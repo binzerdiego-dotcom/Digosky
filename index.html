@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>DigoSky Beta 3.20</title>
+<title>DigoSky Beta 3.21</title>
 <style>
 :root{color-scheme:dark;--bg:#02030a;--fg:#e8ecff;--ac:#55ccff;--card:#10142bd9;--gold:#ffcc33;box-sizing:border-box}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;touch-action:none}
@@ -1278,7 +1278,7 @@ const M2=document.createElement('div');M2.id='m2';
 M2.innerHTML='<canvas id="m3"></canvas><div class="mvig"></div><div class="mgr"></div>'
 +'<header class="mt"><div class="lg">'+EMB+'<div class="lgt">'+[...'DIGOSKY'].map((c,i)=>'<span style="--i:'+i+'">'+c+'</span>').join('')+'</div></div><div class="sb">WANDERER VX-9 · EXPEDITION SOL</div></header>'
 +'<div id="mst"></div><nav id="mn"></nav><section id="mp"></section>'
-+'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.20</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
++'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.21</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
 +'<div id="mfade"></div><input type="file" id="mfile" accept=".json,.txt,application/json,text/plain" style="display:none">';
 wrap.appendChild(M2);
 const mp=el('mp'),NAV=[['play','SPIEL STARTEN',0],['new','NEUES SPIEL',0],['load','SPIELSTAND LADEN',0],['mis','MISSIONEN',1],['char','CHARAKTER',1],['ship','RAUMSCHIFF',1],['kod','KODEX',1],['set','EINSTELLUNGEN',2],['prof','SPIELERPROFIL',2]],MNG=['KAMPAGNE','BORDSYSTEME','SYSTEM'];
@@ -3600,7 +3600,7 @@ const ci=Math.floor(cx/12),cj=Math.floor(cz/12);if(ci!=GEO.wx||cj!=GEO.wz){GEO.w
 /*==== SPIELSYSTEM 3.11: GEGENSTAENDE, INVENTAR, FABRIKATOR, BAUPLAENE, LEBENSERHALTUNG, BASISBAU, TREIBSTOFF ====*/
 /*-- Kategorien und Gegenstaende (ein einziges, einheitliches System fuer alles, was man besitzt) --*/
 var IVR=null;
-const ICAT={roh:['Rohstoffe','#ffb35a'],mat:['Bauteile','#7fe8ff'],wz:['Werkzeuge','#9fff8a'],aus:['Ausrüstung','#ff9ad0'],mod:['Anzug-Module','#c8a0ff'],sch:['Schiff','#ffd060'],bas:['Basis','#6fffd8'],ver:['Verbrauch','#ff8a6a'],han:['Handelswaren','#ffcc33']},ICO=['roh','mat','han','wz','aus','mod','sch','bas','ver'];
+const ICAT={roh:['Rohstoffe','#ffb35a'],mat:['Bauteile','#7fe8ff'],wz:['Werkzeuge','#9fff8a'],aus:['Ausrüstung','#ff9ad0'],mod:['Anzug-Module','#c8a0ff'],sch:['Schiff','#ffd060'],bas:['Basis','#6fffd8'],ver:['Verbrauch','#ff8a6a'],han:['Handelswaren','#ffcc33'],ausr:['Anzug-Teile','#ffa8e8']},ICO=['roh','mat','han','wz','aus','mod','ausr','sch','bas','ver'];
 const ITM={};
 /* id, Name, Kategorie, Masse kg, Stapel, Symbol, Farbe, Beschreibung, Fundort/Herkunft, Wert */
 [['Eisenerz','Eisenerz','roh',10,100,'ore','#d0683c','Eisenoxid-reiches Gestein. Wird im Fabrikator zu Stahlbarren.','Erzadern auf Mars, Merkur, Io, Phobos · Markt: Ares-Werft, Ceres-Börse'],
@@ -3688,7 +3688,20 @@ const ITM={};
 ['stim','Stimulans','ver',1,10,'stim','#ff7ad0','40 Sekunden lang 50 % schneller.','Bauplan: Forschung Stufe 2',70],
 ['notsig','Notsignal','ver',2,5,'flare','#ff4a3a','Ruft einen Bergungsschlepper: +15 % Treibstoff. Am Boden: zurück ins Schiff.','Bauplan: Forschung Stufe 1 · Gaia',120],
 ['hyperkristall','Hyperkristall','sch',1.5,10,'cyber','#3f8cff','Seltener, leuchtend blauer Stein. Treibt den Hyperantrieb an: im Schiffstank einsetzen, jeder Sprung verbraucht einen Kristall.','Selten auf allen Planeten und Monden (1–3 pro Landeort) · mit dem Abbaulaser lösen',900],
-['cyberkristall','Cyberkristall','sch',6,5,'cyber','#5fe8ff','Sechseckige Energiekristall-Säule mit innerem Leuchten. Ersetzt den Schiffskristall: beim Schiff in die Kristallkammer einsetzen.','Hügel und Felswände der Erde · mit dem Abbaulaser herausbrechen',480]
+['cyberkristall','Cyberkristall','sch',6,5,'cyber','#5fe8ff','Sechseckige Energiekristall-Säule mit innerem Leuchten. Ersetzt den Schiffskristall: beim Schiff in die Kristallkammer einsetzen.','Hügel und Felswände der Erde · mit dem Abbaulaser herausbrechen',480],
+/* 3.21: Zelt-Anbauten (stehen nur neben einem Rundzelt oder Habitat und werden mit Gängen verbunden) */
+['wohnmod','Wohnmodul','bas',90,2,'tent','#f0e2b8','Zelt-Anbau mit Schlafplatz und Luftschleuse. Schlafen füllt Gesundheit, Sauerstoff und Energie auf.','Bauplan: Forschung Stufe 1',260],
+['lagermod','Lagermodul','bas',70,2,'crate','#d8b070','Zelt-Anbau mit 32 Lagerplätzen direkt an der Basis.','Startbauplan',180],
+['werkmod','Werkstatt','bas',120,2,'fab','#ffb35a','Zelt-Anbau mit Crafting-Tisch. Stellt aus Rucksack und Schnellleiste her, so schnell wie an Bord.','Bauplan: Forschung Stufe 1',420],
+['gewmod','Gewächshaus','bas',110,2,'bio','#7ae070','Zelt-Anbau mit Glaskuppel. Baut Biomasse an (4 pro Stunde). Braucht Strom.','Bauplan: Forschung Stufe 2 · Orbitalhafen Gaia',520],
+/* 3.21: Anzug-Teile (Datenstruktur EQP, werden in der nächsten Version am Körper ausgerüstet) */
+['gravschuhe','Gravitationsschuhe','ausr',5,1,'boot','#a890ff','Erzeugen ein künstliches Schwerefeld unter den Füssen: Gehen wie auf der Erde, auch auf kleinen Monden.','Bauplan: Forschung Stufe 2',560],
+['o2gross','Grosser Sauerstofftank','ausr',9,1,'tank','#7ad8ff','Druckflasche für den Rücken: +150 % Sauerstoffvorrat.','Bauplan: Forschung Stufe 2',420],
+['visier','Nachtsicht-Visier','ausr',2,1,'lens','#8affb0','Helmvisier mit Restlichtverstärker. Zeigt Gelände auch in der Nacht.','Bauplan: Forschung Stufe 1',300],
+['servo','Servo-Beinschienen','ausr',7,1,'mod','#ffc070','Motorisierte Beinschienen: schneller laufen, höher springen, mehr tragen.','Bauplan: Forschung Stufe 2',480],
+/* 3.21: Energie und Treibstoff */
+['jetgas','Jetpack-Treibgas','aus',2,10,'gas','#ffb070','Druckkartusche: füllt das Jetpack sofort ganz auf.','Crafting-Tisch: Wasserstoff + Stahl',40],
+['ezellexl','Energiezelle XL','aus',3,10,'batt','#fff080','Grosse Zelle: lädt die Anzugenergie ganz auf.','Crafting-Tisch: Energiezelle + Supraleiter',110]
 ].forEach(r=>{ITM[r[0]]={id:r[0],n:r[1],c:r[2],m:r[3],s:r[4],ic:r[5],col:r[6],d:r[7],src:r[8],v:r[9]!=null?r[9]:(GOODS[r[0]]||20),k:r[10]||null}});
 const MODI={};Object.values(ITM).forEach(o=>{if(o.c=='mod')MODI[o.k]=o.id});
 Object.assign(MODS,{jet:{n:'Jetpack',d:'In der Luft Leertaste halten = Schub. Treibgas lädt im Schiff nach.',p:380},mag:{n:'Magnetstiefel',d:'Fester Halt bei geringer Schwerkraft.',p:240}});
@@ -3716,17 +3729,41 @@ const RC=[];
 ['o2gen','bas',{stahl:3,Elektronik:2,Wasser:2},{o2gen:1},12],['wex','bas',{stahl:4,Elektronik:1,kupferdraht:2},{wex:1},10],['abohrer','bas',{titanplatte:3,stahl:4,Elektronik:2},{abohrer:1},14],['kiste','bas',{stahl:2},{kiste:1},4],
 ['licht','bas',{stahl:1,Elektronik:1,Quarz:1},{licht:1},4],['funk','bas',{Elektronik:2,kupferdraht:3,stahl:2},{funk:1},8],['plattform','bas',{stahl:12,titanplatte:4,Elektronik:2},{plattform:1},24],['rover','bas',{titanplatte:6,Elektronik:3,fusionszelle:1,polymer:2},{rover:1},30]
 ].forEach((r,i)=>RC.push({i,bp:r[0],c:r[1],in:r[2],out:r[3],t:r[4],n:r[5]||ITM[Object.keys(r[3])[0]].n}));
+/* 3.21: neue Rezepte immer HINTEN anhaengen, damit die Warteschlange alter Spielstaende stimmt */
+[['wohnmod','bas',{polymer:4,stahl:2,Elektronik:1},{wohnmod:1},10],['lagermod','bas',{stahl:4,polymer:2},{lagermod:1},8],['werkmod','bas',{stahl:4,Elektronik:2,kupferdraht:2},{werkmod:1},12],['gewmod','bas',{polymer:3,optik:2,Wasser:4,Biomasse:2},{gewmod:1},14],
+['gravschuhe','mod',{supraleiter:1,stahl:2,Elektronik:2},{gravschuhe:1},14],['o2gross','mod',{titanplatte:3,polymer:1},{o2gross:1},10],['visier','mod',{optik:2,Elektronik:1},{visier:1},8],['servo','mod',{titanplatte:2,Elektronik:2,kupferdraht:3},{servo:1},12],
+['jetgas','chem',{Wasserstoff:3,stahl:1},{jetgas:2},4],['ezellexl','chem',{ezelle:2,supraleiter:1},{ezellexl:1},8],['hyperkristall','chem',{Quarz:6,supraleiter:2,Edelgas:4},{hyperkristall:1},40,'Hyperkristall synthetisieren']
+].forEach(r=>RC.push({i:RC.length,bp:r[0],c:r[1],in:r[2],out:r[3],t:r[4],n:r[5]||ITM[Object.keys(r[3])[0]].n}));
+/* 3.21: Crafting-Tisch mit genau 3 Bereichen. CAREA = Bereich, CGRP = Gruppe im Bereich, CGOF = Bauplan -> Gruppe */
+const CAREA=[['basis','🏠','BASIS','Zelt, Anbauten, Strom und Baumaterial'],['ausr','🧑‍🚀','AUSRÜSTUNG','Anzug-Teile, Werkzeuge, Vorräte, Schiff'],['treib','⛽','TREIBSTOFF','Treibstoff, Hyperkristalle, Energiezellen']];
+const CGRP={kern:['basis','Zelt & Anbauten'],bstrom:['basis','Strom & Versorgung'],bausst:['basis','Ausstattung'],mat:['basis','Baumaterial'],
+anzug:['ausr','Anzug-Teile'],wz:['ausr','Werkzeuge'],vorrat:['ausr','Vorräte & Medizin'],schiff:['ausr','Schiffsteile'],
+treib:['treib','Treibstoff'],hyper:['treib','Hyperkristalle'],energie:['treib','Energiezellen'],chem:['treib','Wasser & Gase']};
+const CGOF={};[['kern','zelt habitat wohnmod lagermod werkmod gewmod'],['bstrom','solar batterie o2gen wex abohrer'],['bausst','kiste licht funk bake plattform rover'],['mat','stahl titanplatte kupferdraht elektronik silizium polymer optik supraleiter ersatzteile'],
+['wz','laser1 laser2 laser3 scan1 scan2 lampe fernglas multitool bohrer bergung feldfab haken'],['vorrat','ration wbeutel stim notsig medizin medkit o2pat anzrep'],['schiff','hrep sonde erw_tank erw_lade erw_trieb erw_schild'],
+['treib','tzelle'],['hyper','hyperkristall'],['energie','ezelle ezellexl fusionszelle jetgas'],['chem','wasser elektrolyse']].forEach(([g,s])=>s.split(' ').forEach(k=>CGOF[k]=g));
+RC.forEach(r=>{r.g=CGOF[r.bp]||(r.c=='mod'?'anzug':r.c=='bas'?'kern':'mat');r.a=CGRP[r.g][0]});
+/* 3.21: Anzug-Ausruestung. ESLOT = Slot am Koerper [Name, Symbol, Plaetze]; EQP = Teil: s Slot, w Werte, mod = heutiges Anzug-Modul (falls schon ausruestbar).
+   Das Rezept steht in RC (bp = Teil-id). Ab der naechsten Version werden die Teile ueber diese Slots ausgeruestet. */
+const ESLOT={kopf:['Kopf','🪖',2],brust:['Brust','🦺',3],ruecken:['Rücken','🎒',2],beine:['Beine','🦿',1],fuesse:['Füsse','🥾',1]};
+const EQP={mod_jet:{s:'ruecken',w:{schub:1.9,gas:100},mod:'jet'},mod_o2:{s:'ruecken',w:{o2:60},mod:'o2'},o2gross:{s:'ruecken',w:{o2:150}},mod_akku:{s:'brust',w:{energie:-38},mod:'akku'},
+mod_thermo:{s:'brust',w:{hitze:100},mod:'thermo'},mod_kaelte:{s:'brust',w:{kaelte:-150},mod:'kaelte'},mod_strahl:{s:'brust',w:{strahlung:1},mod:'strahl'},mod_druck:{s:'brust',w:{druck:92},mod:'druck'},
+lampe:{s:'kopf',w:{licht:40}},visier:{s:'kopf',w:{nachtsicht:1}},mod_mag:{s:'fuesse',w:{halt:1},mod:'mag'},gravschuhe:{s:'fuesse',w:{g:9.81}},servo:{s:'beine',w:{tempo:1.2,sprung:1.4,tragen:20}}};
+const EQW={schub:['Schub',v=>v+' g'],gas:['Treibgas',v=>v+' %'],o2:['Sauerstoff',v=>'+'+v+' %'],energie:['Energieverbrauch',v=>v+' %'],hitze:['Hitzeschutz',v=>'über '+v+' °C'],kaelte:['Kälteschutz',v=>'unter '+v+' °C'],strahlung:['Strahlenschutz',v=>'ja'],druck:['Druckschutz',v=>'bis '+v+' bar'],
+licht:['Lichtweite',v=>v+' m'],nachtsicht:['Nachtsicht',v=>'ja'],halt:['Halt bei wenig Schwerkraft',v=>'ja'],g:['Künstliche Schwerkraft',v=>v+' m/s²'],tempo:['Tempo',v=>'×'+v],sprung:['Sprung',v=>'×'+v],tragen:['Tragkraft',v=>'+'+v+' kg']};
+const eqTxt=id=>{const q=EQP[id];if(!q)return'';return ESLOT[q.s][1]+' '+ESLOT[q.s][0]+' · '+Object.entries(q.w).map(([k,v])=>EQW[k]?EQW[k][0]+' '+EQW[k][1](v):k).join(' · ')};
 /* Bauplan-Stufen fuer die Forschung (Startbauplaene haben Stufe 0) */
 const BPT={stahl:0,kupferdraht:0,elektronik:0,silizium:0,wasser:0,elektrolyse:0,tzelle:0,ration:0,wbeutel:0,o2pat:0,ezelle:0,laser1:0,scan1:0,lampe:0,zelt:0,kiste:0,licht:0,
 titanplatte:1,polymer:1,optik:1,ersatzteile:1,anzrep:1,haken:1,mod_kaelte:1,mod_o2:1,mod_akku:1,mod_mag:1,mod_thermo:1,fernglas:1,multitool:1,bergung:1,hrep:1,bake:1,solar:1,batterie:1,wex:1,funk:1,notsig:1,
 fusionszelle:2,medizin:2,stim:2,medkit:2,mod_strahl:2,mod_jet:2,laser2:2,scan2:2,bohrer:2,feldfab:2,sonde:2,erw_tank:2,erw_lade:2,habitat:2,o2gen:2,abohrer:2,
-supraleiter:3,mod_druck:3,laser3:3,erw_trieb:3,erw_schild:3,plattform:3,rover:3};
+supraleiter:3,mod_druck:3,laser3:3,erw_trieb:3,erw_schild:3,plattform:3,rover:3,
+lagermod:0,wohnmod:1,werkmod:1,visier:1,jetgas:1,gewmod:2,gravschuhe:2,o2gross:2,servo:2,ezellexl:2,hyperkristall:3};
 const BPFP=[0,15,35,70],BPN={};RC.forEach(r=>{if(!BPN[r.bp])BPN[r.bp]=ITM[Object.keys(r.out)[0]].n});BPN.wasser='Wasser';BPN.elektrolyse='Elektrolyse';BPN.polymer='Polymer';BPN.optik='Optik';
 const bpKnown=k=>!!(save.bpk&&save.bpk[k]);
 function bpLearn(k,why){if(!k||bpKnown(k)||BPT[k]==null)return 0;save.bpk[k]=1;store();sfx('dia');toast('Neuer Bauplan: '+BPN[k]+(why?' ('+why+')':''));G.tt=4;return 1}
 /* Funde an verlassenen Orten, Missionen und Handel */
 const BPSITE={aresost:'medizin',caloris:'scan2',thera:'supraleiter',venera:'mod_thermo',huygens:'polymer',apollo:'fernglas',lyra:'laser3',kestrel:'bergung',odin:'hrep',sonde7:'sonde',voyager:'optik',stille:'feldfab'};
-const BPSHOP={gaia:['habitat','medkit','mod_o2','mod_akku','mod_strahl','mod_druck','notsig','ersatzteile'],ares:['titanplatte','erw_lade','laser2','mod_mag','haken','mod_thermo'],ceres:['abohrer','wex','optik','bohrer'],valhalla:['mod_kaelte','mod_jet','fusionszelle'],kronos:['optik','scan2','sonde'],selene:['solar','batterie','rover'],tharsis:['o2gen','plattform','anzrep']};
+const BPSHOP={gaia:['habitat','gewmod','medkit','mod_o2','mod_akku','mod_strahl','mod_druck','notsig','ersatzteile'],ares:['titanplatte','erw_lade','laser2','mod_mag','haken','mod_thermo'],ceres:['abohrer','wex','optik','bohrer'],valhalla:['mod_kaelte','mod_jet','fusionszelle','jetgas','o2gross'],kronos:['optik','scan2','sonde'],selene:['solar','batterie','rover'],tharsis:['o2gen','plattform','anzrep']};
 const SHOPI=['ration','wbeutel','o2pat','ezelle','medkit','tzelle','hrep','anzrep','notsig','stahl','kupferdraht'];
 /* Was wo abgebaut werden kann: g = Gestein (Laser auf Boden), n = Erzadern */
 const MINE={Merkur:{g:['Regolith','Eisenerz','Titan'],n:['Eisenerz','Titan','Kupfererz','Iridium','Schwefel']},Venus:{g:['Regolith','Schwefel'],n:['Schwefel','Eisenerz','Kupfererz']},Erde:{g:['Silizium','Regolith'],n:['Eisenerz','Kupfererz','Quarz','Biomasse','Biomasse','Wassereis']},
@@ -3968,11 +4005,33 @@ div.nx .nxg:not(.g8){--c:6!important}
 }
 @media (max-width:430px){div.nx .nxh .ucoin{display:none}}
 `;document.head.appendChild(s)}
+/*-- 3.21: Crafting-Tisch --*/
+{const s=document.createElement('style');s.textContent=`
+div.nx .cft{flex:1;min-width:0}div.nx .cfq{flex:none;width:270px}
+.cfa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cfk{display:flex;align-items:center;gap:12px;min-height:78px;margin:0;padding:10px 14px;border:1px solid var(--ub2);background:#06142a;color:#cfe6ff;text-align:left;cursor:pointer;clip-path:var(--ucut);font:500 15px/1.25 Rajdhani,system-ui,sans-serif;touch-action:manipulation}
+.cfk i{font-style:normal;font-size:34px;line-height:1;flex:none}.cfk span{min-width:0}.cfk b{display:block;font:700 14px Orbitron,system-ui;letter-spacing:.12em;color:#fff}.cfk small{display:block;color:var(--um);font-size:13.5px}
+.cfk em{display:block;font-style:normal;font-size:13.5px;color:#9fc8e0;margin-top:2px}.cfk u{text-decoration:none;color:#6fff9a}
+.cfk:hover{border-color:var(--ua)}.cfk.on{background:linear-gradient(180deg,#1a6a9a,#0c3a5c);border-color:var(--ua)}.cfk.on small{color:#cfe6ff}
+.cfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px;align-items:stretch}div.nx .cfg h4{grid-column:1/-1;margin:8px 0 0}
+.cfc{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--ub2);background:rgba(2,8,18,.72);clip-path:var(--ucut)}
+.cfc.rdy{border-color:#2f8a5a;background:linear-gradient(180deg,rgba(20,70,45,.28),rgba(2,8,18,.72))}.cfc.lk{opacity:.55}
+.cfh{display:flex;gap:10px}.cfh img{width:56px;height:56px;flex:none}.cfh b{font:700 14px Orbitron,system-ui;letter-spacing:.05em;color:#fff}.cfh b small{font:700 13px Rajdhani;color:var(--ug)}
+.cfh p{margin:3px 0 0;font-size:14px;color:#bcd;line-height:1.3}.cfh .cfe{color:#ffa8e8;font-size:13.5px}
+.cfi{display:flex;flex-wrap:wrap;gap:5px}.cfi span{display:inline-flex;align-items:center;gap:5px;padding:2px 9px 2px 3px;border:1px solid;font-size:14px}.cfi img{width:24px;height:24px}
+.cfi .ok{color:#9fffbe;border-color:#2f8a5a;background:#0b2618}.cfi .no{color:#ffa0a0;border-color:#8a3030;background:#2a0c10}
+.cfb{display:flex;align-items:center;gap:6px;margin-top:auto}.cfb>b{min-width:30px;text-align:center;font:700 16px Orbitron,system-ui}.cfb small{margin-left:auto;color:var(--um);font-size:14px}div.nx .cfb .ubt{min-width:44px;padding:6px 10px}
+div.nx .cfm{width:100%;min-height:52px;font:700 14px Orbitron,system-ui;letter-spacing:.12em}
+.cfl{margin-top:auto;color:#ff9a6a;font-size:14px}
+@media (max-width:760px),(max-height:520px){.cft .ush{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.cft .ush::-webkit-scrollbar{display:none}.cft .ush .ubt{flex:none}}
+@media (max-height:520px){.cfk{min-height:54px;padding:6px 12px}.cfk small{display:none}.cfk i{font-size:26px}div.nx .cfq{width:230px}}
+@media (max-width:760px){.cfa{gap:6px}.cfk{flex-direction:column;justify-content:center;text-align:center;gap:3px;min-height:76px;padding:8px 4px}.cfk small{display:none}.cfk b{font-size:11px;letter-spacing:.06em}.cfk i{font-size:28px}.cfk em{font-size:12.5px}.cfk em u{display:block}.cfg{grid-template-columns:1fr}div.nx .cfq{width:auto}div.nx .cfq.has{order:-1}div.nx .cfq:not(.has){display:none}}
+`;document.head.appendChild(s)}
 const NX=mkd(''),NXT=document.createElement('div'),NXD=document.createElement('img');NX.className='nx';NXT.className='nxtip';NXD.id='nxdr';document.body.appendChild(NXT);document.body.appendChild(NXD);
-const NXS={on:0,tab:'inv',side:'sh',ct:null,fo:0,rt:'pr',filt:null,sel:null,fcat:'proz',frc:-1,fq:1,fm:'ship',fonly:null,lab:0,ttl:''};
+const NXS={on:0,tab:'inv',side:'sh',ct:null,fo:0,rt:'pr',filt:null,sel:null,fcat:'basis',fg:'',cq:{},frc:-1,fq:1,fm:'ship',fonly:null,lab:0,ttl:''};
 const nxOn=()=>NXS.on;
 function nxOpen(tab,o){o=o||{};Object.assign(NXS,{on:1,tab:tab||'inv',fm:o.fm||'ship',fonly:o.fonly||null,lab:!!o.lab,ttl:o.ttl||'',sel:null});NXS.ct=o.side||null;if(o.box!==undefined)IVR.box=o.box;else if(!o.keepBox)IVR.box=null;
-if(NXS.tab=='fab'){const c=NXS.fonly?NXS.fonly[0]:NXS.fcat;if(!FCAT.some(q=>q[0]==NXS.fcat)||(NXS.fonly&&!NXS.fonly.includes(NXS.fcat)))NXS.fcat=c;NXS.frc=-1}
+if(NXS.tab=='fab')fabFix();
 if(NXS.ct=='box'&&!IVR.box)NXS.ct=null;if(document.pointerLockElement)document.exitPointerLock();NX.style.display='flex';sfx('ui');for(const c in keys)keys[c]=0;G.lmb=G.rmb=0;nxRender()}
 function nxClose(){if(!NXS.on)return;NXS.on=0;NX.style.display='none';NXT.style.display='none';NXD.style.display='none';IVR.box=null;sfx('ui');store()}
 function nxTog(){if(NXS.on)nxClose();else if(G.on&&!G.paused&&!pf&&!DCUR&&SU.style.display!='block'&&MAPD.style.display!='block')nxOpen('inv')}
@@ -3980,7 +4039,7 @@ const slH=(k,i,s,ex)=>'<div class="sl'+(ex||'')+'" data-k="'+k+'" data-i="'+i+'"
 function nxSlots(k,cols,acc,cl){const a=ivA(k);return'<div class="nxg'+(cl?' '+cl:'')+'" style="--c:'+cols+'">'+a.map((s,i)=>slH(k,i,s,(NXS.sel&&NXS.sel[0]==k&&NXS.sel[1]==i?' sel':'')+(s&&NXS.filt&&ITM[s.id].c!=NXS.filt?' dim':'')+(acc?'':' lk'))).join('')+'</div>'}
 function nxSideOk(k){if(k=='box')return!!IVR.box;return reachK().includes(k)}
 function fmtKg(m){return m>=1000?(m/1000).toFixed(m>=1e4?0:1)+' t':Math.round(m)+' kg'}
-function nxHead(){const tb=[['inv','🎒','INVENTAR'],['fab','🛠','FABRIKATOR'],['res','🔬','FORSCHUNG'],['base','🏠','BASEN']];
+function nxHead(){const tb=[['inv','🎒','INVENTAR'],['fab','🛠','CRAFTING'],['res','🔬','FORSCHUNG'],['base','🏠','BASEN']];
 return'<div class="nxh">'+(NXS.ttl?'<div class="utt">'+NXS.ttl+'</div>':'<div class="utabs">'+tb.map(([k,i,n])=>'<button class="utb'+(NXS.tab==k?' on':'')+'" data-tab="'+k+'"><i>'+i+'</i><span>'+n+'</span></button>').join('')+'</div>')+'<span class="sp"></span><span class="ucoin">● '+save.coins+'</span><button class="ux" data-a="close" title="Schliessen (Esc)">✕</button></div>'}
 function nxRender(){if(!NXS.on)return;const sc=[...NX.querySelectorAll('.nxb,.nxs')].map(e=>e.scrollTop),k0=NX._k,k1=NXS.tab+'|'+NXS.ct+'|'+NXS.rt;let h=nxHead()+'<div class="nxb">';try{h+=NXS.tab=='inv'?nxInv():NXS.tab=='fab'?fabHtml():NXS.tab=='res'?resHtml():baseHtml()}catch(e){console.error(e);h+='<p>Fehler: '+e.message+'</p>'}h+='</div>';if(NXS.tab=='inv')h+='<div class="nxft">'+nxDet()+'</div>';NX.innerHTML=h;NX._k=k1;if(k0==k1)NX.querySelectorAll('.nxb,.nxs').forEach((e,i)=>{if(sc[i])e.scrollTop=sc[i]})}
 function nxInv(){const sp=SPEC(),eq=save.suit.eq,ct=NXS.ct,cok=ct?nxSideOk(ct):0,sm=k=>ivA(k).reduce((a,s)=>a+(s?ITM[s.id].m*s.n:0),0);let h='<div class="nxp nxs nxL">';
@@ -3989,11 +4048,11 @@ if(NXS.fo)h+='<div class="nxc nxfl"><button data-f="" class="'+(NXS.filt?'':'on'
 h+=nxSlots('bp',8,1)+'<h4><span>⚡ SCHNELLLEISTE <small>Tasten 1–8</small></span></h4>'+nxSlots('hb',8,1,'g8');
 if(!ct){h+='<h4><span>🧩 ANZUG-MODULE <small>'+eq.length+' / '+sp.slots+(G.gm&&!G.gi?' · Wechsel nur an Bord':'')+'</small></span></h4><div class="nxg g8" style="--c:8">';for(let i=0;i<sp.slots;i++){const k=eq[i];h+='<div class="sl md'+(k?' f':'')+'" data-k="md" data-i="'+i+'">'+(k&&MODI[k]?'<img src="'+icon(MODI[k])+'">':'')+'</div>'}h+='</div>'}
 h+='</div><div class="nxp nxs nxR">';
-if(ct){const a=ivA(ct),nm=ct=='box'?'LAGERKISTE':IVK[ct][0].toUpperCase();h+='<h4><span>'+(ct=='cg'?'🚚 ':'📦 ')+nm+' <small>'+a.filter(Boolean).length+' / '+a.length+(ct=='cg'?' · '+fmtKg(cgMass())+' / '+sp.hold+' t':'')+'</small></span><button class="bt sm" data-a="sort">⇅ Sortieren</button></h4>'+(cok?'':'<p style="color:#ff9a6a">Kein Zugriff – nur an Bord.</p>')+nxSlots(ct,8,cok)}
+if(ct){const a=ivA(ct),nm=ct=='box'?(IVR.box&&IVR.box.t=='lagermod'?'LAGERMODUL':'LAGERKISTE'):IVK[ct][0].toUpperCase();h+='<h4><span>'+(ct=='cg'?'🚚 ':'📦 ')+nm+' <small>'+a.filter(Boolean).length+' / '+a.length+(ct=='cg'?' · '+fmtKg(cgMass())+' / '+sp.hold+' t':'')+'</small></span><button class="bt sm" data-a="sort">⇅ Sortieren</button></h4>'+(cok?'':'<p style="color:#ff9a6a">Kein Zugriff – nur an Bord.</p>')+nxSlots(ct,8,cok)}
 else h+='<h4><span>❤ ZUSTAND</span></h4>'+vitHtml(1)+'<h4><span>⚖ MASSE AN BORD <small>'+fmtKg(ivMass())+'</small></span><button class="bt sm" data-a="sort">⇅ Sortieren</button></h4><small class="unote">Schiffslager und Frachtraum öffnest du im Schiff direkt am Lagerschrank.</small>';
 return h+'</div>'}
 function nxDet(){const s=NXS.sel&&(NXS.sel[0]=='md'?null:ivA(NXS.sel[0])[NXS.sel[1]]);if(!s)return'<div class="nxd"><p class="nxhint"><span class="dsko">Klicken = Details · Ziehen = verschieben · Shift+Klick = umlagern · Rechtsklick = teilen · Doppelklick = benutzen</span><span class="tcho">Antippen = Details · Ziehen = verschieben</span></p></div>';const it=ITM[s.id],u=useInfo(s.id),sk=NXS.sel[0],ct=NXS.ct,mv=ct?(sk==ct?'← In den Rucksack':(sk=='bp'||sk=='hb')?'→ '+(ct=='box'?'Lagerkiste':IVK[ct][0]):''):(sk=='bp'?'→ Schnellleiste':sk=='hb'?'→ Rucksack':'');
-return'<div class="nxd"><img src="'+icon(s.id)+'"><div style="flex:1;min-width:0"><div class="t">'+it.n+' <small style="font:600 12px Rajdhani;color:'+ICAT[it.c][1]+'">'+ICAT[it.c][0]+'</small></div><p>'+it.d+'</p><p style="color:#8ab">Masse '+fmtKg(it.m)+' pro Stück · Stapel '+it.s+' · Wert '+it.v+' ● · Herkunft: '+it.src+'</p><div class="nxc" style="margin-top:6px">'+(u?'<button class="bt go" data-a="use">'+u+'</button>':'')+(mv?'<button class="bt" data-a="mv">'+mv+'</button>':'')+(s.n>1?'<button class="bt" data-a="split">Teilen</button>':'')+'<button class="bt" data-a="drop">Entsorgen</button></div></div></div>'}
+return'<div class="nxd"><img src="'+icon(s.id)+'"><div style="flex:1;min-width:0"><div class="t">'+it.n+' <small style="font:600 12px Rajdhani;color:'+ICAT[it.c][1]+'">'+ICAT[it.c][0]+'</small></div><p>'+it.d+'</p>'+(EQP[s.id]?'<p style="color:#ffa8e8">'+eqTxt(s.id)+'</p>':'')+'<p style="color:#8ab">Masse '+fmtKg(it.m)+' pro Stück · Stapel '+it.s+' · Wert '+it.v+' ● · Herkunft: '+it.src+'</p><div class="nxc" style="margin-top:6px">'+(u?'<button class="bt go" data-a="use">'+u+'</button>':'')+(mv?'<button class="bt" data-a="mv">'+mv+'</button>':'')+(s.n>1?'<button class="bt" data-a="split">Teilen</button>':'')+'<button class="bt" data-a="drop">Entsorgen</button></div></div></div>'}
 function nxTip(e,k,i){if(k=='md'){const q=save.suit.eq[i];if(!q){NXT.style.display='none';return}const o=MODS[q];NXT.innerHTML='<b>'+o.n+'</b><br>'+o.d+'<br><em>Ziehen zum Ausbauen</em>';}else{const s=ivA(k)[i];if(!s){NXT.style.display='none';return}const it=ITM[s.id];NXT.innerHTML='<b>'+it.n+'</b> ×'+s.n+'<br><span style="color:'+ICAT[it.c][1]+'">'+ICAT[it.c][0]+'</span> · '+fmtKg(it.m*s.n)+'<br>'+it.d+'<br><em>'+it.src+'</em>'}
 NXT.style.display='block';NXT.style.left=Math.min(innerWidth-290,e.clientX+16)+'px';NXT.style.top=Math.min(innerHeight-140,e.clientY+14)+'px'}
 /* Ziehen und Ablegen */
@@ -4021,13 +4080,13 @@ function quickMove(k,i){const s=ivA(k)[i];if(!s)return;let to;const ct=NXS.ct&&n
 function splitAt(k,i){const a=ivA(k),s=a[i];if(!s||s.n<2||!canTouch(k))return;const j=a.indexOf(null);if(j<0)return toast('Kein freier Platz zum Teilen');const h=Math.floor(s.n/2);s.n-=h;a[j]={id:s.id,n:h};IVD=1;sfx('ui')}
 function sortC(k){const a=ivA(k),m={};a.forEach(s=>{if(s)m[s.id]=(m[s.id]||0)+s.n});const ids=Object.keys(m).sort((p,q)=>ICO.indexOf(ITM[p].c)-ICO.indexOf(ITM[q].c)||ITM[p].n.localeCompare(ITM[q].n));a.fill(null);let i=0;ids.forEach(id=>{let n=m[id];while(n>0&&i<a.length){const q=Math.min(n,ITM[id].s);a[i++]={id,n:q};n-=q}});IVD=1;hbDirty=1}
 NX.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const d=b.dataset;
-if(d.tab){NXS.tab=d.tab;NXS.sel=null;if(d.tab=='fab'&&NXS.fonly&&!NXS.fonly.includes(NXS.fcat))NXS.fcat=NXS.fonly[0];sfx('ui')}
+if(d.tab){NXS.tab=d.tab;NXS.sel=null;if(d.tab=='fab')fabFix();sfx('ui')}
 else if(d.f!=null){NXS.filt=d.f||null}else if(d.side){NXS.side=d.side;NXS.sel=null}
 else if(d.a=='close'){nxClose();return}else if(d.a=='sort'){if(NXS.ct&&nxSideOk(NXS.ct))sortC(NXS.ct);sortC('bp');sfx('ui')}else if(d.a=='filt'){NXS.fo=NXS.fo?0:1;if(!NXS.fo)NXS.filt=null}else if(d.rtab){NXS.rt=d.rtab;sfx('ui')}
 else if(d.a=='mv'&&NXS.sel){quickMove(NXS.sel[0],NXS.sel[1]);if(!ivA(NXS.sel[0])[NXS.sel[1]])NXS.sel=null}
 else if(d.a=='use'&&NXS.sel){const s=ivA(NXS.sel[0])[NXS.sel[1]];if(s)useItem(s.id,NXS.sel)}else if(d.a=='split'&&NXS.sel)splitAt(NXS.sel[0],NXS.sel[1]);
 else if(d.a=='drop'&&NXS.sel){const a=ivA(NXS.sel[0]),s=a[NXS.sel[1]];if(s&&canTouch(NXS.sel[0])){if(b.dataset.c){a[NXS.sel[1]]=null;IVD=1;hbDirty=1;NXS.sel=null;sfx('ui');store()}else{b.dataset.c=1;b.textContent='Wirklich entsorgen?';return}}}
-else if(d.fc){NXS.fcat=d.fc;NXS.frc=-1;sfx('ui')}else if(d.fr!=null){NXS.frc=+d.fr;NXS.fq=1;sfx('ui')}else if(d.q){const r=RC[NXS.frc];NXS.fq=d.q=='m'?Math.max(1,fabMax(r)):Math.max(1,Math.min(99,NXS.fq+ +d.q))}
+else if(d.fc){NXS.fcat=d.fc;NXS.fg='';sfx('ui')}else if(d.fg!=null){NXS.fg=d.fg;sfx('ui')}else if(d.cq){const i=+d.ri,r=RC[i];NXS.cq[i]=d.cq=='m'?Math.max(1,fabMax(r)):Math.max(1,Math.min(99,(NXS.cq[i]||1)+ +d.cq));sfx('ui')}else if(d.mk!=null){fabStart(+d.mk,NXS.cq[+d.mk]||1);NXS.cq[+d.mk]=1}else if(d.fr!=null){NXS.frc=+d.fr;NXS.fq=1;sfx('ui')}else if(d.q){const r=RC[NXS.frc];NXS.fq=d.q=='m'?Math.max(1,fabMax(r)):Math.max(1,Math.min(99,NXS.fq+ +d.q))}
 else if(d.a=='make')fabStart(NXS.frc,NXS.fq);else if(d.qx!=null)fabCancel(+d.qx);
 else if(d.an)resAnalyze(d.an,+d.n);else if(d.rb)resBP(d.rb);else if(d.rt)resTech(d.rt);
 else if(d.bc)baseCollect(d.bc,1);else if(d.bt){setTgtStr('p:'+d.bt);toast('Ziel: '+d.bt);sfx('beep')}
@@ -4063,24 +4122,34 @@ if(c=='KeyN'&&!e.repeat){fuelReserve();return}
 if((G.gi||G.gm)&&/^Digit[1-8]$/.test(c))hbSel(+c[5]-1)},true);
 
 /*-- Fabrikator: Warteschlange laeuft im Hintergrund weiter --*/
-function fabKs(m){return(m||NXS.fm)=='field'?['bp','hb']:['cg','sh','bp','hb']}
+function fabKs(m){const q=m||NXS.fm;return q=='field'||q=='base'?['bp','hb']:['cg','sh','bp','hb']}
 function fabMax(r){if(!r)return 0;const ks=fabKs();let m=99;for(const[k,v]of Object.entries(r.in))m=Math.min(m,Math.floor(cntIn(ks,k)/v));return m}
-function fabHtml(){const cats=NXS.fonly?FCAT.filter(c=>NXS.fonly.includes(c[0])):FCAT,ks=fabKs(),fld=NXS.fm=='field';let h='<div class="nxp nxs fab1"><div class="nxc">';
-cats.forEach(([k,n])=>{const L=RC.filter(r=>r.c==k),kn=L.filter(r=>bpKnown(r.bp)).length;h+='<button class="bt'+(NXS.fcat==k?' go':'')+'" data-fc="'+k+'">'+n+' <small style="opacity:.6">'+kn+'/'+L.length+'</small></button>'});
-h+='</div>';const fnote='<small class="unote">'+(fld?'Nimmt Material nur aus Rucksack und Schnellleiste. 50 % langsamer.':'Nimmt Material aus Rucksack, Schnellleiste, Schiffslager und Frachtraum.')+' Baupläne gibt es im Labor, an verlassenen Orten, bei Missionen und an Stationen.</small>';
-const L=RC.filter(r=>r.c==NXS.fcat).sort((a,b)=>(bpKnown(b.bp)-bpKnown(a.bp))||BPT[a.bp]-BPT[b.bp]);if(NXS.frc<0||RC[NXS.frc].c!=NXS.fcat){const f=L.find(r=>bpKnown(r.bp));NXS.frc=f?f.i:(L[0]?L[0].i:-1)}
-h+='<h4>BAUPLÄNE</h4>'+L.map(r=>{const k=bpKnown(r.bp),o=Object.keys(r.out)[0],mx=k?fabMax(r):0;return'<div class="frl'+(r.i==NXS.frc?' on':'')+(k?'':' lk')+'" data-fr="'+r.i+'"><img src="'+icon(o)+'"><div style="flex:1;pointer-events:none">'+r.n+(r.out[o]>1?' ×'+r.out[o]:'')+'<small>'+(k?(mx>0?'<span style="color:#6fff9a">herstellbar ×'+mx+'</span>':'Material fehlt'):'🔒 Bauplan fehlt · Stufe '+BPT[r.bp])+'</small></div></div>'}).join('')+'</div>';
-const r=RC[NXS.frc];h+='<div class="nxp" style="flex:1">';
-if(r){const o=Object.keys(r.out)[0],it=ITM[o],k=bpKnown(r.bp),mx=fabMax(r),n=Math.max(1,NXS.fq),T=r.t*(fld?1.5:1)/(save.tech.fab?1.3:1);
-h+='<div class="nxd"><img src="'+icon(o)+'"><div><div class="t">'+r.n+'</div><p>'+it.d+'</p><p style="color:#8ab">Ergibt '+Object.entries(r.out).map(([a,b])=>b+'× '+ITM[a].n).join(' + ')+' · '+T.toFixed(1)+' s pro Durchgang</p></div></div><h4>BENÖTIGT <small>für '+n+' Durchgang'+(n>1?'e':'')+'</small></h4>';
-Object.entries(r.in).forEach(([a,b])=>{const hv=cntIn(ks,a),nd=b*n,ok=hv>=nd;h+='<div class="mi"><img src="'+icon(a)+'"><div style="flex:1">'+ITM[a].n+'<small>'+(ok?'':'Fundort: '+ITM[a].src)+'</small></div><b class="'+(ok?'ok':'no')+'">'+hv+' / '+nd+'</b></div>'});
-h+=k?'<div style="display:flex;gap:6px;align-items:center;margin-top:10px"><button class="bt" data-q="-10">−10</button><button class="bt" data-q="-1">−</button><b style="font:700 18px Orbitron;min-width:44px;text-align:center">'+n+'</b><button class="bt" data-q="1">+</button><button class="bt" data-q="10">+10</button><button class="bt" data-q="m">Max ('+mx+')</button><span style="flex:1;min-width:4px"></span><button class="bt go" data-a="make" '+(mx>=n&&save.fq.length<10?'':'disabled')+'>HERSTELLEN</button></div>':'<p style="color:#ff9a6a">Bauplan fehlt. '+(BPT[r.bp]?'Forschung Stufe '+BPT[r.bp]+' ('+BPFP[BPT[r.bp]]+' FP) im Labor':'')+(Object.keys(BPSHOP).filter(s=>BPSHOP[s].includes(r.bp)).length?' · Händler: '+Object.keys(BPSHOP).filter(s=>BPSHOP[s].includes(r.bp)).map(s=>STN.find(q=>q.id==s).n).join(', '):'')+(Object.keys(BPSITE).find(s=>BPSITE[s]==r.bp)?' · Fund an einem verlassenen Ort':'')+'</p>'}
-h+='<h4>WARTESCHLANGE <small>'+save.fq.length+' / 10 · läuft im Hintergrund</small></h4><div class="nxs" style="flex:1">'+(save.fq.length?save.fq.map((j,i)=>{const q=RC[j.r],T=q.t*(j.m=='field'?1.5:1)/(save.tech.fab?1.3:1),p=i==0?clamp(j.t/T,0,1):0;return'<div class="mi"><img src="'+icon(Object.keys(q.out)[0])+'"><div style="flex:1">'+q.n+' <small>'+j.n+' Durchgang'+(j.n>1?'e':'')+' übrig'+(j.m=='field'?' · Feld':'')+(i==0&&j.m=='field'&&!cntIn(['bp','hb'],'feldfab')?' · <span style="color:#ff9a6a">Feld-Fabrikator nicht dabei</span>':'')+'</small><div class="qb"><i style="width:'+Math.round(p*100)+'%"></i></div></div><button class="bt" data-qx="'+i+'">✕</button></div>'}).join(''):'<small style="color:#7a9ab0">Leer.</small>')+'</div>';return h+fnote+'</div>'}
+/* 3.21: Crafting-Tisch neu: 3 grosse Bereichs-Kacheln, Gruppen als Unter-Reiter, Rezept-Karten mit Rohstoffen (gruen/rot) und grossem Herstellen-Knopf */
+const fabT=(r,m)=>r.t*((m||NXS.fm)=='field'?1.5:1)/(save.tech.fab?1.3:1);
+const fabVis=r=>!NXS.fonly||NXS.fonly.includes(r.g);
+function fabFix(){if(!CAREA.some(a=>a[0]==NXS.fcat))NXS.fcat='basis';const ok=CAREA.filter(a=>RC.some(r=>r.a==a[0]&&fabVis(r)));if(ok.length&&!ok.some(a=>a[0]==NXS.fcat))NXS.fcat=NXS.fonly&&CGRP[NXS.fonly[0]]?CGRP[NXS.fonly[0]][0]:ok[0][0];
+if(NXS.fg&&(!CGRP[NXS.fg]||CGRP[NXS.fg][0]!=NXS.fcat||(NXS.fonly&&!NXS.fonly.includes(NXS.fg))))NXS.fg=''}
+function fabWhere(r){const t=BPT[r.bp],sh=Object.keys(BPSHOP).filter(s=>BPSHOP[s].includes(r.bp)).map(s=>(STN.find(q=>q.id==s)||{n:s}).n),si=Object.keys(BPSITE).find(s=>BPSITE[s]==r.bp);
+return'Bauplan fehlt'+(t?' · Forschung Stufe '+t+' ('+BPFP[t]+' FP) im Labor':'')+(sh.length?' · Händler: '+sh.join(', '):'')+(si?' · Fund an einem verlassenen Ort':'')}
+function fabCard(r,k,m,ks){const o=Object.keys(r.out)[0],it=ITM[o],q=Math.max(1,Math.min(99,NXS.cq[r.i]||1)),T=fabT(r);
+let h='<div class="cfc'+(k?(m>0?' rdy':''):' lk')+'"><div class="cfh"><img src="'+icon(o)+'" alt=""><div><b>'+r.n+(r.out[o]>1?' <small>×'+r.out[o]+'</small>':'')+'</b><p>'+it.d+'</p>'+(EQP[o]?'<p class="cfe">'+eqTxt(o)+'</p>':'')+'</div></div>';
+h+='<div class="cfi">'+Object.entries(r.in).map(([a,b])=>{const hv=cntIn(ks,a),nd=b*q,ok=hv>=nd;return'<span class="'+(ok?'ok':'no')+'"'+(ok?'':' title="Fundort: '+ITM[a].src+'"')+'><img src="'+icon(a)+'" alt="">'+ITM[a].n+' <b>'+hv+' / '+nd+'</b></span>'}).join('')+'</div>';
+if(k)h+='<div class="cfb"><button class="ubt" data-cq="-1" data-ri="'+r.i+'" '+(q>1?'':'disabled')+'>−</button><b>'+q+'</b><button class="ubt" data-cq="1" data-ri="'+r.i+'">+</button><button class="ubt" data-cq="m" data-ri="'+r.i+'" '+(m>1?'':'disabled')+'>Max</button><small>⏱ '+Math.ceil(T*q)+' s</small></div><button class="ubt pri cfm" data-mk="'+r.i+'" '+(m>=q&&save.fq.length<10?'':'disabled')+'>'+(m>=q?'🛠 HERSTELLEN'+(q>1?' ×'+q:''):save.fq.length>=10?'WARTESCHLANGE VOLL':'ROHSTOFFE FEHLEN')+'</button>';
+else h+='<div class="cfl">🔒 '+fabWhere(r)+'</div>';return h+'</div>'}
+function fabHtml(){fabFix();const ks=fabKs(),fld=NXS.fm=='field',bas=NXS.fm=='base';let h='<div class="nxp nxs cft"><div class="cfa">';
+CAREA.forEach(([k,i,n,d])=>{const L=RC.filter(r=>r.a==k&&fabVis(r));if(!L.length)return;const kn=L.filter(r=>bpKnown(r.bp)),rd=kn.filter(r=>fabMax(r)>0).length;
+h+='<button class="cfk'+(NXS.fcat==k?' on':'')+'" data-fc="'+k+'"><i>'+i+'</i><span><b>'+n+'</b><small>'+d+'</small><em>'+kn.length+' / '+L.length+' Baupläne'+(rd?' · <u>'+rd+' herstellbar</u>':'')+'</em></span></button>'});
+const G2=Object.keys(CGRP).filter(g=>CGRP[g][0]==NXS.fcat&&RC.some(r=>r.g==g&&fabVis(r)));
+h+='</div><div class="ush"><button class="ubt'+(NXS.fg?'':' on')+'" data-fg="">Alle</button>'+G2.map(g=>'<button class="ubt'+(NXS.fg==g?' on':'')+'" data-fg="'+g+'">'+CGRP[g][1]+'</button>').join('')+'</div>';
+const L=RC.filter(r=>r.a==NXS.fcat&&fabVis(r)&&(!NXS.fg||r.g==NXS.fg)).map(r=>{const k=bpKnown(r.bp);return{r,k,m:k?fabMax(r):0}}).sort((a,b)=>(G2.indexOf(a.r.g)-G2.indexOf(b.r.g))||(b.k-a.k)||((b.m>0)-(a.m>0))||(BPT[a.r.bp]-BPT[b.r.bp]));
+let lg=null;h+='<div class="cfg">';L.forEach(({r,k,m})=>{if(!NXS.fg&&r.g!=lg){lg=r.g;h+='<h4>'+CGRP[r.g][1].toUpperCase()+'</h4>'}h+=fabCard(r,k,m,ks)});
+h+=(L.length?'':'<p class="nxhint">Hier gibt es keine Rezepte.</p>')+'</div><small class="unote">'+(fld?'Feld-Fabrikator: nimmt Material nur aus Rucksack und Schnellleiste, 50 % langsamer.':bas?'Werkstatt: nimmt Material aus Rucksack und Schnellleiste.':'Nimmt Material aus Rucksack, Schnellleiste, Schiffslager und Frachtraum.')+' Grün = vorhanden, rot = fehlt. Baupläne gibt es im Labor, an verlassenen Orten, bei Missionen und an Stationen.'+(NXS.fcat=='ausr'?' Anzug-Teile mit Slot (Kopf, Brust, Rücken, Beine, Füsse) werden in der nächsten Version am Körper ausgerüstet; Anzug-Module gehen schon heute in die Modulplätze.':'')+'</small></div>';
+h+='<div class="nxp nxs cfq'+(save.fq.length?' has':'')+'"><h4>WARTESCHLANGE <small>'+save.fq.length+' / 10</small></h4>'+(save.fq.length?save.fq.map((j,i)=>{const q=RC[j.r],T=fabT(q,j.m),p=i==0?clamp(j.t/T,0,1):0;return'<div class="mi"><img src="'+icon(Object.keys(q.out)[0])+'" alt=""><div style="flex:1;min-width:0">'+q.n+' <small>'+j.n+' Durchgang'+(j.n>1?'e':'')+' übrig'+(j.m=='field'?' · Feld':j.m=='base'?' · Werkstatt':'')+(i==0&&j.m=='field'&&!cntIn(['bp','hb'],'feldfab')?' · <span style="color:#ff9a6a">Feld-Fabrikator nicht dabei</span>':'')+'</small><div class="qb"><i style="width:'+Math.round(p*100)+'%"></i></div></div><button class="bt sm" data-qx="'+i+'" title="Abbrechen">✕</button></div>'}).join(''):'<p class="nxhint">Leer. Aufträge laufen im Hintergrund weiter, auch wenn das Menü zu ist.</p>')+'</div>';return h}
 function fabStart(i,n){const r=RC[i];if(!r||!bpKnown(r.bp))return;if(save.fq.length>=10)return toast('Warteschlange voll');n=Math.min(n,fabMax(r));if(n<1)return toast('Material fehlt');const ks=fabKs();Object.entries(r.in).forEach(([a,b])=>takeFrom(ks,a,b*n));save.fq.push({r:i,n,t:0,m:NXS.fm});sfx('ab');hbDirty=1;store()}
-function fabCancel(i){const j=save.fq[i];if(!j)return;const r=RC[j.r];Object.entries(r.in).forEach(([a,b])=>give(a,b*j.n,j.m=='field'?['bp','hb']:null));save.fq.splice(i,1);sfx('ui')}
+function fabCancel(i){const j=save.fq[i];if(!j)return;const r=RC[j.r];Object.entries(r.in).forEach(([a,b])=>give(a,b*j.n,j.m=='field'||j.m=='base'?['bp','hb']:null));save.fq.splice(i,1);sfx('ui')}
 const FAB={a:0,p:0,sc:null,head:null,lt:null,led:[],cr:null,ct:0};
-function fabStep(dt){const j=save.fq[0];FAB.a=0;if(j){const r=RC[j.r];if(!r){save.fq.shift();return}if(j.m=='field'&&!cntIn(['bp','hb'],'feldfab'))return;const T=r.t*(j.m=='field'?1.5:1)/(save.tech.fab?1.3:1);j.t+=dt;FAB.a=1;FAB.p=j.t/T;
-if(j.t>=T){j.t=0;j.n--;const ks=j.m=='field'?['bp','hb']:onBoard()?['bp','hb','sh','cg']:['sh','cg','bp','hb'];Object.entries(r.out).forEach(([a,b])=>give(a,b,ks));mEvt('fab');sfx('coin');wOnce('fabd','Fabrikator: '+r.n+' fertig'+(j.n>0?' (noch '+j.n+')':''),2);if(j.n<=0){save.fq.shift();if(!save.fq.length)wOnce('fabe','Fabrikator: Warteschlange abgearbeitet',3)}if(NXS.on)nxRender()}
+function fabStep(dt){const j=save.fq[0];FAB.a=0;if(j){const r=RC[j.r];if(!r){save.fq.shift();return}if(j.m=='field'&&!cntIn(['bp','hb'],'feldfab'))return;const T=fabT(r,j.m);j.t+=dt;FAB.a=1;FAB.p=j.t/T;
+if(j.t>=T){j.t=0;j.n--;const ks=j.m=='field'||j.m=='base'?['bp','hb']:onBoard()?['bp','hb','sh','cg']:['sh','cg','bp','hb'];Object.entries(r.out).forEach(([a,b])=>give(a,b,ks));mEvt('fab');sfx('coin');wOnce('fabd','Fabrikator: '+r.n+' fertig'+(j.n>0?' (noch '+j.n+')':''),2);if(j.n<=0){save.fq.shift();if(!save.fq.length)wOnce('fabe','Fabrikator: Warteschlange abgearbeitet',3)}if(NXS.on)nxRender()}
 else if(NXS.on&&NXS.tab=='fab'&&(FAB.ru=(FAB.ru||0)-dt)<=0){FAB.ru=.25;const q=NX.querySelector('.qb i');if(q)q.style.width=Math.round(clamp(j.t/T,0,1)*100)+'%'}}}
 /* Fabrikator an Bord: Geraet mit Kammer, Druckkopf, Licht und Bildschirm */
 function fabScr(){const s=FAB.sc;if(!s)return;const x=s.c.getContext('2d'),j=save.fq[0],r=j&&RC[j.r];x.fillStyle='#031220';x.fillRect(0,0,512,96);x.strokeStyle='#2ac';x.lineWidth=2;x.strokeRect(2,2,508,92);x.fillStyle='#7ff';x.font='bold 22px monospace';x.fillText('FABRIKATOR',14,30);
@@ -4108,7 +4177,7 @@ function resTech(t){if(!NXS.lab||save.tech[t]||save.fp<TECH[t][2])return;save.fp
 TECH.fab=['Schnellfertigung','Fabrikator arbeitet 30 % schneller',30];TECH.lebens=['Recycling-Kreislauf','Wasser und Nahrung sinken draussen 30 % langsamer',25];
 
 /*-- Lebenserhaltung: Sauerstoff, Energie, Wasser, Nahrung, Anzug-Integritaet --*/
-function inHab(){const R=GR;if(!(G.gm&&!G.gi&&R.free))return 0;const L=save.bases[bKey()]||[];for(const b of L){const d=Math.hypot(b.x-R.x,b.z-R.z);if(b.t=='habitat'&&d<12&&basePow(bKey()).pf>.2)return 2;if(b.t=='zelt'&&d<3.6)return 1}return 0}
+function inHab(){const R=GR;if(!(G.gm&&!G.gi&&R.free))return 0;const L=save.bases[bKey()]||[];for(const b of L){const d=Math.hypot(b.x-R.x,b.z-R.z);if(b.t=='habitat'&&d<12&&basePow(bKey()).pf>.2)return 2;if((b.t=='zelt'&&d<3.6)||(BANB[b.t]&&d<BMR[b.t]+.3))return 1}return 0}
 let LST={w:0,f:0,hurt:0};
 function lsStep(dt){const S2=save.suit,L=save.ls,out=G.gm&&!G.gi&&GR.ph=='walk';if(S2.int==null)S2.int=100;if(S2.jet==null)S2.jet=100;const hb=out?inHab():0;
 if(!out||hb==2){L.w=Math.min(100,L.w+dt*4);L.f=Math.min(100,L.f+dt*3);S2.o2=Math.min(100,S2.o2+dt*8);S2.en=Math.min(100,S2.en+dt*6);S2.jet=Math.min(100,S2.jet+dt*5);if(!out)S2.int=Math.min(100,S2.int+dt*.6);if(L.w>40&&L.f>40&&VS.h<10&&(LST.rg=(LST.rg||0)+dt)>8){LST.rg=0;VS.h=Math.min(10,VS.h+1)}return}
@@ -4119,13 +4188,13 @@ if(!GR.E||!GR.E.air){if(S2.o2<18&&autoUse('o2pat'))toast('Sauerstoffpatrone eing
 if(L.w<=0||L.f<=0){LST.hurt+=dt;caution('ls',(L.w<=0?'WASSER LEER':'')+(L.w<=0&&L.f<=0?' · ':'')+(L.f<=0?'NAHRUNG LEER':'')+' – zurück zum Schiff',4);if(LST.hurt>20){LST.hurt=0;VS.h=Math.max(0,VS.h-1);sfx('hit')}}else if(L.w<20)wOnce('lsw','Wasser knapp ('+Math.round(L.w)+' %) – Wasserbeutel mitnehmen',30);else if(L.f<20)wOnce('lsf','Nahrung knapp ('+Math.round(L.f)+' %) – Rationen mitnehmen',30);
 if(VS.h<=0){if(GR.free&&save.crash&&out){dthStart(1,L.w<=0?'Wasser leer':L.f<=0?'Nahrung leer':'Verletzungen');return}VS.h=4;L.w=Math.max(L.w,30);L.f=Math.max(L.f,30);toast('Bewusstlos! KAI hat dich mit der Notwinde ins Schiff gezogen.');G.tt=6;if(GR.free)enterInt()}}
 function autoUse(id){const ks=['hb','bp'];if(!cntIn(ks,id))return 0;takeFrom(ks,id,1);useEff(id);hbDirty=1;return 1}
-function useEff(id){const S2=save.suit,L=save.ls;if(id=='ration')L.f=Math.min(100,L.f+45);else if(id=='wbeutel')L.w=Math.min(100,L.w+45);else if(id=='o2pat')S2.o2=Math.min(100,S2.o2+40);else if(id=='ezelle')S2.en=Math.min(100,S2.en+40);else if(id=='anzrep')S2.int=100;else if(id=='medkit')VS.h=Math.min(10,VS.h+6);else if(id=='stim')TL.stim=40;sfx('pw')}
+function useEff(id){const S2=save.suit,L=save.ls;if(id=='ration')L.f=Math.min(100,L.f+45);else if(id=='wbeutel')L.w=Math.min(100,L.w+45);else if(id=='o2pat')S2.o2=Math.min(100,S2.o2+40);else if(id=='ezelle')S2.en=Math.min(100,S2.en+40);else if(id=='ezellexl')S2.en=100;else if(id=='jetgas')S2.jet=100;else if(id=='anzrep')S2.int=100;else if(id=='medkit')VS.h=Math.min(10,VS.h+6);else if(id=='stim')TL.stim=40;sfx('pw')}
 
 /*-- Gegenstaende benutzen --*/
 const TL={stim:0,zoom:0,lamp:0,rp:0,drill:0,dcd:0,hk:null};
-function useInfo(id){const it=ITM[id];if(!it)return null;if(['ration'].includes(id))return'Essen';if(id=='wbeutel')return'Trinken';if(['o2pat','ezelle','anzrep','medkit','stim'].includes(id))return'Benutzen';
+function useInfo(id){const it=ITM[id];if(!it)return null;if(['ration'].includes(id))return'Essen';if(id=='wbeutel')return'Trinken';if(['o2pat','ezelle','ezellexl','jetgas','anzrep','medkit','stim'].includes(id))return'Benutzen';
 if(it.c=='bas'||id=='bake')return'Aufstellen';if(id.startsWith('erw_'))return'Einbauen';if(id=='tzelle')return'In den Tank';if(['hrep','sonde','notsig','multitool','feldfab','scan1','scan2','lampe','bohrer','haken'].includes(id))return'Benutzen';if(it.c=='mod')return'Einbauen';return null}
-function useHint(id){const it=ITM[id];if(!it)return'';if(id.startsWith('laser'))return'Linke Maustaste / '+kl(save.kb.KeyR||'KeyR')+' halten';if(id.startsWith('scan'))return'Rechte Maustaste: Puls';if(id=='fernglas')return'Rechte Maustaste halten';if(it.c=='bas'||id=='bake')return'E oder rechte Maustaste: aufstellen';const u=useInfo(id);return u?'E / rechte Maustaste: '+u:''}
+function useHint(id){const it=ITM[id];if(!it)return'';if(id.startsWith('laser'))return'Linke Maustaste / '+kl(save.kb.KeyR||'KeyR')+' halten';if(id.startsWith('scan'))return'Rechte Maustaste: Puls';if(id=='fernglas')return'Rechte Maustaste halten';if(it.c=='bas'||id=='bake')return'E oder rechte Maustaste: aufstellen';if(it.c=='ausr')return'Wird in der nächsten Version am Körper ausgerüstet';const u=useInfo(id);return u?'E / rechte Maustaste: '+u:''}
 function useSel(){const id=selItem();if(!id)return toast('Leerer Platz in der Schnellleiste – Inventar mit '+kl(save.kb.KeyI||'KeyI')+' öffnen');if(id.startsWith('laser'))return toast('Abbaulaser: linke Maustaste oder '+kl(save.kb.KeyR||'KeyR')+' halten und auf Gestein oder Erzadern zielen');if(id=='fernglas')return toast('Fernglas: rechte Maustaste halten');useItem(id,['hb',SL])}
 function consume(id,from){if(from&&ivA(from[0])[from[1]]&&ivA(from[0])[from[1]].id==id){const s=ivA(from[0])[from[1]];s.n--;if(!s.n)ivA(from[0])[from[1]]=null;IVD=1}else takeFrom(reachK(),id,1);hbDirty=1;store()}
 function useItem(id,from){const it=ITM[id];if(!it)return;const foot=G.gm&&!G.gi,shipOk=onBoard()||nearShip();if(id=='cyberkristall'){const c=foot&&cybNear();if(c&&c.k=='ins')return cybInsert();return toast(save.sk||save.crash?'Cyberkristall: wertvoller Energiekristall (Handelsware)':'Setze den Cyberkristall beim Schiff in die Kristallkammer am Rumpf ein [E]')}
@@ -4201,12 +4270,20 @@ bmTxt('ROVER · '+Math.round(Math.abs(ROV.v)*3.6)+' km/h · '+kl(save.kb.KeyE||'
 
 /*-- Basisbau: Bauteile frei platzieren (Hologramm), wieder abbauen, Strom, Ertraege --*/
 const BMS={on:0,id:null,rot:0,g:null,ok:0,x:0,z:0,why:''};
-const BMR={zelt:3.3,habitat:4.2,solar:1.8,batterie:1,o2gen:1.3,wex:1.4,abohrer:1.8,kiste:.85,licht:.45,funk:.7,plattform:9,rover:2.6,bake:.6};
+/* 3.21: BANB = Zelt-Anbauten: stehen nur bis 16 m neben einem Rundzelt oder Habitat, werden per Gang verbunden (Grundlage fuer Prompt 7) */
+const BANB={wohnmod:1,lagermod:1,werkmod:1,gewmod:1},BANR=16;
+const BMR={wohnmod:2.7,lagermod:2.5,werkmod:2.7,gewmod:2.9,zelt:3.3,habitat:4.2,solar:1.8,batterie:1,o2gen:1.3,wex:1.4,abohrer:1.8,kiste:.85,licht:.45,funk:.7,plattform:9,rover:2.6,bake:.6};
 const BMH=mkd('');BMH.className='bmh';
 function bmTxt(t){if(BMH.textContent!=t)BMH.textContent=t;BMH.style.display=t?'block':'none';BMH.dt=.3}
 function bmModel(t){const g=new THREE.Group(),PI=Math.PI,ht=hullTex(),H=new THREE.MeshStandardMaterial({map:ht,color:0xd8dde6,metalness:.5,roughness:.45}),D=new THREE.MeshStandardMaterial({color:0x2a2e38,metalness:.7,roughness:.4}),OR=new THREE.MeshStandardMaterial({color:0xff8a30,emissive:0xff6a10,emissiveIntensity:1.2}),
 add=(geo,m,x,y,z,rx,ry,rz)=>{const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);o.rotation.set(rx||0,ry||0,rz||0);o.castShadow=true;g.add(o);return o},B=(a,b,c)=>new THREE.BoxGeometry(a,b,c),Cy=(a,b,h,s)=>new THREE.CylinderGeometry(a,b,h,s||14);
 if(t=='zelt'){add(new THREE.SphereGeometry(3.2,22,12,0,PI*2,0,PI/2),new THREE.MeshStandardMaterial({color:0xd8c9a0,roughness:1}),0,-.2,0);add(new THREE.PlaneGeometry(1.4,2.2),new THREE.MeshBasicMaterial({color:0x2a2218,side:THREE.DoubleSide}),0,1,3.12);[0,1,2].forEach(i=>add(new THREE.TorusGeometry(3.21,.04,4,28,PI),D,0,-.2,0,0,i*PI/3))}
+else if(BANB[t]){const sh=t=='gewmod'?new THREE.MeshStandardMaterial({color:0xaee8ff,metalness:.2,roughness:.05,transparent:true,opacity:.35,depthWrite:false}):new THREE.MeshStandardMaterial({color:t=='lagermod'?0xc8b080:t=='werkmod'?0xd8c090:0xe8dcb4,roughness:1}),r=BMR[t]-.15;
+add(new THREE.SphereGeometry(r,20,10,0,PI*2,0,PI/2),sh,0,-.15,0);add(new THREE.TorusGeometry(r+.01,.05,4,28),D,0,-.1,0,PI/2);[0,1].forEach(i=>add(new THREE.TorusGeometry(r+.01,.035,4,24,PI),D,0,-.15,0,0,i*PI/2));add(B(1.2,1.9,.3),D,0,.95,r-.2);
+if(t=='wohnmod'){for(let i=0;i<3;i++){const a=PI*.35+i*PI*.15;add(Cy(.32,.32,.06,12),new THREE.MeshStandardMaterial({color:0xffe6a0,emissive:0xffb040,emissiveIntensity:.9}),Math.cos(a)*r*.86,1.25,-Math.sin(a)*r*.86,PI/2,0,PI/2-a)}}
+else if(t=='lagermod'){[[-1.1,.35,-.6],[.9,.35,-.9],[0,.35,-1.5]].forEach(p=>add(B(.9,.7,.7),new THREE.MeshStandardMaterial({map:ht,color:0xc89a50,roughness:.7}),p[0],p[1],p[2]));add(B(1.3,.12,.03),OR,0,2.05,r-.04)}
+else if(t=='werkmod'){add(Cy(.12,.16,1.6,8),D,.9,r*.85,-.6);add(Cy(.2,.2,.12,8),OR,.9,r*.85+.85,-.6);add(B(1.3,.12,.03),OR,0,2.05,r-.04);add(B(.4,.4,.05),new THREE.MeshBasicMaterial({color:0x5fdcff}),-.9,1.3,r*.7)}
+else{const lf=new THREE.MeshStandardMaterial({color:0x3fbf4a,roughness:.8});add(B(3.2,.35,1),new THREE.MeshStandardMaterial({color:0x5a3c24,roughness:1}),0,.18,0);[-1.1,-.4,.3,1].forEach((x,i)=>add(new THREE.ConeGeometry(.28,.7+i%2*.3,6),lf,x,.65+i%2*.15,(i%2?.2:-.2)));add(B(.2,.2,.05),new THREE.MeshBasicMaterial({color:0xd0ffb0}),0,2.4,0)}}
 else if(t=='habitat'){const c=add(Cy(2.4,2.4,7,20),H,0,2.6,0,0,0,PI/2);add(new THREE.SphereGeometry(2.4,16,10,0,PI*2,0,PI/2),H,3.5,2.6,0,0,0,-PI/2);add(new THREE.SphereGeometry(2.4,16,10,0,PI*2,0,PI/2),H,-3.5,2.6,0,0,0,PI/2);
 for(let i=-2;i<=2;i++)add(B(.8,.5,.05),new THREE.MeshStandardMaterial({color:0x7fd8ff,emissive:0x2a8fc8,emissiveIntensity:.9}),i*1.3,3.1,2.36);add(B(1.2,2,1),D,0,1.2,2.6);[-2.5,2.5].forEach(x=>[-1.4,1.4].forEach(z=>add(Cy(.12,.16,1.2,6),D,x,.5,z)));add(B(6.8,.06,.1),OR,0,1.6,2.38)}
 else if(t=='solar'){add(Cy(.08,.1,1.6,8),D,0,.8,0);const p=new THREE.Group();p.position.y=1.7;p.rotation.x=-.6;g.add(p);const m=new THREE.Mesh(B(3.2,.06,1.8),new THREE.MeshStandardMaterial({color:0x14306a,metalness:.9,roughness:.2,emissive:0x061430}));p.add(m);for(let i=1;i<4;i++){const l=new THREE.Mesh(B(.02,.07,1.8),D);l.position.x=-1.6+i*.8;p.add(l)}}
@@ -4232,10 +4309,10 @@ function bmEnd(){if(BMS.g&&BMS.g.parent)BMS.g.parent.remove(BMS.g);BMS.on=0;BMS.
 function bmStep(dt){if(!BMS.on)return;if(selItem()!=BMS.id||!(G.gm&&!G.gi&&GR.ph=='walk')){bmEnd();return}const R=GR,r=BMR[BMS.id]||1,h=aimRay(Math.max(14,r*2.4));let x,z;if(h.hit){x=h.p.x;z=h.p.z}else{const d=Math.max(5,r+3);x=R.x-Math.sin(R.yaw)*d;z=R.z-Math.cos(R.yaw)*d}
 const pd=Math.hypot(x-R.x,z-R.z),mn=r+.9;if(pd<mn){const a=Math.atan2(x-R.x,z-R.z)||0;x=R.x+Math.sin(a)*mn;z=R.z+Math.cos(a)*mn}BMS.x=x;BMS.z=z;
 const y0=hgt(x,z),hs=[0,1,2,3,4,5].map(i=>hgt(x+Math.cos(i*1.047)*r*.85,z+Math.sin(i*1.047)*r*.85)),mx=Math.max(y0,...hs),mi=Math.min(y0,...hs),L=save.bases[bKey()]||[];let why='';
-if(mx-mi>(BMS.id=='plattform'?2.6:Math.max(.9,r*.55)))why='Boden zu steil';else if(Math.hypot(x,z)<r+16)why='Zu nah am Schiff';else if(R.E&&R.E.liq&&y0<.6)why='Hier ist Flüssigkeit';else if(L.some(b=>Math.hypot(b.x-x,b.z-z)<r+(BMR[b.t]||1)+.4))why='Zu nah an einem anderen Bauteil';else if((R.sites||[]).some(o=>Math.hypot(o.x-x,o.z-z)<r+7))why='Zu nah an einem Fundort';else if(Math.hypot(x,z)>700)why='Zu weit weg';
+if(mx-mi>(BMS.id=='plattform'?2.6:Math.max(.9,r*.55)))why='Boden zu steil';else if(Math.hypot(x,z)<r+16)why='Zu nah am Schiff';else if(R.E&&R.E.liq&&y0<.6)why='Hier ist Flüssigkeit';else if(L.some(b=>Math.hypot(b.x-x,b.z-z)<r+(BMR[b.t]||1)+.4))why='Zu nah an einem anderen Bauteil';else if((R.sites||[]).some(o=>Math.hypot(o.x-x,o.z-z)<r+7))why='Zu nah an einem Fundort';else if(Math.hypot(x,z)>700)why='Zu weit weg';else if(BANB[BMS.id]&&!L.some(b=>(b.t=='zelt'||b.t=='habitat')&&Math.hypot(b.x-x,b.z-z)<BANR))why='Nur neben einem Rundzelt oder Habitat (bis '+BANR+' m)';
 BMS.ok=!why;BMS.why=why;BMS.g.position.set(x,BMS.id=='plattform'?mi:y0-.05,z);BMS.g.rotation.y=BMS.rot;bmGhostMat(BMS.g,BMS.ok);bmTxt(ITM[BMS.id].n+' · '+(why||'passt')+' · Mausrad drehen · E / Klick aufstellen · Q abbrechen')}
 function bmPlace(){if(!BMS.on)return;if(!BMS.ok)return toast(BMS.why||'Hier nicht möglich');const id=BMS.id,k=bKey(),L=save.bases[k]=save.bases[k]||[];const s=save.iv.hb[SL];if(!s||s.id!=id)return bmEnd();s.n--;if(!s.n)save.iv.hb[SL]=null;IVD=1;hbDirty=1;
-const b={t:id,x:+BMS.x.toFixed(2),z:+BMS.z.toFixed(2),r:+BMS.rot.toFixed(3),ts:Date.now()};if(id=='kiste')b.inv=Array(16).fill(null);L.push(b);bmSpawn(b);bmLinks();sfx('ab');sparkAt(LV5.set(b.x,hgt(b.x,b.z)+.5,b.z),0x9fe8ff,30,4);toast(ITM[id].n+' aufgestellt');
+const b={t:id,x:+BMS.x.toFixed(2),z:+BMS.z.toFixed(2),r:+BMS.rot.toFixed(3),ts:Date.now()};if(id=='kiste')b.inv=Array(16).fill(null);if(id=='lagermod')b.inv=Array(32).fill(null);L.push(b);bmSpawn(b);bmLinks();sfx('ab');sparkAt(LV5.set(b.x,hgt(b.x,b.z)+.5,b.z),0x9fe8ff,30,4);toast(ITM[id].n+' aufgestellt');
 if(id=='zelt'||id=='habitat')mEvt('zelt');if((id=='bake'||id=='plattform')&&GR.pl&&G.land&&G.land.p){const p=G.land.p;save.lp[p.n]=PT.copy(ship.position).sub(p.pos).normalize().toArray().map(v=>+v.toFixed(5))}
 if(!save.iv.hb[SL]||save.iv.hb[SL].id!=id)bmEnd();store()}
 function bmColAdd(b){if(b.t=='plattform')return;const r=(BMR[b.t]||1)*(b.t=='licht'||b.t=='funk'||b.t=='bake'?.6:.9);colAdd(b.x,b.z,r);const k=Math.floor(b.x/10)+','+Math.floor(b.z/10),L=GR.cg[k];b._c=L[L.length-1];b._k=k}
@@ -4243,25 +4320,29 @@ function bmColDel(b){if(!b._c||!GR.cg)return;const L=GR.cg[b._k];if(L){const i=L
 function bmSpawn(b){const g=bmModel(b.t),y=hgt(b.x,b.z);try{mrgStatic(g,[b])}catch(e){}g.position.set(b.x,b.t=='plattform'?y-.1:y-.05,b.z);g.rotation.y=b.r||0;GR.g.add(g);Object.defineProperty(b,'_g',{value:g,writable:true,enumerable:false,configurable:true});
 if(b.t!='plattform')(GR.rayL=GR.rayL||[]).push(g);Object.defineProperty(b,'_c',{value:null,writable:true,enumerable:false,configurable:true});Object.defineProperty(b,'_k',{value:null,writable:true,enumerable:false,configurable:true});bmColAdd(b);
 if(b.t=='licht'&&(GR.nl=(GR.nl||0))<4){GR.nl++;const l=new THREE.PointLight(0xfff0d0,0,34,1.6);l.position.set(0,4,0);g.add(l);g.userData.lt=l}}
-function bmLinks(){const R=GR;(R.tun||[]).forEach(m=>R.g.remove(m));R.tun=[];const L=(save.bases[bKey()]||[]).filter(b=>b.t=='zelt'||b.t=='habitat'),done={};
+function bmLinks(){const R=GR;(R.tun||[]).forEach(m=>R.g.remove(m));R.tun=[];const L=(save.bases[bKey()]||[]).filter(b=>b.t=='zelt'||b.t=='habitat'||BANB[b.t]),done={};
 L.forEach((b,i)=>{let nb=null,nd=28;[{x:0,z:0,t:'ship'},...L].forEach(q=>{if(q===b)return;const d=Math.hypot(q.x-b.x,q.z-b.z);if(d<nd){nd=d;nb=q}});if(!nb)return;const key=[b.x,b.z,nb.x,nb.z].join();if(done[[nb.x,nb.z,b.x,b.z].join()])return;done[key]=1;
 const dx=nb.x-b.x,dz=nb.z-b.z,d=Math.hypot(dx,dz),r1=BMR[b.t]||3,r2=nb.t=='ship'?6:BMR[nb.t]||3,len=Math.max(.5,d-r1-r2+1);if(len<.6)return;const c=new THREE.Mesh(new THREE.CylinderGeometry(1,1,len,12,1,true),new THREE.MeshStandardMaterial({color:0xc9b98c,side:THREE.DoubleSide,roughness:1}));const ux=dx/d,uz=dz/d,mx=b.x+ux*(r1-.5+len/2),mz=b.z+uz*(r1-.5+len/2);c.quaternion.setFromUnitVectors(new V3(0,1,0),new V3(ux,0,uz));c.position.set(mx,hgt(mx,mz)+.9,mz);R.g.add(c);R.tun.push(c)})}
 function bmAll(){const R=GR;R.nl=0;if(!R.free)return;(save.bases[bKey()]||[]).forEach(b=>{if(!ITM[b.t])return;bmSpawn(b)});bmLinks();baseProdAll(bKey())}
 function bmAnim(dt){const L=save.bases[bKey()];if(!L||!G.gm)return;const pw=basePow(bKey()),dl=GR.daylt==null?1:GR.daylt;L.forEach(b=>{const g=b._g;if(!g)return;const u=g.userData;if(u.spin)u.spin.rotation.y+=dt*(pw.pf>.2?6:0);if(u.blink)u.blink.visible=Math.floor(T*1.5+b.x)%2==0;if(u.lt)u.lt.intensity=b.off?0:dl<.4?2.2:0})}
 /* Strom und Ertraege */
-const PROD={o2gen:['sauerstoff',6,.5],wex:['Wasser',8,.6],abohrer:[null,10,1]},PDEM={habitat:.3,licht:.1,funk:.1};
+const PROD={o2gen:['sauerstoff',6,.5],wex:['Wasser',8,.6],abohrer:[null,10,1],gewmod:['Biomasse',4,.4]},PDEM={habitat:.3,licht:.1,funk:.1,wohnmod:.1,werkmod:.2};
 function basePow(k){const L=save.bases[k]||[];let sup=0,dem=0,bat=0;L.forEach(b=>{if(b.t=='solar')sup+=1;else if(b.t=='batterie')bat++;else if(PROD[b.t])dem+=PROD[b.t][2];else if(PDEM[b.t])dem+=PDEM[b.t]});const pf=dem<=0?1:Math.min(1,sup/dem)*(bat>0?1:.5);return{sup,dem,bat,pf}}
 function prodRes(b,k){return PROD[b.t][0]||mineOf(k).n.find(g=>!LTIER[g])||'Regolith'}
 function baseProd(k,b,pf){if(!PROD[b.t])return;const now=Date.now(),h=clamp((now-(b.ts||now))/3.6e6,0,72);b.ts=now;b.st=Math.min(60,(b.st||0)+h*PROD[b.t][1]*pf)}
 function baseProdAll(k){const pw=basePow(k);(save.bases[k]||[]).forEach(b=>baseProd(k,b,pw.pf))}
 function baseCollect(k,remote,only){baseProdAll(k);let tot=0;(save.bases[k]||[]).forEach(b=>{if(!PROD[b.t]||(only&&b!==only))return;const n=Math.floor(b.st||0);if(n<1)return;b.st-=n;give(prodRes(b,k),n,remote?['sh','cg']:null);tot+=n});if(tot){sfx('coin');toast(remote?'Lastdrohne: '+tot+' Einheiten von '+k+' ins Schiffslager':'Ertrag abgeholt: '+tot+' Einheiten')}else toast('Noch kein Ertrag');store()}
 const canRemote=k=>{const L=save.bases[k]||[];if(!L.some(b=>b.t=='funk'))return 0;const n=G.near;return n&&n.n==k&&G.alt<n.R*6&&!G.gm};
-function baseHtml(){const K=Object.keys(save.bases).filter(k=>(save.bases[k]||[]).length);let h='<div class="nxp nxs" style="flex:1"><h4>DEINE BASEN <small>'+K.length+' Himmelskörper</small></h4>';if(!K.length)h+='<p style="color:#7a9ab0">Noch keine Basis. Bauteile (Kategorie Basis) im Fabrikator herstellen, in die Schnellleiste legen und auf einem Planeten aufstellen.</p>';
+function baseHtml(){const K=Object.keys(save.bases).filter(k=>(save.bases[k]||[]).length);let h='<div class="nxp nxs" style="flex:1"><h4>DEINE BASEN <small>'+K.length+' Himmelskörper</small></h4>';if(!K.length)h+='<p style="color:#7a9ab0">Noch keine Basis. Bauteile im Crafting-Tisch (Bereich Basis) herstellen, in die Schnellleiste legen und auf einem Planeten aufstellen.</p>';
 K.forEach(k=>{const L=save.bases[k],pw=basePow(k);baseProdAll(k);const cnt2={};L.forEach(b=>cnt2[b.t]=(cnt2[b.t]||0)+1);const st=L.filter(b=>PROD[b.t]).map(b=>Math.floor(b.st||0)+'× '+ITM[prodRes(b,k)].n).join(', ');
 h+='<div class="nxd" style="display:block;margin-bottom:8px"><div class="t">'+k.toUpperCase()+'</div><p>'+Object.entries(cnt2).map(([t,n])=>n+'× '+ITM[t].n).join(' · ')+'</p><p style="color:#8ab">Strom: '+pw.sup+' kW Erzeugung · '+pw.dem.toFixed(1)+' kW Bedarf · '+pw.bat+' Batterie'+(pw.bat==1?'':'n')+' → Leistung '+Math.round(pw.pf*100)+' %'+(pw.bat?'':' (ohne Batterie nachts aus)')+'</p>'+(st?'<p>Lager der Anlagen: '+st+'</p>':'')+'<div class="nxc" style="margin-top:6px">'+(L.some(b=>b.t=='funk')?'<button class="bt" data-bc="'+k+'" '+(canRemote(k)?'':'disabled')+'>Per Lastdrohne holen'+(canRemote(k)?'':' (im Orbit von '+k+')')+'</button>':'<small style="color:#7a9ab0">Funkbake aufstellen, um Erträge aus dem Orbit abzuholen.</small>')+'<button class="bt" data-bt="'+k+'">Als Ziel setzen</button></div></div>'});return h+'</div>'}
 function bmPanel(b){const k=bKey(),it=ITM[b.t],pw=basePow(k);panel(()=>{const r=[];baseProd(k,b,pw.pf);
 if(PROD[b.t])r.push(['Leistung '+Math.round(pw.pf*100)+' % · Lager: '+Math.floor(b.st||0)+'× '+ITM[prodRes(b,k)].n+' (max. 60)',null],['Ertrag abholen',()=>baseCollect(k,0,b),(b.st||0)<1]);
 if(b.t=='kiste')r.push(['Lagerkiste öffnen',()=>{panel(null);if(!b.inv)b.inv=Array(16).fill(null);nxOpen('inv',{side:'box',box:b,ttl:'📦 LAGERKISTE'})}]);
+if(b.t=='lagermod')r.push(['Lagermodul öffnen (32 Plätze)',()=>{panel(null);if(!b.inv)b.inv=Array(32).fill(null);nxOpen('inv',{side:'box',box:b,ttl:'📦 LAGERMODUL'})}]);
+if(b.t=='wohnmod')r.push(['Schlafen (Gesundheit +4, Sauerstoff und Energie voll)',()=>{VS.h=Math.min(10,VS.h+4);save.suit.en=100;save.suit.o2=100;sfx('lvl');toast('Ausgeschlafen')}]);
+if(b.t=='werkmod')r.push(['Crafting-Tisch der Werkstatt öffnen',()=>{panel(null);nxOpen('fab',{fm:'base',ttl:'🛠 WERKSTATT · CRAFTING-TISCH'})}]);
+if(BANB[b.t])r.push(['Zelt-Anbau · '+(PDEM[b.t]||PROD[b.t]?'Strom '+Math.round(pw.pf*100)+' %':'braucht keinen Strom'),null]);
 if(b.t=='habitat')r.push([pw.pf>.2?'Lebenserhaltung aktiv: füllt in 12 m alles auf':'Kein Strom – Solarpanels und Batterie aufstellen',null]);
 if(b.t=='solar'||b.t=='batterie')r.push(['Basis: '+pw.sup+' kW Erzeugung · '+pw.dem.toFixed(1)+' kW Bedarf · '+pw.bat+' Batterien',null]);
 if(b.t=='zelt')r.push(['Ausruhen (Gesundheit +2, Energie auf)',()=>{VS.h=Math.min(10,VS.h+2);save.suit.en=100;sfx('lvl');toast('Ausgeruht')}]);
@@ -4383,7 +4464,7 @@ const gi=R.free&&R.ph=='walk'&&!ROV.on&&!BMS.on&&groundInteract(),t=!ROV.on&&ext
 if((vt.a+=dt)>.25){vt.a=0;if(w)hudInv()}}
 function doIA(t){const n=t.t;if(n=='sitz'){if(G.gm&&!GR.free&&!save.crash){if(save.sk)return cybLaunchInt();mEvt('bericht');panel(PAN.schaden)}else sit()}else if(n=='rampe'){if(!G.gm&&G.st!='landed')return toast(G.st=='docked'?'Angedockt – zur Station über das Stationsmenü [T]':'Im Flug lässt sich die Rampe nicht öffnen');if(!I.rampOn&&!G.gm&&!I2.ack)return panel(PAN.umwelt);I.rampOn=!I.rampOn;if(!I.rampOn)I2.ack=0;sfx('ab')}
 else if(n=='karte')mapTog(1);else if(n=='cklicht')ckLight();else if(n=='tuer')doorT();else if(n=='licht')lightT();else if(n=='bett')rest();
-else if(n=='fab')nxOpen('fab',{fm:'ship',ttl:'🛠 FABRIKATOR'});else if(n=='labor'||n=='kueche'||n=='filter')nxOpen('fab',{fm:'ship',fonly:['ver','chem'],ttl:'🧪 LABOR'});
+else if(n=='fab')nxOpen('fab',{fm:'ship',ttl:'🛠 CRAFTING-TISCH'});else if(n=='labor'||n=='kueche'||n=='filter')nxOpen('fab',{fm:'ship',fonly:['chem','treib','vorrat'],ttl:'🧪 LABOR'});
 else if(n=='lager')nxOpen('inv',{side:'sh',ttl:'📦 SCHIFFSLAGER'});else if(n=='fracht')nxOpen('inv',{side:'cg',ttl:'🚚 FRACHTRAUM'});else if(n=='anzug')nxOpen('inv',{ttl:'🦺 ANZUGSSPIND'});else if(n=='forsch')nxOpen('res',{lab:1,ttl:'🔬 FORSCHUNG'});else if(PAN[n])panel(PAN[n])}
 mk('Werkzeug','tl',()=>G.tl=1,()=>G.tl=0);mk('Inventar','iv',()=>nxTog());bt.tl.style.display='none';
 ACT.push(['Inventar (auch Tab)','KeyI'],['Hilfe','KeyH'],['Notreserve Treibstoff','KeyN'],['Abbaulaser / Werkzeug (zu Fuss)','KeyR']);rebT();
