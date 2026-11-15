@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>DigoSky Beta 3.18</title>
+<title>DigoSky Beta 3.19</title>
 <style>
 :root{color-scheme:dark;--bg:#02030a;--fg:#e8ecff;--ac:#55ccff;--card:#10142bd9;--gold:#ffcc33;box-sizing:border-box}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;touch-action:none}
@@ -855,7 +855,7 @@ if(!save.pt)save.pt=0;if(!save.bases)save.bases={};
 const VS=save.v=save.v||{h:10},J={y:0,v:0},vt={a:0,sv:0};
 function jmp(dt){if((keys.Space||G.jp)&&J.y<=0&&J.v<=0)J.v=5.2;J.v-=(G.gm&&!G.gi&&GR.E?Math.max(.35,14*GR.E.g/9.81):14)*dt;J.y+=J.v*dt;if(J.y<0){J.y=0;J.v=0}return J.y}
 const ui=document.createElement('div');ui.style.cssText='position:absolute;inset:0;pointer-events:none;display:none;z-index:6;font-family:system-ui;color:#fff';
-ui.innerHTML='<div style="position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px"><i style="position:absolute;left:8px;top:0;width:2px;height:18px;background:#fff;mix-blend-mode:difference"></i><i style="position:absolute;top:8px;left:0;height:2px;width:18px;background:#fff;mix-blend-mode:difference"></i></div><div id="vt"></div><div id="hbn" class="hbn"></div><div id="hb" style="position:absolute;left:50%;transform:translateX(-50%);bottom:calc(68px + env(safe-area-inset-bottom,0px));display:flex;gap:3px;pointer-events:auto"></div><div id="hn" style="position:absolute;left:0;right:0;top:56%;text-align:center;font-weight:700;text-shadow:0 0 6px #000"></div>';wrap.appendChild(ui);
+ui.innerHTML='<div style="position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px"><i style="position:absolute;left:8px;top:0;width:2px;height:18px;background:#fff;mix-blend-mode:difference"></i><i style="position:absolute;top:8px;left:0;height:2px;width:18px;background:#fff;mix-blend-mode:difference"></i></div><div id="vt"></div><div id="hbn" class="hbn"></div><div id="hb" style="position:absolute;left:50%;transform:translateX(-50%);bottom:calc(68px + var(--tb,0px) + env(safe-area-inset-bottom,0px));display:flex;gap:3px;pointer-events:auto"></div><div id="hn" style="position:absolute;left:0;right:0;top:56%;text-align:center;font-weight:700;text-shadow:0 0 6px #000"></div>';wrap.appendChild(ui);
 const pn=document.createElement('div');pn.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;display:none;background:#10142bee;border:1px solid #55ccff88;border-radius:14px;padding:14px;min-width:min(86vw,360px);max-height:70vh;overflow:auto;color:#fff;font:14px system-ui';wrap.appendChild(pn);let pf=null;
 function panel(f){pf=f;if(f)sfx('ui');if(f&&document.exitPointerLock)document.exitPointerLock();if(!f){pn.style.display='none';return}const d=f();pn.innerHTML='';const h=document.createElement('div');h.style.cssText='font:700 17px system-ui;margin-bottom:8px;color:#8ef';h.textContent=d.t;pn.appendChild(h);if(!d.r.length)d.r.push(['(leer)',null]);
 d.r.forEach(([tx,fn,off])=>{const b=document.createElement('button');b.className='g3b';b.style.cssText='display:block;width:100%;margin:5px 0;text-align:left';b.textContent=tx;b.disabled=!!off||!fn;if(fn)b.onclick=()=>{fn();if(pf)panel(pf)};pn.appendChild(b)});
@@ -876,7 +876,7 @@ function sit(){if(DTH.on)return;if(G.gm&&!GR.free&&!save.crash)return;const gm=G
 function istep(dt){const k=keys;if(CYB.o2<100)CYB.o2=Math.min(100,CYB.o2+dt*20);save.suit.o2=Math.min(100,save.suit.o2+dt*8);save.suit.en=Math.min(100,save.suit.en+dt*6);if(I.wk>0){I.wk=Math.max(0,I.wk-dt/3.2);I.x=1.45-(1-I.wk)*.85;I.z=-8.22;I.pit=1.2*I.wk*I.wk}if(!(I.wk>0)){locoI(dt);iSafe(dt)}
 I.ramp=Math.max(0,Math.min(1,I.ramp+(I.rampOn?1:-1)*dt*.5));if(I.hatch)I.hatch.rotation.x=-I.ramp*1.15;scrUpd(dt);emerg(dt);rearStep(dt);if(I.ramp>.9&&I.x>IHT.x0&&I.x<IHT.x1&&I.z>IHT.z0&&I.z<IHT.z1)return exitInt();
 camFoot(I,dt,1);
-let tg=null,bd=3.4;const fx=-Math.sin(I.yaw),fz=-Math.cos(I.yaw);I.ia.forEach(o=>{const dx=o.x-I.x,dz=o.z-I.z,d=Math.hypot(dx,dz);if(d<bd&&(dx*fx+dz*fz)/(d||1)>.7){bd=d;tg=o}});I.tg=tg;el('hn').textContent=pf?'':tg?'[E] '+tg.l:'';
+const tg=iPick();I.tg=tg;el('hn').textContent=pf?'':tg?'[E] '+tg.l:'';
 hud.innerHTML='<b>'+(I.z<-12.1?'Cockpit':isec(I.z)[6])+'</b>'+ckHudTxt()+(I.rampOn?'<br>Laderampe offen':'')}
 /* Figur an einer Stelle, die es nicht mehr gibt (alter Spielstand, Umbau): in den Gang setzen */
 function iSafe(dt){if(intOk(I.x,I.z)){I.bad=0;return}I.bad=(I.bad||0)+dt;if(I.bad>.25){I.bad=0;Object.assign(I,{x:0,z:-5.0,vx:0,vz:0});locoReset(I);toast('Du stehst jetzt im Gang')}}
@@ -1144,10 +1144,36 @@ function mkScr(n,x,y,z,ry,w,h,fn,fr){const c=document.createElement('canvas');c.
 if(fr){const f=new THREE.Mesh(new THREE.BoxGeometry(w+.14,h+.14,.06),new THREE.MeshStandardMaterial({color:0x14181f,metalness:.6,roughness:.4}));f.position.set(x,y,z-.04);GI.add(f)}I.sc.push({n,c,t,fn,x,z})}
 const PI2=Math.PI/2;
 function setDoor(o,im){const d=I.door;d.o=o;if(im){d.t=o;d.m.position.x=o*1.95}if(o)d.b.fill(1e4);else d.c.forEach((v,i)=>d.b[i]=v)}
+/*==== 3.19: ANKLICKBARE OBJEKTE IM INNENRAUM ====
+ Jedes Ziel hat einen Punkt am Gerät (x,y,z), eine Trefferzone r (Radius um den Punkt), eine Reichweite rg (waagrecht vom Spieler)
+ und einen Vorrang pr. Gewählt wird nur, was der Blickstrahl (Kopf, Blickrichtung mit Neigung) wirklich trifft.
+ Ist die Druckschleuse zu, sind Cockpit und hinterer Teil getrennt: von hinten reagiert nichts im Cockpit und umgekehrt. */
+const IAF={'Druckschleuse':{x:0,y:1.3,z:-12.02,r:.9,h:1.25,rg:2.1,pr:.35,both:1},
+'Lichtschalter (Beleuchtung)':{y:1.4,r:.25,h:.3,rg:1.7},'Laderampe (Bodenluke)':{x:1.42,y:1.3,z:-6.95,r:.25,h:.32,rg:1.8},
+'Schiffslager':{x:2.09,y:1.02,z:-10.0,r:.95,h:.72,rg:2.0},'Frachtraum':{x:-1.42,y:1.0,z:-10.0,r:.9,h:.8,rg:2.0},
+'Anzugsspind':{x:-1.55,y:1.05,z:-8.22,r:.55,h:.95,rg:1.9},'Schlafkoje (ausruhen)':{x:1.6,y:1.05,z:-8.22,r:.55,h:.55,rg:1.9},
+'Labor (Rezepte, Wasser & Elektrolyse)':{x:-1.36,y:1.0,z:-3.25,r:.9,h:.45,rg:2.0},'Fabrikator':{x:1.48,y:1.2,z:-3.5,r:.68,h:.85,rg:2.0},
+'Forschung (Proben analysieren)':{x:1.5,y:1.15,z:-1.72,r:.55,h:.75,rg:1.9},'Schiffstank (tanken)':{x:1.9,y:1.45,z:1.05,r:.45,h:.3,rg:1.9},
+'Holo-Sternenkarte':{y:1.1,r:.42,rg:1.7},'Pilotensitz (fliegen)':{y:.8,r:.55,rg:1.8},
+'Bordtechnik':{y:1.0,r:.5,rg:1.8},'Umweltanalyse':{y:1.0,r:.5,rg:1.8},'Missionslog':{y:1.42,r:.5,rg:1.8},'Cockpit-Beleuchtung':{y:1.42,r:.5,rg:1.8}};
+function iaNorm(o){const f=IAF[o.l]||{};if(f.x!=null)o.x=f.x;if(f.z!=null)o.z=f.z;o.y=f.y!=null?f.y:1.2;o.r=f.r||.5;o.h=f.h||o.r;o.rg=f.rg||2.0;o.pr=f.pr||0;o.both=!!f.both;
+/* Geräte an den Seitenwänden hinten: Fläche in der Wand (x fest), Schleuse: Fläche quer (z fest), sonst Punkt im Raum */
+o.nx=o.z>-12&&Math.abs(o.x)>1?Math.sign(o.x):0;
+/* Leuchtpunkt etwas in den Raum geschoben, damit er nicht in der Wand steckt */
+o.sx=o.nx?o.x-o.nx*.14:o.x;o.sy=o.y;o.sz=o.both?o.z+.12:o.z;o._n=1}
+const iaSide=o=>o.both||I.door.t>.6||(o.z<-12)==(I.z<-12);
+/* Trifft der Blickstrahl das Ziel? Rückgabe: Wert (kleiner = besser) oder -1 */
+function iaHit(o,ex,ey,ez,fx,fy,fz){if(!iaSide(o))return -1;const dx=o.x-ex,dz=o.z-ez;if(Math.hypot(dx,dz)>o.rg)return -1;let a,b,t;
+if(o.nx){if(fx*o.nx<.25)return -1;t=dx/fx;a=ez+fz*t-o.z;b=ey+fy*t-o.y}
+else if(o.both){if(Math.abs(fz)<.25)return -1;t=dz/fz;a=ex+fx*t-o.x;b=ey+fy*t-o.y}
+else{const dy=o.y-ey;t=dx*fx+dy*fy+dz*fz;if(t<=0)return -1;const qx=dx-fx*t,qz=dz-fz*t;a=Math.hypot(qx,qz);b=(dy-fy*t)/1.6}
+if(!(t>0)||t>o.rg+.6)return -1;const e=Math.hypot(a/o.r,b/o.h);return e>1?-1:1+e+.25*t-o.pr}
+function iPick(){const ey=(I.y||0)+1.62-(I.cr||0)*.5,p=I.pit||0,cp=Math.cos(p),fx=-Math.sin(I.yaw)*cp,fy=Math.sin(p),fz=-Math.cos(I.yaw)*cp;let tg=null,bs=1e9;
+for(const o of I.ia){if(!o._n)iaNorm(o);const v=iaHit(o,I.x,ey,I.z,fx,fy,fz);if(v>=0&&v<bs){bs=v;tg=o}}return tg}
 function doorT(){setDoor(I.door.o?0:1);if(I.door.o)mEvt('tuer');sfx('door')}
-function lightT(){I.lo^=1;GI.traverse(o=>{if(o.isPointLight)o.visible=!I.lo;if(o.isAmbientLight)o.intensity=I.lo?.12:(CK.night?.14:.5)});sfx('pw')}
+function lightT(){I.lo^=1;if(I.swM)I.swM.color.setHex(I.lo?0xd87a10:0x1fbf4a);GI.traverse(o=>{if(o.isPointLight)o.visible=!I.lo;if(o.isAmbientLight)o.intensity=I.lo?.12:(CK.night?.14:.5)});sfx('pw')}
 function scrUpd(dt){const d=I.door;d.t+=(d.o-d.t)*Math.min(1,dt*3);d.m.position.x=d.t*1.95;
-I.ia.forEach((o,i)=>{const s=I.hl[i],q=I.tg==o;s.visible=Math.hypot(o.x-I.x,o.z-I.z)<7&&!pf;s.scale.setScalar(q?1.5:.7+.1*Math.sin(T*4+i));s.material.opacity=q?1:.45});
+I.ia.forEach((o,i)=>{const s=I.hl[i],q=I.tg==o;if(!o._n){iaNorm(o);s.position.set(o.sx,o.sy,o.sz)}s.visible=Math.hypot(o.x-I.x,o.z-I.z)<7&&!pf&&iaSide(o);s.scale.setScalar(q?1.5:.7+.1*Math.sin(T*4+i));s.material.opacity=q?1:.45});
 if((I.sa=(I.sa||0)-dt)<=0){I.sa=.25;I.sc.forEach(s=>{if(Math.hypot(s.x-I.x,s.z-I.z)>16)return;const x=s.c.getContext('2d');x.fillStyle='#04141c';x.fillRect(0,0,256,128);x.strokeStyle='#2ac';x.strokeRect(2,2,252,124);x.fillStyle='#7ff';x.font='bold 15px monospace';x.fillText(s.n,10,22);x.font='13px monospace';x.fillStyle='#bff';s.fn().forEach((l,i)=>x.fillText(l,10,46+i*18));s.t.needsUpdate=true})}
 if((I.hm=(I.hm||0)-dt)<=0&&!I.vent&&AC&&AC.state=='running'&&!save.mute){I.hm=2;tone(52,AC.currentTime,2.3,'sine',.07,AG,0,.6);tone(78,AC.currentTime,2.3,'triangle',.025,AG,0,.6);noise2(AC.currentTime,2.2,.03)}}
 function noise2(t,d,v){const s=AC.createBufferSource();s.buffer=NB;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=380;const g=AC.createGain();g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.8);g.gain.linearRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(g);g.connect(AG);s.start(t);s.stop(t+d)}
@@ -1254,7 +1280,7 @@ const M2=document.createElement('div');M2.id='m2';
 M2.innerHTML='<canvas id="m3"></canvas><div class="mvig"></div><div class="mgr"></div>'
 +'<header class="mt"><div class="lg">'+EMB+'<div class="lgt">'+[...'DIGOSKY'].map((c,i)=>'<span style="--i:'+i+'">'+c+'</span>').join('')+'</div></div><div class="sb">WANDERER VX-9 · EXPEDITION SOL</div></header>'
 +'<div id="mst"></div><nav id="mn"></nav><section id="mp"></section>'
-+'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.18</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
++'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.19</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
 +'<div id="mfade"></div><input type="file" id="mfile" accept=".json,.txt,application/json,text/plain" style="display:none">';
 wrap.appendChild(M2);
 const mp=el('mp'),NAV=[['play','SPIEL STARTEN',0],['new','NEUES SPIEL',0],['load','SPIELSTAND LADEN',0],['mis','MISSIONEN',1],['char','CHARAKTER',1],['ship','RAUMSCHIFF',1],['kod','KODEX',1],['set','EINSTELLUNGEN',2],['prof','SPIELERPROFIL',2]],MNG=['KAMPAGNE','BORDSYSTEME','SYSTEM'];
@@ -1522,7 +1548,7 @@ T.dial=cvTex(128,128,(x,w,h)=>{x.fillStyle='#e9ecef';x.beginPath();x.arc(64,64,6
 x.strokeStyle='#d33';x.lineWidth=5;x.beginPath();x.arc(64,64,52,Math.PI*1.95,Math.PI*2.25);x.stroke();x.fillStyle='#333';x.font='bold 13px monospace';x.textAlign='center';x.fillText('bar',64,98);x.textAlign='left'});
 /* Schilder-Atlas: 4 x 8 Felder à 256 x 64 */
 const LB=[['DRUCKSCHLEUSE','#f0b81a','#16181c'],['SCHIFFSLAGER','#e9ecef','#1d2128'],['LABOR','#e9ecef','#1d2128'],['SCHIFFSTANK','#e9ecef','#1d2128'],['⚠ HOCHDRUCK','#f0b81a','#16181c'],['TREIBSTOFF H₂ · CH₄','#d8641e','#ffffff'],['ENERGIEKERN','#1d2128','#5fdcff'],['H₂O · FILTER','#1d2128','#7fe8ff'],
-['FRACHTNETZ MAX 400 kg','#e9ecef','#1d2128'],['ANZUG','#1d2128','#ffb347'],['SCHLAFKOJE','#1d2128','#cfd6e0'],['NOTAUSGANG ▼','#2a8a3a','#ffffff'],['⚠ NICHT BETRETEN BEI OFFENER LUKE','#f0b81a','#16181c'],['FABRIKATOR','#1d2128','#ffb347'],['ANALYSATOR','#1d2128','#5fdcff'],['VENTIL A','#c0392b','#ffffff'],['VENTIL B','#c0392b','#ffffff'],['O₂','#2a6ad8','#ffffff'],['LÜFTUNG','#e9ecef','#1d2128'],['ELEKTRIK 48 V','#f0b81a','#16181c']];
+['FRACHTNETZ MAX 400 kg','#e9ecef','#1d2128'],['ANZUG','#1d2128','#ffb347'],['SCHLAFKOJE','#1d2128','#cfd6e0'],['NOTAUSGANG ▼','#2a8a3a','#ffffff'],['⚠ NICHT BETRETEN BEI OFFENER LUKE','#f0b81a','#16181c'],['FABRIKATOR','#1d2128','#ffb347'],['ANALYSATOR','#1d2128','#5fdcff'],['VENTIL A','#c0392b','#ffffff'],['VENTIL B','#c0392b','#ffffff'],['O₂','#2a6ad8','#ffffff'],['LÜFTUNG','#e9ecef','#1d2128'],['ELEKTRIK 48 V','#f0b81a','#16181c'],['LICHT · BELEUCHTUNG','#f0b81a','#16181c']];
 const ac=document.createElement('canvas');ac.width=1024;ac.height=512;const ax=ac.getContext('2d');LB.forEach(([t,b,f],i)=>{const X=(i%4)*256,Y=Math.floor(i/4)*64;ax.fillStyle=b;rr(ax,X+3,Y+3,250,58,10);ax.fill();ax.strokeStyle='rgba(0,0,0,.35)';ax.lineWidth=2;rr(ax,X+6,Y+6,244,52,8);ax.stroke();ax.fillStyle=f;ax.font='bold '+(t.length>16?17:24)+'px Rajdhani,Arial,sans-serif';ax.textAlign='center';ax.fillText(t,X+128,Y+41)});
 T.lbl=new THREE.CanvasTexture(ac);T.lbl.anisotropy=4;T.LB=LB.map(l=>l[0]);return I.TX=T}
 /*-- Bildschirm mit eigener Zeichenfunktion --*/
@@ -1587,8 +1613,7 @@ const dm=new THREE.Mesh(new THREE.ExtrudeGeometry(ds,{depth:.04,bevelEnabled:tru
 const hb=new THREE.Mesh(rbx(.07,.5,.06,.02),M.rub);hb.position.set(.55,1.15,sd*.06);dg.add(hb);const st=new THREE.Mesh(box(.5,.03,.01),I.dGlow);st.position.set(0,.55,sd*.045);dg.add(st)});
 I.door={m:dg,s:{material:I.dGlow},o:0,t:0,b:[-.95,-12.2,.95,-11.95],c:[-.95,-12.2,.95,-11.95]};col(...I.door.b);I.door.b=I.bx[I.bx.length-1];
 col(.95,-12.25,6,-11.9);col(-6,-12.25,-.95,-11.9);IA(0,-11.62,'tuer','Druckschleuse');
-/* Lichtschalter neben der Schleuse */
-put('dk',rbx(.2,.3,.05,.015),.86,1.35,-11.95);put('sw',box(.05,.05,.02),.86,1.4,-11.92);IA(.55,-11.45,'licht','Beleuchtung')}
+/* 3.19: Lichtschalter sitzt jetzt im Gang am Eingang zum Labor (weg von der Schleuse) */}
 
 /* ---- Gang mit Bodenluke (Laderampe) ---- */
 {const s=IS[2],x=IHO.x,z0=IHO.z0,z1=IHO.z1,zc=(z0+z1)/2;
@@ -1603,6 +1628,9 @@ lbl(12,.95,.24,-(s[2]-.06),1.9,-6.0,PI/2);lbl(11,.5,.13,s[2]-.06,1.9,-6.0,-PI/2)
 [-1,1].forEach(sd=>{put('gr',new THREE.PlaneGeometry(.52,.26),sd*(s[2]-.012),.6,-5.0,0,-sd*PI/2,0);put('gr',new THREE.PlaneGeometry(.52,.26),sd*(s[2]-.012),.6,-7.0,0,-sd*PI/2,0)});
 /* Kabelkanäle oben in den Ecken */
 [-1,1].forEach(sd=>{const[a,b]=onWall(s,PI/2-.3);put('dk',box(.14,.1,2.6),sd*(a-.08),b-.1,-6.0,0,0,-sd*.3);[0,1,2].forEach(k=>put('rub',cyl(.018,.018,2.6,6),sd*(a-.1-k*.04),b-.18+k*.02,-6.0,PI/2,0,0))});
+/* 3.19: Lichtschalter linke Wand am Eingang zum Labor, beschriftet, leuchtet (grün = an, orange = aus) */
+{const xw=-(s[2]-.025);M.lsw=I.swM=new THREE.MeshBasicMaterial({color:0x1fbf4a,toneMapped:false});put('dk',rbx(.05,.34,.24,.015),xw,1.4,-5.0);put('fr',box(.03,.4,.3),xw-.012,1.4,-5.0);put('lsw',box(.02,.11,.07),xw+.03,1.4,-5.0);put('lsw',box(.01,.012,.22),xw+.035,1.21,-5.0);
+lbl(20,.5,.12,-(s[2]-.06),1.68,-5.0,PI/2);IA(xw+.03,-5.0,'licht','Lichtschalter (Beleuchtung)')}
 L(0,2.45,-6.0,0xdff0ff,.55,5.5)}
 
 /* ---- SCHIFFSLAGER ---- */
@@ -1926,7 +1954,7 @@ grid(g,10,2,-L/2+.25,.62,(L-.5)/9,.09,.525,'L',[0x46cfff,0x2a3038,0x6aff8a,0xffb
 /* Klappsitz */
 const js=new THREE.Group();js.position.set(0,0,1.15);g.add(js);add(js,cyl(.05,.06,.46,12),mMet,0,.23,0);add(js,cyl(.16,.16,.025,20),mFrame,0,.012,0);add(js,rb(.42,.07,.4,.025),mSeat,0,.49,0);add(js,rb(.4,.34,.06,.025),mSeat,0,.78,.2);add(js,box(.03,.3,.03),mFrame,0,.62,.22);
 col(g,0,.33,L/2+.03,.34);col(js,0,0,.22,.22);
-const wp=new V3(0,0,.95).applyMatrix4((g.updateMatrixWorld(true),g.matrixWorld));ckIA(wp.x,wp.z,k?'reaktor':'umwelt',k?'Bordtechnik':'Umweltanalyse')});
+const wp=new V3(0,0,.6).applyMatrix4((g.updateMatrixWorld(true),g.matrixWorld));ckIA(wp.x,wp.z,k?'reaktor':'umwelt',k?'Bordtechnik':'Umweltanalyse')});
 /* Haltegriffe an den Panoramascheiben */
 [2,6].forEach(ei=>{const a=P[ei],b=P[ei+1],n=CK.N[ei],o=(v,d,y)=>new V3(v.x+n[0]*d,y,v.z+n[1]*d),u=b.clone().sub(a).normalize(),a2=a.clone().addScaledVector(u,.3),b2=b.clone().addScaledVector(u,-.3);
 beam(o(a2,.2,1.0),o(b2,.2,1.0),.04,.04,mMet,n[0],n[1]);[a2,b2,a2.clone().add(b2).multiplyScalar(.5)].forEach(v=>beam(o(v,.02,1.0),o(v,.21,1.0),.035,.05,mFrame,0,1))});
@@ -1937,7 +1965,7 @@ add(g,rb(1.86,2.05,.56,.02),mRack,0,1.025,.3);add(g,box(1.7,.03,.03),glow(k?0xff
 const pn=new THREE.Group();pn.position.set(0,1.42,.585);g.add(pn);add(pn,rb(.96,.66,.03,.01),mCon2,0,0,0);mkCkScr(pn,.88,.58,0,0,.02,k?dKAI:dMIS,420);
 grid(g,2,12,-.82,.2,.05,.065,.585,'L',[0x6aff8a,0x46cfff,0xffb347,0x2a3038]);grid(g,2,12,.77,.2,.05,.065,.585,'L',[0x46cfff,0x6aff8a,0x2a3038,0xff5a4a]);
 [-.45,.45].forEach(x=>add(g,box(.03,.4,.04),mMet,x,.55,.6));col(g,0,.3,.95,.3);
-const wp=new V3(0,0,.95).applyMatrix4((g.updateMatrixWorld(true),g.matrixWorld));ckIA(wp.x,wp.z,k?'cklicht':'mission',k?'Cockpit-Beleuchtung':'Missionslog')});
+const wp=new V3(0,0,.62).applyMatrix4((g.updateMatrixWorld(true),g.matrixWorld));ckIA(wp.x,wp.z,k?'cklicht':'mission',k?'Cockpit-Beleuchtung':'Missionslog')});
 
 /* ---- Holo-Navigationstisch ---- */
 {const g=new THREE.Group();g.position.set(0,0,-14.75);G0.add(g);add(g,cyl(.36,.48,.12,32),mFrame,0,.06,0);add(g,cyl(.22,.3,.62,28),mCon,0,.43,0);add(g,cyl(.6,.56,.09,48),mFrame,0,.78,0);
@@ -3273,7 +3301,9 @@ mk('Hyperantrieb','hy',()=>G.hy=1,()=>G.hy=0);mk('Hoch','hu',()=>G.vu=1,()=>G.vu
 /*-- Vollbild (schuetzt in Chrome auch vor STRG+W) --*/
 {const b=document.createElement('button');b.id='pfs';b.textContent='Vollbild';b.style.cssText='background:#fff1;color:#e8ecff;border:1px solid #fff3;border-radius:10px;padding:10px 30px;font-size:16px;font-weight:700;cursor:pointer';el('ps').insertBefore(b,el('pq'));b.onclick=()=>{const d=document.documentElement;if(document.fullscreenElement){document.exitFullscreen&&document.exitFullscreen();return}const r=d.requestFullscreen&&d.requestFullscreen();if(r&&r.then)r.then(()=>{try{navigator.keyboard&&navigator.keyboard.lock&&navigator.keyboard.lock(['KeyW','KeyS','KeyA','KeyD','KeyR','KeyF']).catch(()=>{})}catch(_){}}).catch(()=>toast('Vollbild wird hier nicht unterstützt'))}}
 /*-- Touch-Leiste nur bei Touch-Bedienung --*/
-bar.id='tbar';{const s=document.createElement('style');s.textContent='body.dsk #tbar{display:none!important}';document.head.appendChild(s);if(matchMedia('(hover:hover) and (pointer:fine)').matches)document.body.classList.add('dsk');addEventListener('touchstart',()=>document.body.classList.remove('dsk'),{passive:true})}
+bar.id='tbar';{const s=document.createElement('style');s.textContent='body.dsk #tbar{display:none!important}';document.head.appendChild(s);if(matchMedia('(hover:hover) and (pointer:fine)').matches)document.body.classList.add('dsk');addEventListener('touchstart',()=>document.body.classList.remove('dsk'),{passive:true})
+/* 3.19: Schnellleiste, Name und Anzeigen über die Touch-Leiste schieben (zwei Reihen auf schmalen Handys), nur bei Grössenänderung */
+const tbFit=()=>{const r=bar.getBoundingClientRect(),o=r.height>0?Math.max(0,Math.round(innerHeight-r.top+6-64)):0;wrap.style.setProperty('--tb',o+'px')};try{new ResizeObserver(tbFit).observe(bar)}catch(_){}addEventListener('resize',tbFit);addEventListener('orientationchange',()=>setTimeout(tbFit,300))}
 
 /*==== BETA 3.10: PLANETEN-GEOLOGIE – Boden, Gestein, Formationen (alle festen Himmelskörper ausser der Erde) ====*/
 /* Aufbau:
@@ -3829,9 +3859,9 @@ function hexA(h,a){const n=parseInt(h.slice(1),16);return'rgba('+(n>>16&255)+','
 .qb{height:6px;background:#06142a;border:1px solid #1d4a66;margin-top:3px}.qb i{display:block;height:100%;background:linear-gradient(90deg,#2aa0d8,#8fe4ff)}
 .nxtip{position:fixed;z-index:30;pointer-events:none;display:none;max-width:280px;background:rgba(3,10,22,.97);border:1px solid #5fd4ff;padding:8px 10px;color:#dff;font:500 12px/1.35 Rajdhani,system-ui}.nxtip b{font:700 13px Orbitron,system-ui;color:#fff}.nxtip em{color:#ffcc33;font-style:normal}
 #nxdr{position:fixed;z-index:31;width:48px;height:48px;pointer-events:none;display:none;filter:drop-shadow(0 0 6px #5fd4ff)}
-.hbx{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom,0px));display:flex;gap:4px;pointer-events:auto}
-.hbx .sl{width:50px;height:50px;background:rgba(4,12,26,.78)}.hbx .sl img{width:42px;height:42px}.hbn{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(120px + env(safe-area-inset-bottom,0px));font:700 13px Orbitron,system-ui;letter-spacing:.1em;color:#dff;text-shadow:0 0 6px #000;white-space:nowrap;transition:opacity .4s}
-.vtl{position:absolute;left:14px;bottom:calc(64px + env(safe-area-inset-bottom,0px));display:grid;gap:4px;font:700 11px Orbitron,system-ui;letter-spacing:.08em;color:#bfe6ff;text-shadow:0 0 4px #000}
+.hbx{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(64px + var(--tb,0px) + env(safe-area-inset-bottom,0px));display:flex;gap:4px;pointer-events:auto}
+.hbx .sl{width:50px;height:50px;background:rgba(4,12,26,.78)}.hbx .sl img{width:42px;height:42px}.hbn{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(120px + var(--tb,0px) + env(safe-area-inset-bottom,0px));font:700 13px Orbitron,system-ui;letter-spacing:.1em;color:#dff;text-shadow:0 0 6px #000;white-space:nowrap;transition:opacity .4s}
+.vtl{position:absolute;left:14px;bottom:calc(64px + var(--tb,0px) + env(safe-area-inset-bottom,0px));display:grid;gap:4px;font:700 11px Orbitron,system-ui;letter-spacing:.08em;color:#bfe6ff;text-shadow:0 0 4px #000}
 .vtl div{display:flex;align-items:center;gap:6px}.vtl svg{width:15px;height:15px}.vtl .br{width:92px;height:6px;background:rgba(4,12,26,.8);border:1px solid #1d4a66}.vtl .br i{display:block;height:100%}.vtl span{min-width:30px;text-align:right}
 .hx{position:absolute;inset:4vh 4vw;z-index:17;display:none;overflow:auto;padding:18px 22px;color:#dff;font:500 14px/1.45 Rajdhani,system-ui;background:linear-gradient(160deg,rgba(8,20,40,.97),rgba(3,8,18,.97));border:1px solid #2f7fa8}
 .hx h2{font:800 20px Orbitron,system-ui;letter-spacing:.2em;color:#5fd4ff;margin:0 0 8px}.hx h3{font:700 12px Orbitron;letter-spacing:.2em;color:#ffcc33;margin:14px 0 6px}.hx .kc{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:3px 18px}.hx .kc div{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 0;border-bottom:1px solid #ffffff10}
