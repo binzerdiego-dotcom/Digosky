@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>DigoSky Beta 3.26</title>
+<title>DigoSky Beta 3.27</title>
 <style>
 :root{color-scheme:dark;--bg:#02030a;--fg:#e8ecff;--ac:#55ccff;--card:#10142bd9;--gold:#ffcc33;box-sizing:border-box}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;touch-action:none}
@@ -240,13 +240,13 @@ function start(){if(!R3){R3=new THREE.WebGLRenderer({canvas:c3,antialias:qlTier(
 mkShip();applyGfx();rz();rmPatch();hyReset();const e=G.pl[3];G.st='fly';G.thr=0;ship.position.copy(e.pos).add(e.pos.clone().sub(G.pl[14].pos).normalize());parkOrbit(e,4.5);if(save.lastSt&&save.crash){const s=STN.find(q=>q.id==save.lastSt);if(s)stSafe(s)}G.disc=0;G.pl.forEach(p=>{if(!p.sun)p.vis=0});G.on=1;G.paused=0;
 c3.style.display='block';hud.style.display='block';bar.style.display='flex';el('pb').style.display='block';el('pb').textContent='⏸';setV(0);if(!save.crash)enterGround();if(!I.built)buildInt();if(!CK.built)ckBuild();dthReset();dthInit();if(save.crash&&save.dth)try{dthRestore()}catch(e){console.warn(e)}jobFlush();pfCompile(GI,GC);pfCompile(S,C);if(G.gm)pfCompile(GS,GC);last=performance.now();if(!G.lp){G.lp=1;requestAnimationFrame(frame)}wakeUp()}
 function rz(){if(!R3)return;const w=wrap.clientWidth,h=wrap.clientHeight;R3.setSize(w,h,false);C.aspect=w/h;C.updateProjectionMatrix();GC.aspect=w/h;GC.updateProjectionMatrix()}
-function quit(){dthReset();try{nxClose();helpTog(0);bmEnd();ROV.on=0}catch(_){}DKH.style.display='none';gOff();iOff();stClose();mapTog(0);NWS.style.opacity=0;MK.pro.style.display=MK.ret.style.display=MK.tgt.style.display=MKL.style.display='none';XH.style.display=NSM.style.display=XLN.style.display=SPG.style.display='none';G.on=0;G.paused=0;c3.style.display='none';hud.style.display=bar.style.display=tst.style.display=xh.style.display='none';el('ps').style.display='none';el('pb').style.display='none';wk.style.display='none';mbox.style.display='none';el('ds').style.display='block';store();showM();audioSync()}
+function quit(){dthReset();try{nxClose();helpTog(0);bmEnd();ROV.on=0}catch(_){}DKH.style.display='none';gOff();iOff();stClose();mapTog(0);NWS.style.opacity=0;MK.pro.style.display=MK.ret.style.display=MK.tgt.style.display=MKL.style.display='none';XH.style.display=NSM.style.display=XLN.style.display=SPG.style.display='none';G.on=0;G.paused=0;LAP.style.display='none';LA.uiK='';c3.style.display='none';hud.style.display=bar.style.display=tst.style.display=xh.style.display='none';el('ps').style.display='none';el('pb').style.display='none';wk.style.display='none';mbox.style.display='none';el('ds').style.display='block';store();showM();audioSync()}
 function pause(v){if(!G.on)return;hyPause(v);dthPause(v);if(v&&document.pointerLockElement)document.exitPointerLock();G.paused=v;paused=!!v;audioSync();el('ps').style.display=v?'flex':'none';el('pb').textContent=v?'▶':'⏸'}
 function found(p){p.vis=1;G.disc++;mEvt('found');const c=25+Math.round(p.R/100);save.coins+=c;if(Math.random()<.3)save.dia=(save.dia||0)+1;store();sfx('lvl');toast((p.gas?'Erkundet: ':'Entdeckt: ')+p.n+' · +'+c+' Münzen')}
 function play(){if(G.on||G.ldg)return;G.ldg=1;initAudio();el('ds').style.display='none';showLd();setTimeout(()=>{try{start()}catch(e){console.error(e)}hideM();G.ldg=0;setTimeout(()=>{ld.style.opacity=0;setTimeout(()=>ld.style.display='none',650)},Math.max(0,3300-(performance.now()-ld.t0)))},80)}
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&G.on&&!G.paused)pause(1)});
 el('pb').onclick=()=>pause(!G.paused);el('pr').onclick=()=>pause(0);el('psx').onclick=()=>pause(0);el('phl').onclick=()=>helpTog(1);el('pq').onclick=quit;
-addEventListener('keydown',e=>{if(!G.on)return;if(e.code=='KeyF')setV();if(e.code=='KeyL')landTog();if(e.code=='KeyP'||e.code=='Escape')pause(!G.paused)});
+addEventListener('keydown',e=>{if(!G.on)return;if(e.code=='KeyF')setV();if(e.code=='KeyL')landTog();if(e.code=='KeyK'&&!G.gm&&!G.paused)laTog();if(e.code=='KeyP'||e.code=='Escape')pause(!G.paused)});
 let dragId=null;c3.addEventListener('pointerdown',e=>{if(e.pointerType=='mouse'&&G.on)return;if(drag&&dragId!=null&&dragId!==e.pointerId)return;drag=1;dragId=e.pointerId;ox=e.clientX;oy=e.clientY});
 c3.addEventListener('pointermove',e=>{if(drag&&(dragId==null||e.pointerId===dragId)){G.sx=Math.max(-1,Math.min(1,(e.clientX-ox)/80));G.sy=Math.max(-1,Math.min(1,(e.clientY-oy)/80))}});
 ['pointerup','pointercancel'].forEach(n=>addEventListener(n,e=>{if(dragId!=null&&e.pointerId!==dragId)return;drag=0;dragId=null;G.sx=G.sy=0}));
@@ -267,12 +267,12 @@ gear.visible=ld?q>.1:q<.4;
 if(q>=1){PH.v.set(0,0,0);if(ld){G.st='landed';if(!pl.vis)found(pl);else toast('Gelandet auf '+pl.n)}else{G.st='fly';G.thr=.35;PH.v.copy(U3).multiplyScalar(35)}}}
 else if(G.st=='dock'){spd=dockSeq(dt)}
 else gear.visible=true;
-C.fov=G.fov;C.updateProjectionMatrix();
+laVis(dt,near);C.fov=G.fov;C.updateProjectionMatrix();
 animNav(vis,T);fl.forEach(g=>g.scale.z=G.st=='fly'?.12+Math.max(0,PH.thrF)*2.2+BO.f*1.4+(wp?4:0)+HY.k*5+HY.ch*.8+Math.random()*.2:.05);stkStep(dt);heatUpd(dt);orbUpd(dt);stars.position.copy(P);
 {const da=dust.geometry.attributes.position.array;for(let j=0;j<750;j++){const c=j%3==0?P.x:j%3==1?P.y:P.z;da[j]=((dp[j]-c+150)%300+300)%300-150+c}}dust.visible=!(HY.k>.05);
 dust.geometry.attributes.position.needsUpdate=true;
 let nu=null,nd=1e12;G.pl.forEach(p=>{if(!p.vis){const d=P.distanceTo(p.pos);if(d<nd){nd=d;nu=p}}});
-const can=G.st=='fly'&&!near.gas&&!near.sun&&na<near.R*.8+300;bt.ld.disabled=!(can||G.st=='landed'||G.dk||G.poiN||G.st=='docked');bt.ld.textContent=G.st=='landed'?'Starten [L]':G.st=='docked'?'Abdocken [L]':G.dk?'Andocken [L]':G.poiN?'Erkunden [L]':'Landen [L]';
+const can=G.st=='fly'&&!near.gas&&!near.sun&&na<near.R*.8+300;const lca=laLKey();bt.ld.disabled=!(can||lca||G.st=='landed'||G.dk||G.poiN||G.st=='docked');bt.ld.textContent=G.st=='landed'?'Starten [L]':G.st=='docked'?'Abdocken [L]':G.dk?'Andocken [L]':G.poiN?'Erkunden [L]':lca?(LA.al?'Auto-Landen stopp [L]':'Auto-Landen [L]'):'Landen [L]';
 if((G.hu=(G.hu||0)-dt)<=0){G.hu=.12;flyHud(near,na,spd,wp,can)}
 G.mc-=dt;gasM(near,na,dt);if(G.tt>0){G.tt-=dt;if(G.tt<=0)tst.style.display='none'}}
 let SUNL;
@@ -318,8 +318,100 @@ if(near&&!near.sun){c=Math.min(c,(near.gas?60:80)+Math.max(0,na)*(near.gas?.06:.
 for(const s of STN){if(s.dead)continue;const d=P.distanceTo(s.pos)-s.r;if(d<5000)c=Math.min(c,d<s.r*1.2?25:25+(d-s.r*1.2)*.1)}
 return Math.max(25,c)}
 const STG={'FLIP & BURN':'#ff9a6a',WARP:'#c9a2ff','WARP LÄDT':'#c9a2ff',NEWTON:'#ffd36a',NACHBRENNER:'#ffb04a','RÜCKWÄRTS':'#ffd36a',TREIBEN:'#9ab4c8',SCHWEBEN:'#8ef0ff','MANÖVER':'#8ef0ff',REISE:'#7fffc0','VOLLE KRAFT':'#55ccff'};
+/*==== 3.27 LANDEASSISTENT ====*/
+/* Richtwerte (anpassbar): [Hoehe ueber Grund in m, Hoechsttempo in m/s] – oberhalb des ersten Werts gilt das normale Tempo, dazwischen fliessend */
+const LA_V=[[20000,2000],[5000,400],[1000,80],[200,20]];
+/* Sinkgeschwindigkeit in Bodennaehe: [Hoehe, hoechstens m/s nach unten] – darunter gilt der letzte Wert */
+const LA_VD=[[200,20],[30,4]];
+const LA_BO=5000,LA_ALN=1000,LA_HOV=300,LA_HV=25,LA_TD=1.5,LA_SAFE=40,LA_K=3,LA_SLP=.32,LA_ZONE=25000;
+const LA={act:0,agl:1e9,gh:0,ft:0,cap:1e9,capD:1e9,hv:0,al:0,brk:0,bS:0,force:0,vr:0,hs:0,slp:0,wet:0,zok:1,ann:'',annT:-99,hz:0,sel:null,selD:1e9,up:new V3(0,1,0),t1:new V3(),t2:new V3(),t3:new V3(),u:new V3(),nst:0,ring:null,pad:null,beam:null,glow:null,uiK:'',bk:0};
+const laOn=()=>save.la!==0;
+/* weiche Kurve durch die Stuetzpunkte (logarithmisch, ohne Ruck) */
+function laI(T,a){const n=T.length;if(a>=T[0][0])return T[0][1];if(a<=T[n-1][0])return T[n-1][1];for(let i=0;i<n-1;i++){const A=T[i],B=T[i+1];if(a<=A[0]&&a>=B[0]){const u=Math.log(a/B[0])/Math.log(A[0]/B[0]);return Math.exp(Math.log(B[1])+u*(Math.log(A[1])-Math.log(B[1])))}}return T[n-1][1]}
+function laCap(a){const a0=LA_V[0][0];if(a>a0)return LA_V[0][1]*Math.exp(Math.min(20,(a-a0)/4000));return laI(LA_V,Math.max(1,a))}
+function laCapD(a){const c=laCap(a);return a>LA_VD[0][0]?c:Math.min(c,laI(LA_VD,Math.max(1,a)))}
+function laWet(p,u){return p.t=='e'&&fbm(u.x*2+p.sd,u.y*2,u.z*2,6)<.53}
+function laSay(t){kSay(t);toast('🤖 KAI: '+t);sfx('beep')}
+/* Anfang jedes Flugschritts: Hoehe ueber Grund, Grenzen, Zustand */
+function laPre(dt,near,na,P,v,fw){const L=LA;if(L.ft%8==0)L.nst=STN.some(s=>!s.dead&&!s.gnd&&P.distanceTo(s.pos)<2500)?1:0;const on=!L.nst&&laOn()&&G.st=='fly'&&near&&!near.sun&&!near.gas&&(!near.I||near.I.land)&&na<LA_ZONE&&!(PH.ws>0);
+L.up.copy(P).sub(near.pos).normalize();
+if(near&&!near.sun&&!near.gas&&na<LA_ZONE*1.5){if(++L.ft%4==0||L.ft<2){L.gh=pat&&pat.p==near?gH(near,P):hAt(near,L.up)}
+if(L.ft%8==0&&na<LA_ALN*2){const R=near.R,s=8/R;L.t1.set(0,1,0).cross(L.up);if(L.t1.lengthSq()<1e-6)L.t1.set(1,0,0);L.t1.normalize();L.t2.crossVectors(L.up,L.t1);let mx=0;const h0=hAt(near,L.up);
+for(let i=0;i<4;i++){L.u.copy(L.up).addScaledVector(i<2?L.t1:L.t2,i%2?-s:s).normalize();mx=Math.max(mx,Math.abs(hAt(near,L.u)-h0))}L.slp=mx/8;L.wet=laWet(near,L.up)?1:0;L.zok=L.slp<LA_SLP&&!L.wet?1:0}}
+L.agl=Math.max(0,na-(L.gh||0)-4.5);L.vr=v.dot(L.up);L.hs=Math.sqrt(Math.max(0,v.lengthSq()-L.vr*L.vr));
+if(!on){if(L.act)laOff();L.act=0;L.hv=0;L.brk=0;return}
+L.act=1;L.cap=laCap(L.agl);L.capD=laCapD(L.agl);
+const k=keys;L.force=!!((k.ControlLeft||k.ControlRight||G.vd)&&(G.thrA||0)>.95&&fw.dot(L.up)<-.5);
+/* Selene: Landefeld 1 */
+L.sel=null;L.selD=1e9;const cs=STN.find(s=>s.city&&!s.dead);if(cs&&cs.ports&&cs.ports.length&&P.distanceTo(cs.pos)<4000){const q=cs.ports.find(q=>!q.st)||cs.ports[0];if(L.up.dot(q.n)>.35){L.sel=q;L.selD=P.distanceTo(q.D);if(L.up.dot(q.n)<.75)L.selD=Math.max(L.selD,1600)}}
+/* Auto-Landen abbrechen bei eigener Eingabe */
+if(L.al&&(k.KeyW||k.KeyS||k.KeyA||k.KeyD||k.Space||G.up||G.dw||G.vu||G.bo||k.KeyB||G.brk)){L.al=0;toast('Auto-Landen abgebrochen – Handsteuerung')}
+if(L.al&&L.agl>LA_ALN*1.3)L.al=0;
+L.hv=L.agl<LA_HOV||L.al?1:0;
+/* Ansagen */
+if(L.agl<20000&&L.vr<-3&&L.ann!=near.n&&T-L.annT>20){L.ann=near.n;L.annT=T;laSay('Annäherung an '+near.n+'. Landeassistent aktiv.')}
+if(L.agl>30000)L.ann='';
+if(L.hv&&!L.hz){L.hz=1;laSay(L.sel&&L.selD<1500?'Landezone erfasst – Landefeld 1 von Selene markiert.':'Landezone erfasst.')}if(L.agl>LA_HOV*2)L.hz=0;
+/* Landebeine */
+if(L.al||L.agl<45)gear.visible=true;
+/* Selene: Auto-Landen endet im Andockautopiloten */
+if(L.al&&L.sel&&DK.ok&&DK.port&&DK.port.s===L.sel.s){L.al=0;laSay('Landefeld 1 erreicht – Andockautopilot übernimmt.');dockBegin(DK.port)}}
+function laOff(){LA.al=0;LA.hv=0;LA.bS=0;LA.brk=0}
+/* Boost unter 5 km gesperrt (ausser beim Wegfliegen mit der Nase nach oben) */
+function laBoOk(want,fw){if(!want||!LA.act||LA.agl>=LA_BO||fw.dot(LA.up)>.3)return want;wOnce('labo','Landeassistent: Boost unter '+fmtD(LA_BO)+' gesperrt',5);return false}
+/* Ausrichten: Nase langsam zum Horizont, der Spieler kann weiter lenken */
+function laLevel(dt,kp){if(!LA.act||LA.agl>LA_ALN)return;const f=FA.t2.set(0,0,-1).applyQuaternion(FA.q),s=clamp(f.dot(LA.up),-1,1);if(!LA.al&&(G.thr>.2||kp>0)&&(s>.42||LA.vr>5))return;
+const st=(LA.al?1.4:.75)*sm(LA_ALN,LA_ALN*.35,LA.agl)*(kp?.2:1);aimRot(FA.X,-Math.asin(s)*(1-Math.exp(-dt*st)))}
+/* Schweben: Wunschgeschwindigkeit waagerecht, Schwerkraft wird im Flugassistenten ausgeglichen */
+function laHov(vd,fw,rgt,sx,sy,rev){const L=LA,up=L.up,ps=fw.dot(up);if(!L.al&&ps>.42&&G.thr>.2)return;
+const hf=L.t1.copy(fw).addScaledVector(up,-ps);if(hf.lengthSq()<1e-3)hf.copy(rgt).cross(up);hf.normalize();const hr=L.t2.copy(rgt).addScaledVector(up,-rgt.dot(up)).normalize();
+const vh=Math.min(LA_HV,L.cap);let f=(rev?-.4:G.thr)*vh,s=sx*vh*.7,vz=sy>0?sy*Math.max(8,Math.min(30,L.cap)):sy<0?sy*L.capD:0;
+if(L.al){f=0;s=0;vz=-clamp(L.agl*.25,LA_TD,L.capD);
+if(L.sel&&L.selD<1500){const to=L.t3.copy(L.sel.A).sub(ship.position),dz=to.dot(up);to.addScaledVector(up,-dz);const hl=to.length(),sp=Math.min(L.cap*.9,hl*.25+2);vd.copy(to).multiplyScalar(hl>1?sp/hl:0).addScaledVector(up,clamp(dz*.3,-L.capD,15));return}}
+vd.copy(hf).multiplyScalar(f).addScaledVector(hr,s).addScaledVector(up,vz)}
+/* Tempo begrenzen (nach dem Schub, vor der Bewegung) – Steigen bleibt frei */
+function laClamp(dt,v,m,sp){const L=LA;L.brk=0;if(!L.act||L.force)return;const up=L.up;let dv=0;const vr=v.dot(up);
+if(-vr>L.capD){const nv=L.agl<30?-L.capD:-(L.capD+(-vr-L.capD)*Math.exp(-dt*LA_K));dv+=nv-vr;v.addScaledVector(up,nv-vr)}
+const vr2=v.dot(up),h=L.t3.copy(v).addScaledVector(up,-vr2),hl=h.length();if(hl>L.cap&&!(vr2>hl)){const nh=L.cap+(hl-L.cap)*Math.exp(-dt*LA_K);v.addScaledVector(h,nh/hl-1);dv+=hl-nh}
+if(dv>.01){L.brk=Math.min(1,dv/Math.max(dt,1e-3)/(sp.F/m));save.fuel=Math.max(0,save.fuel-dv*m/(sp.Isp*9.81)*.5);if(L.brk>.3)wOnce('labr','Landeassistent: zu schnell – Bremsschub',8)}}
+/* Aufsetzen mit Assistent: kein Schaden */
+function laSoft(s2){return LA.act&&!LA.force&&s2<LA_SAFE}
+function laTouch(n){LA.al=0;LA.hz=0;laSay('Aufgesetzt auf '+n.n+'.')}
+function laCanAuto(){return LA.act&&LA.agl<LA_ALN&&G.st=='fly'}
+/* Taste L: ueber der Schwebezone mit eigener Landeplattform/Bake bleibt der bisherige Landeautopilot zur Basis */
+function laLKey(){return laCanAuto()&&(LA.agl<LA_HOV||LA.al||!(G.near&&landPad(G.near)))}
+function laAuto(){if(!laCanAuto())return toast(laOn()?'Auto-Landen: erst unter '+fmtD(LA_ALN)+' über Grund':'Landeassistent ist aus ['+kl(save.kb.KeyK||'KeyK')+']');LA.al=LA.al?0:1;if(LA.al){G.thr=0;laSay(LA.sel&&LA.selD<1500?'Auto-Landen – Anflug auf Landefeld 1.':'Auto-Landen – sinke senkrecht.')}else toast('Auto-Landen aus')}
+function laTog(){save.la=laOn()?0:1;store();laOff();if(laOn())laSay('Landeassistent an.');else{kSay('Landeassistent aus – Handlandung.');toast('🤖 KAI: Landeassistent aus – harte Landungen beschädigen die Hülle')}sfx('ui');if(KAI.on)kaiUpd()}
+/* Anzeigen im Raum: Landezonen-Kreis, Landefeld 1, Bremsschub (einmal gebaut, danach nur bewegt) */
+function laMk(){const rm=new THREE.MeshBasicMaterial({color:0x6dff8e,transparent:true,opacity:.75,depthWrite:false,side:THREE.DoubleSide,toneMapped:false});
+LA.ring=new THREE.Mesh(new THREE.RingGeometry(.82,1,48),rm);LA.ring.frustumCulled=false;LA.ring.renderOrder=3;LA.ring.visible=false;S.add(LA.ring);
+LA.pad=new THREE.Mesh(new THREE.RingGeometry(.86,1,64),new THREE.MeshBasicMaterial({color:0x55ddff,transparent:true,opacity:.8,depthWrite:false,side:THREE.DoubleSide,toneMapped:false}));LA.pad.visible=false;LA.pad.renderOrder=3;S.add(LA.pad);
+const bg=new THREE.CylinderGeometry(1,1,1,10,1,true);bg.translate(0,.5,0);LA.beam=new THREE.Mesh(bg,new THREE.MeshBasicMaterial({color:0x55ddff,transparent:true,opacity:.18,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide,toneMapped:false}));LA.beam.visible=false;S.add(LA.beam);
+const p0=ship.position.clone(),q0=ship.quaternion.clone();ship.position.set(0,0,0);ship.quaternion.identity();ship.updateMatrixWorld(true);const b=new THREE.Box3();try{b.setFromObject(vis)}catch(e){}ship.position.copy(p0);ship.quaternion.copy(q0);ship.updateMatrixWorld(true);
+const zn=isFinite(b.min.z)?b.min.z+1.2:-9,xw=isFinite(b.max.x)?Math.min(2.2,b.max.x*.35):1.6;LA.glow=new THREE.Group();[-1,1].forEach(sx=>{const s=new THREE.Sprite(new THREE.SpriteMaterial({map:GD,color:0xffc890,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,opacity:0}));s.position.set(sx*xw,-.2,zn);LA.glow.add(s)});LA.glow.visible=false;ship.add(LA.glow)}
+function laVis(dt,near){if(!LA.ring){if(!S||!ship||!GD)return;laMk()}if(LA.act&&(G.st!='fly'||HY.on)){LA.act=0;laOff()}const L=LA,show=L.act&&G.st=='fly'&&L.agl<LA_HOV*2;
+L.bS+=((L.act?L.brk:0)-L.bS)*Math.min(1,dt*6);const gv=L.bS>.02;if(L.glow.visible!=gv)L.glow.visible=gv;if(gv)L.glow.children.forEach((s,i)=>{s.material.opacity=Math.min(1,L.bS*1.4)*(.8+.2*Math.sin(T*40+i));s.scale.setScalar(2+L.bS*4)});
+L.ring.visible=show;if(show){const R=near.R+(L.gh||0)+.6,sc=clamp(13+L.agl*.06,13,32),tg=Math.min(8,L.agl/Math.max(1,-L.vr));L.ring.position.copy(PH.v).addScaledVector(L.up,-L.vr).multiplyScalar(tg);if(L.ring.position.length()>80)L.ring.position.setLength(80);L.ring.position.add(ship.position).sub(near.pos).setLength(R).add(near.pos);L.ring.quaternion.setFromUnitVectors(Z3U,L.up);L.ring.scale.setScalar(sc);L.ring.material.color.setHex(L.zok?0x6dff8e:0xff5a4a);L.ring.material.opacity=.55+.25*Math.sin(T*4)}
+const ps=L.act&&L.sel&&L.selD<3000&&(G.st=='fly');L.pad.visible=L.beam.visible=!!ps;if(ps){const pt=L.sel;L.pad.position.copy(pt.D).addScaledVector(pt.n,-2.6);L.pad.quaternion.setFromUnitVectors(Z3U,pt.n);L.pad.scale.setScalar(16+2*Math.sin(T*3));L.beam.position.copy(L.pad.position);L.beam.quaternion.setFromUnitVectors(Y3U,pt.n);L.beam.scale.set(3,260,3);L.beam.material.opacity=.12+.06*Math.sin(T*2)}}
+const Z3U=new V3(0,0,1),Y3U=new V3(0,1,0);
+/* HUD-Block (wird mit dem Flug-HUD hoechstens 10 Mal pro Sekunde geschrieben) */
+function laHud(near){const L=LA;if(!near||near.sun||near.gas)return'';const show=L.act?L.agl<LA_ZONE:L.agl<LA_ALN*2;if(!show&&!(laOn()&&L.agl<LA_ZONE))return'';
+const sink=Math.max(0,-L.vr),cD=L.act?L.capD:laCapD(L.agl),low=L.agl<30,sc=low?(sink<=4.5?'#6dff8e':sink<9?'#ffb347':'#ff5a4a'):(sink<=cD*1.1+1?'#6dff8e':sink<=cD*1.6+3?'#ffb347':'#ff5a4a');
+const md=L.nst&&laOn()?'<b style="color:#9ab4c8">LANDEASSIST BEREIT · Station in der Nähe</b>':!L.act?'<b style="color:#fc6">LANDEASSIST AUS</b>':L.al?'<b style="color:#7fe8ff">AUTO-LANDEN</b>':L.bS>.15?'<b style="color:#ffb070">BREMST</b>':L.hv?'<b style="color:#8ef0ff">SCHWEBEN</b>':L.agl<LA_ALN?'<b style="color:#7fffc0">ANFLUG</b>':'<b style="color:#7f7">LANDEASSIST</b>';
+let h='<div style="margin-top:5px;padding:3px 7px;border-left:3px solid '+sc+';background:#0006">'+md+(L.act&&L.agl<LA_ZONE?' <span style="opacity:.7">· Limit '+Math.round(L.cap)+' m/s</span>':'')
++'<br>Über Grund <b>'+fmtD(L.agl)+'</b> · Sinken <b style="color:'+sc+'">'+(L.vr>0.05?'+':L.vr<-.05?'−':'')+Math.abs(L.vr).toFixed(Math.abs(L.vr)<10?1:0)+' m/s</b> · Vorwärts <b>'+Math.round(L.hs)+' m/s</b>';
+if(L.agl<LA_HOV*2)h+='<br>Landezone <b style="color:'+(L.zok?'#6dff8e':'#ff5a4a')+'">● '+(L.wet?'Wasser':L.zok?'flach genug':'zu steil')+'</b>';
+if(L.act&&L.sel&&L.selD<3000){const to=L.t3.copy(L.sel.D).sub(ship.position),dz=to.dot(L.up);to.addScaledVector(L.up,-dz);const fw=F.set(0,0,-1).applyQuaternion(ship.quaternion),rg=PT2.set(1,0,0).applyQuaternion(ship.quaternion),a=Math.atan2(to.dot(rg),to.dot(fw))*180/Math.PI,ar=['⬆','⬈','➡','⬊','⬇','⬋','⬅','⬉'][((Math.round(a/45)%8)+8)%8];
+h+='<br><b style="color:#55ddff">LANDEFELD 1</b> · Selene '+ar+' '+fmtD(to.length())+(L.al?' · Anflug läuft':' · ['+kl(save.kb.KeyL||'KeyL')+'] Auto-Landen')}
+else if(L.act&&L.agl<LA_ALN&&!L.al)h+='<br><span style="color:#6f9">'+(laLKey()?'['+kl(save.kb.KeyL||'KeyL')+'] ':'')+'Auto-Landen'+(laLKey()?'':' (Knopf)')+'</span>';
+return h+'</div>'}
+/* Knoepfe (Cockpit-HUD, auch Handy): nur bei Aenderung ins DOM schreiben */
+function laUI(){if(!bt.la)return;const fly=G.on&&!G.gi&&!G.gm&&(G.st=='fly'||G.st=='landed'),au=fly&&laCanAuto(),key=(fly?1:0)+'|'+(au?1:0)+'|'+(laOn()?1:0)+'|'+(LA.al?1:0);if(key==LA.uiK)return;LA.uiK=key;
+LAP.style.display=fly?'flex':'none';bt.la.textContent='🛬 Landeassist '+(laOn()?'AN':'AUS');bt.la.style.borderColor=laOn()?'#6dff8e':'#ffb347';bt.al.style.display=au?'':'none';bt.al.textContent=LA.al?'✋ Auto-Landen stopp':'⤓ Auto-Landen';bt.al.style.borderColor=LA.al?'#7fe8ff':''}
+const LAP=mkd('position:absolute;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(var(--tb,0px) + 70px);display:none;flex-direction:column;gap:8px;align-items:flex-end;z-index:6');LAP.id='lap';
+mk('🛬 Landeassist AN','la',()=>laTog());mk('⤓ Auto-Landen','al',()=>laAuto());LAP.appendChild(bt.la);LAP.appendChild(bt.al);bt.la.style.minHeight=bt.al.style.minHeight='48px';
 function flyPhys(dt,near,na){const k=keys,P=ship.position,SQ=ship.quaternion,sp=SPEC(),m=sp.dry+save.fuel,v=PH.v,fw=F.set(0,0,-1).applyQuaternion(SQ);
-if(!(PH.ws>0))PH.ws=0;const brk=(k.KeyB||G.brk)&&v.length()>.4;let Fm=0,rcs=0;const ri=(k.KeyE&&!DK.port?1:0)-(k.KeyQ?1:0);
+if(!(PH.ws>0))PH.ws=0;laPre(dt,near,na,P,v,fw);const brk=(k.KeyB||G.brk)&&v.length()>.4;let Fm=0,rcs=0;const ri=(k.KeyE&&!DK.port?1:0)-(k.KeyQ?1:0);
 if(!FA.ok||brk){FA.q.copy(SQ);FA.ok=1;FA.bank=0;G.ax=G.ay=0}
 if(brk){PT.copy(v).normalize().negate();const up=PT2.set(0,1,0).applyQuaternion(SQ);orient(PT,up);const ang=fw.angleTo(PT);SQ.rotateTowards(Q,sp.rcs*1.1*dt);PH.w.set(0,0,0);rcs=1;if(ang<.12)Fm=Math.min(sp.F,m*v.length()/Math.max(dt,.016));if(v.length()<.6&&wOnce('stop','Relativ zum Raum gestoppt',3))v.set(0,0,0);fw.set(0,0,-1).applyQuaternion(SQ)}
 else{
@@ -328,7 +420,7 @@ if(2*Math.acos(Math.min(1,Math.abs(FA.q.dot(SQ))))>1.3)FA.q.copy(SQ);G.ax=clamp(
 aimRot(FA.Y,(-(G.ax||0)-ky*1.15*dt)*wsl);aimRot(FA.X,(-(G.ay||0)+kp*dt)*wsl);G.ax=G.ay=0;aimRot(FA.Z,-ri*1.5*dt);
 /* Horizont-Stabilisierung in Planetennaehe */
 if(near&&!near.sun&&na<near.R*2.5&&!ri){const up=FA.t1.copy(P).sub(near.pos).normalize(),f=FA.t2.set(0,0,-1).applyQuaternion(FA.q),u=FA.t3.set(0,1,0).applyQuaternion(FA.q);up.addScaledVector(f,-up.dot(f));const l=up.length();if(l>.2){up.divideScalar(l);const ph=Math.atan2(FA.ax.crossVectors(u,up).dot(f),u.dot(up)),st=(na<near.R*.8?2.4:1.2)*sm(.2,.55,l);aimRot(FA.Z,-ph*(1-Math.exp(-dt*st)))}}
-FA.q.normalize();
+laLevel(dt,kp);FA.q.normalize();
 /* Fadenkreuz bleibt in Reichweite der Schiffsnase */
 const dev=2*Math.acos(Math.min(1,Math.abs(FA.q.dot(SQ)))),MXD=.8;if(dev>MXD){FA.qa.copy(SQ).slerp(FA.q,MXD/dev);FA.q.copy(FA.qa)}
 /* 2) Kurvenneigung (nur Optik + Gefuehl, kein Einfluss auf den Kurs) */
@@ -349,15 +441,15 @@ const arr=tp&&FA.dT<250;if(wpK&&wBlk&&wOnce('wpb',wBlk))FA.wc=0;
 if(wpK&&!wBlk&&!arr&&!PH.ws){if(FA.wc==0)sfx('ab');FA.wc=Math.min(1,FA.wc+dt/1.3);save.fuel=Math.max(0,save.fuel-3*dt)}else if(!PH.ws)FA.wc=Math.max(0,FA.wc-dt*2);
 if(FA.wc>=1&&wpK&&!wBlk&&!arr){const v0=Math.max(PH.ws,v.length(),300);PH.ws=v0+(wT-v0)*(1-Math.exp(-dt*(wT>v0?1.1:4)));save.fuel=Math.max(0,save.fuel-9*dt*(save.tech&&save.tech.warp?.65:1));PH.heat-=4*dt}
 else if(PH.ws){PH.ws*=Math.exp(-dt*(wBlk?7:4.5));if(PH.ws<Math.max(v.length(),150)*1.05){PH.ws=0;FA.wc=0;if(arr)wOnce('warr','Ziel erreicht – Warp beendet',5)}}
-const wp=PH.ws>0?1:0,bo=boStep(dt,!brk&&!wp&&!!(k.ShiftLeft||k.ShiftRight||G.bo)),rev=!!(k.KeyS||G.dw)&&G.thr<=.001;
+const wp=PH.ws>0?1:0,bo=boStep(dt,laBoOk(!brk&&!wp&&!!(k.ShiftLeft||k.ShiftRight||G.bo),fw)),rev=!!(k.KeyS||G.dw)&&G.thr<=.001;
 const sxI=wp?0:clamp((k.KeyD?1:0)-(k.KeyA?1:0),-1,1),syI=wp?0:clamp((k.Space?1:0)-(k.ControlLeft||k.ControlRight?1:0)+(G.vu?1:0)-(G.vd?1:0),-1,1);
 const dom=gAt(P,PH.g);PH.dom=dom;
-const cap=vCap(near,na),hov=!near.sun&&!near.gas&&na<Math.max(400,near.R*.8),gov=!!save.fa&&!brk&&!wp&&save.fuel>0&&(G.thr>0||hov||rev||bo);FA.cap=cap;FA.hov=hov;FA.gov=gov;
+const cap=vCap(near,na),hov=!near.sun&&!near.gas&&na<Math.max(400,near.R*.8),gov=!!(save.fa||LA.hv)&&!brk&&!wp&&save.fuel>0&&(G.thr>0||hov||rev||bo||LA.hv);FA.cap=cap;FA.hov=hov;FA.gov=gov;
 G.thrA=(G.thrA||0)+(G.thr-(G.thrA||0))*Math.min(1,dt*3.2);
 if(gov){
 /* 5) Flugassistent: Schubhebel = Wunschtempo, Bewegung folgt der Nase, Schwerkraft wird ausgeglichen */
 let vT=bo?Math.max(G.thr,.6)*cap*1.8:G.thr*cap;if(rev)vT=-Math.min(40,cap*.2);FA.vt=vT;
-const rgt=FA.t1.set(1,0,0).applyQuaternion(SQ),upv=FA.t2.set(0,1,0).applyQuaternion(SQ),vs=Math.min(cap*.5,hov?clamp(Math.max(0,na)*.12,6,35):35),vd=FA.t3.copy(fw).multiplyScalar(vT).addScaledVector(rgt,sxI*vs).addScaledVector(upv,syI*vs);
+const rgt=FA.t1.set(1,0,0).applyQuaternion(SQ),upv=FA.t2.set(0,1,0).applyQuaternion(SQ),vs=Math.min(cap*.5,hov?clamp(Math.max(0,na)*.12,6,35):35),vd=FA.t3.copy(fw).multiplyScalar(vT).addScaledVector(rgt,sxI*vs).addScaledVector(upv,syI*vs);if(LA.hv)laHov(vd,fw,rgt,sxI,syI,rev);
 const vl=v.length();if(vl>2&&vT>2){const a0=v.angleTo(vd);if(a0>1e-4&&a0<2.6){FA.ax.crossVectors(v,vd).normalize();v.applyAxisAngle(FA.ax,a0*(1-Math.exp(-dt*2.4)))}}
 const ac=PT3.copy(vd).sub(v).multiplyScalar(1/(bo?1.1:1.6)).sub(PH.g),aMain=Math.max(sp.F/m,cap/11)*(bo?2.2:1),af=clamp(ac.dot(fw),-aMain*1.25,aMain);
 ac.addScaledVector(fw,-ac.dot(fw));const aL=Math.max(.42*sp.F/m*Math.sqrt(sp.rcs),PH.g.length()*1.3+4),ll=ac.length();if(ll>aL)ac.multiplyScalar(aL/ll);ac.addScaledVector(fw,af);
@@ -375,14 +467,14 @@ let rho=0;if(near.rho&&!near.sun){const H=near.R*(near.ak||.05)*.4,top=near.R*(n
 const vl=v.length();if(rho>0&&vl>.1&&!wp){const ad=Math.min(.5*rho*vl*vl*60/m,vl/dt*.9);PH.a.addScaledVector(v,-ad/vl)}
 PH.heat+=(rho*vl*vl*vl*1.5e-6/sp.heat*kHSf()-4*(save.tech&&save.tech.kuehl?1.6:1))*dt;
 STP0.copy(P);if(wp)P.addScaledVector(fw,PH.ws*dt);
-if(!wp){v.addScaledVector(PH.a,dt);P.addScaledVector(v,dt)}
+if(!wp){v.addScaledVector(PH.a,dt);laClamp(dt,v,m,sp);P.addScaledVector(v,dt)}
 stHit(STP0,dt);
 PT.copy(P).sub(near.pos);const d=PT.length(),gh=pat&&pat.p==near?gH(near,P):0,fl=near.R+gh+(near.gas||near.sun?0:4.5);
 if(d<fl){PT.normalize();const vr=v.dot(PT);P.copy(near.pos).addScaledVector(PT,fl);
 if(near.sun)shipLost('In der Sonne verglüht');
 else if(near.gas){v.addScaledVector(PT,-Math.min(0,vr));hullDmg(9*dt,'Vom Druck des Gasriesen zerquetscht');wOnce('gp','DRUCKZONE! Die Hülle wird zerquetscht – sofort aufsteigen!',3)}
-else{const s2=vl,lnd=!near.I||near.I.land;if(-vr>3){if(s2<9&&lnd){touchdown(near,fl);return{s:0,w:0}}hullDmg((s2-9)*1.6,'Aufschlag auf '+near.n);if(G.lost)return{s:0,w:0};wOnce('imp','AUFPRALL mit '+Math.round(s2)+' m/s! Unter 9 m/s aufsetzen.',2);v.addScaledVector(PT,-vr*1.4);v.multiplyScalar(.6);sfx('boom')}
-else{v.addScaledVector(PT,-Math.min(0,vr));v.multiplyScalar(1-Math.min(1,dt*1.5));if(v.length()<2.5&&lnd&&G.thr<.05){touchdown(near,fl);return{s:0,w:0}}}}}
+else{const s2=vl,lnd=!near.I||near.I.land;if(-vr>3){if(lnd&&(s2<9||laSoft(s2))){const la=LA.act;touchdown(near,fl);if(la)laTouch(near);return{s:0,w:0}}hullDmg((s2-9)*1.6,'Aufschlag auf '+near.n);if(G.lost)return{s:0,w:0};wOnce('imp','AUFPRALL mit '+Math.round(s2)+' m/s! Unter 9 m/s aufsetzen.',2);v.addScaledVector(PT,-vr*1.4);v.multiplyScalar(.6);sfx('boom')}
+else{v.addScaledVector(PT,-Math.min(0,vr));v.multiplyScalar(1-Math.min(1,dt*1.5));if(v.length()<2.5&&lnd&&(G.thr<.05||LA.al)){const la=LA.act;touchdown(near,fl);if(la)laTouch(near);return{s:0,w:0}}}}}
 const sd=G.pl[0]?P.distanceTo(G.pl[0].pos):1e9;if(sd<G.pl[0].R*2.2)PH.heat+=Math.pow(G.pl[0].R*2.2/sd,4)*6*dt/sp.heat;
 return{s:wp?PH.ws:v.length(),w:wp}}
 function heatUpd(dt){PH.heat=clamp(PH.heat-(G.st=='fly'?0:4*dt),0,150);if(PH.heat>100){hullDmg((PH.heat-100)*.12*dt,'Hitzeschild durchgebrannt');wOnce('ht','HITZE KRITISCH – Geschwindigkeit verringern!',3)}else if(PH.heat>75)wOnce('ht2','Hüllentemperatur hoch',8)}
@@ -417,7 +509,7 @@ h+='<div style="margin-top:4px">Schub '+bars(G.thr*100,'#55ccff')+' '+Math.round
 h+='<div>Boost '+bars(BO.e*100,BO.lk?'#f86':BO.f>.1?'#ffb04a':'#55ccff')+' '+Math.round(BO.e*BO_T)+' s'+(BO.lk?' · lädt':'')+'</div>'+hyHud();
 h+='<div>Tank&nbsp; '+bars(fp,fp<10?'#f44':fp<20?'#fc6':'#ffb340')+' '+Math.round(fp)+' % · '+fmtKg(save.fuel)+' · Δv '+fV(FS.dv)+' · ≈'+FS.n+' Landungen</div><div>Hülle '+bars(save.hull,save.hull<30?'#f44':'#7f9')+' '+Math.round(save.hull)+'%'+(PH.heat>5?' · Hitze '+Math.round(PH.heat)+'%':'')+'</div>';
 if(G.ns)h+='<span style="opacity:.75">Nächstes System: '+G.ns.name+' ('+fmtD(G.nsd)+')</span><br>';
-if(can&&!DK.port)h+='<span style="color:#6f9">[L] Landeautopilot möglich</span><br>';if(DK.port)h+=DK.ok?'<span style="color:#6f9">['+kl(save.kb.KeyE||'KeyE')+' halten] Andocken: '+DK.port.s.n+' · '+DK.port.name+'</span><br>':'<span style="color:#fc6">Andocken: '+DK.why+'</span><br>';
+h+=laHud(near);if(can&&!DK.port&&!laLKey())h+='<span style="color:#6f9">[L] Landeautopilot möglich</span><br>';if(DK.port)h+=DK.ok?'<span style="color:#6f9">['+kl(save.kb.KeyE||'KeyE')+' halten] Andocken: '+DK.port.s.n+' · '+DK.port.name+'</span><br>':'<span style="color:#fc6">Andocken: '+DK.why+'</span><br>';
 h+=resTxt();hud.innerHTML=h}
 
 /*==== LADEBILDSCHIRM ====*/
@@ -1278,7 +1370,7 @@ const M2=document.createElement('div');M2.id='m2';
 M2.innerHTML='<canvas id="m3"></canvas><div class="mvig"></div><div class="mgr"></div>'
 +'<header class="mt"><div class="lg">'+EMB+'<div class="lgt">'+[...'DIGOSKY'].map((c,i)=>'<span style="--i:'+i+'">'+c+'</span>').join('')+'</div></div><div class="sb">WANDERER VX-9 · EXPEDITION SOL</div></header>'
 +'<div id="mst"></div><nav id="mn"></nav><section id="mp"></section>'
-+'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.26</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
++'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.27</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
 +'<div id="mfade"></div><input type="file" id="mfile" accept=".json,.txt,application/json,text/plain" style="display:none">';
 wrap.appendChild(M2);
 const mp=el('mp'),NAV=[['play','SPIEL STARTEN',0],['new','NEUES SPIEL',0],['load','SPIELSTAND LADEN',0],['mis','MISSIONEN',1],['char','CHARAKTER',1],['ship','RAUMSCHIFF',1],['kod','KODEX',1],['set','EINSTELLUNGEN',2],['prof','SPIELERPROFIL',2]],MNG=['KAMPAGNE','BORDSYSTEME','SYSTEM'];
@@ -1453,7 +1545,7 @@ const bs=[...document.querySelectorAll('#mn .nb')].filter(b=>b.style.display!='n
 if(e.code=='ArrowDown'||e.code=='ArrowUp'){if(mp.contains(ae))return;e.preventDefault();bs[i<0?0:(i+(e.code=='ArrowDown'?1:-1)+bs.length)%bs.length].focus({preventScroll:true});uiS(0)}
 else if(e.code=='Escape'){if(mpage!='home'){e.preventDefault();const b=bs.find(b=>b.dataset.p==mpage);page('home');if(b)b.focus({preventScroll:true})}}
 else if((e.code=='Enter'||e.code=='NumpadEnter')&&i<0&&!mp.contains(ae)&&mpage=='home'){e.preventDefault();launch()}});
-const ACT=[['Vorwärts / Schub +','KeyW'],['Rückwärts / Schub −','KeyS'],['Links / seitlich links','KeyA'],['Rechts / seitlich rechts','KeyD'],['Sprinten / Nachbrenner','ShiftLeft'],['Springen / Aufsteigen','Space'],['Schleichen / Sinken','ControlLeft'],['Interagieren / Andocken (halten) / Rollen rechts','KeyE'],['Rollen links','KeyQ'],['Feuer (auch linke Maustaste)','KeyG'],['Landen','KeyL'],['Aufstehen','KeyY'],['Warp','KeyX'],['Ansicht / Ich-Perspektive','KeyF']];
+const ACT=[['Vorwärts / Schub +','KeyW'],['Rückwärts / Schub −','KeyS'],['Links / seitlich links','KeyA'],['Rechts / seitlich rechts','KeyD'],['Sprinten / Nachbrenner','ShiftLeft'],['Springen / Aufsteigen','Space'],['Schleichen / Sinken','ControlLeft'],['Interagieren / Andocken (halten) / Rollen rechts','KeyE'],['Rollen links','KeyQ'],['Feuer (auch linke Maustaste)','KeyG'],['Landen / Auto-Landen','KeyL'],['Landeassistent ein/aus','KeyK'],['Aufstehen','KeyY'],['Warp','KeyX'],['Ansicht / Ich-Perspektive','KeyF']];
 let KB={},rb=null,MSET='gfx';if(!save.kb)save.kb={};
 function rebT(){KB={};ACT.forEach(([n,d])=>{if(save.kb[d])KB[d]='None'});ACT.forEach(([n,d])=>{if(save.kb[d])KB[save.kb[d]]=d})}rebT();
 function kd(e){if(e._r||/INPUT|TEXTAREA/.test((e.target||{}).tagName))return;
@@ -2382,7 +2474,7 @@ w.buffer=NB;w.loop=true;w.playbackRate.value=.5;wf.type='lowpass';wf.frequency.v
 o.start();o2.start();n.start();w.start();EN={o,o2,lp,g,n,bp,ng,w,wf,wg}}catch(e){EN=null}}
 function sndStep(dt){if(CYB.sc&&!(G.gm&&!G.gi&&GR.ph=='walk'&&cybOn()&&!CYB.intro))CYB.sc.style.display='none';if(!AC||AC.state!='running')return;if(CYB.au&&CYB.au.g&&!(G.gm&&!G.gi&&cybOn()&&!G.paused))CYB.au.g.gain.setTargetAtTime(0,AC.currentTime,.2);enInit();if(!EN)return;const t=AC.currentTime,sm2=(p,v)=>p.setTargetAtTime(v,t,.15);let eg=0,ng=0,wg=0,wfq=600,fq=41;
 if(G.on&&!G.paused){if(!G.gi&&!G.gm&&(G.st=='fly'||G.st=='land'||G.st=='take')){const th=G.st=='fly'?Math.max(0,PH.thrF):.6,vac=PH.rho<.002,ext=G.view!=1,mute=vac&&ext&&!save.cine?.12:1;
-eg=(.025+.09*th+(PH.ws?.06:0))*mute;ng=(.015+.08*th)*mute;fq=41+th*14+(PH.ws?40:0);const v=PH.v.length();if(PH.rho>.002){wg=Math.min(.35,PH.rho*v*v/9000);wfq=300+Math.min(3000,v*6)}}
+eg=(.025+.09*th+(PH.ws?.06:0))*mute;ng=(.015+.08*th+(LA.bS||0)*.06)*mute;fq=41+th*14+(PH.ws?40:0);const v=PH.v.length();if(PH.rho>.002){wg=Math.min(.35,PH.rho*v*v/9000);wfq=300+Math.min(3000,v*6)}}
 else if(G.gm&&GR.E){const E=GR.E;if(E.p>.004){wg=Math.min(.18,.03+E.p*.03+(G.storm&&GR.pl&&GR.pl.n=='Mars'?.12:0))+(CYB.sk||0)*.2;wfq=E.p>5?180:E.p<.05?2400:700}}
 else if(G.st=='docked'){eg=.012}}
 sm2(EN.g.gain,eg);sm2(EN.ng.gain,ng);sm2(EN.wg.gain,wg);sm2(EN.wf.frequency,wfq);sm2(EN.o.frequency,fq);sm2(EN.o2.frequency,fq*2.01);
@@ -2854,7 +2946,7 @@ function showEnd(k){const e=ENDS[k];save.end=save.end||{};save.end[k]=1;if(k=='A
 setTimeout(()=>{if(document.pointerLockElement)document.exitPointerLock();EOV.innerHTML='<div style="font:800 13px system-ui;letter-spacing:.4em;color:#c9f">ENDE</div><div style="font:800 clamp(28px,6vw,52px) system-ui;letter-spacing:.12em;margin:6px 0 18px;background:linear-gradient(180deg,#fff,#c070ff);-webkit-background-clip:text;background-clip:text;color:transparent">'+e[0]+'</div><p style="max-width:640px">'+e[1]+'</p><p style="max-width:640px">'+e[2]+'</p><p style="color:#ffcc33">'+e[3]+'</p><button class="g3b" id="eob" style="margin-top:14px">Weiterspielen</button><small style="opacity:.6;margin-top:8px">Es gibt drei Enden. Im Spielerprofil kannst du einen neuen Spielstand beginnen.</small>';EOV.style.display='flex';el('eob').onclick=()=>{EOV.style.display='none'}},k=='B'?1500:600)}
 
 /*==== VERBINDUNG: LANDEN, MISSIONEN, TASTEN ====*/
-function landTog(){if(G.gi||HY.on||DTH.on)return;if(G.gm)return repair();if(G.st=='dock')return;if(G.st=='docked')return undock();if(G.st=='fly'&&DK.port){if(DK.ok)return dockBegin(DK.port);return toast(DK.why)}if(G.st=='fly'&&G.poiN)return poiEnter(G.poiN);const n=G.near;if(!n)return;const P=ship.position,dir=P.clone().sub(n.pos).normalize(),f=new V3(0,0,-1).applyQuaternion(ship.quaternion);f.addScaledVector(dir,-f.dot(dir));if(f.lengthSq()<1e-3)f.crossVectors(new V3(1,0,0),dir);f.normalize();const sp=SPEC();
+function landTog(){if(G.gi||HY.on||DTH.on)return;if(G.gm)return repair();if(G.st=='dock')return;if(G.st=='docked')return undock();if(G.st=='fly'&&DK.port){if(DK.ok)return dockBegin(DK.port);return toast(DK.why)}if(G.st=='fly'&&G.poiN)return poiEnter(G.poiN);if(G.st=='fly'&&laLKey())return laAuto();const n=G.near;if(!n)return;const P=ship.position,dir=P.clone().sub(n.pos).normalize(),f=new V3(0,0,-1).applyQuaternion(ship.quaternion);f.addScaledVector(dir,-f.dot(dir));if(f.lengthSq()<1e-3)f.crossVectors(new V3(1,0,0),dir);f.normalize();const sp=SPEC();
 if(G.st=='fly'){if(n.gas||n.sun)return toast(n.sun?'Zu heiss':'Gasriese: keine feste Oberfläche');if(G.alt<n.R*.8+300){if(PH.v.length()>350)return toast('Zu schnell für den Landeautopiloten ('+Math.round(PH.v.length())+' m/s) – erst bremsen [B]');const LP=landPad(n),lc=landCost(n,0,LP&&LP.pad);if(save.fuel<lc)return toast('Zu wenig Treibstoff für den Landeanflug ('+fmtKg(lc)+' nötig)');save.fuel-=lc;let th=Math.min(.9,Math.max(G.alt*4,500)/n.R),d1;if(LP){const t2=new V3().fromArray(LP.d).normalize(),c=clamp(dir.dot(t2),-1,1);th=Math.acos(c);if(th>.002)f.copy(t2).addScaledVector(dir,-c).normalize();d1=t2;toast((LP.pad?'Landeplattform':'Landebake')+' erfasst – Kurs auf deine Basis')}else d1=dir.clone().multiplyScalar(Math.cos(th)).addScaledVector(f,Math.sin(th));rmPatch();bPatch(n,d1);W3.copy(n.pos).addScaledVector(d1,n.R);G.land={d0:dir,f,th,aE:gH(n,W3)+3.4,a0:G.alt,p:n,t:0,last:P.clone(),al:G.alt,ph:.1+Math.random()*.6};G.st='land';delete save.dth;PH.v.set(0,0,0);if(!LP)toast('Landeautopilot aktiv · '+fmtKg(lc)+' Treibstoff')}}
 else if(G.st=='landed'){const tc=landCost(n,1);if(save.fuel<tc)return toast('Zu wenig Treibstoff zum Starten ('+fmtKg(tc)+' nötig) – Treibstoffzelle, Notreserve ['+kl(save.kb.KeyN||'KeyN')+'] oder Notsignal');save.fuel-=tc;const o=G.land;G.land={d0:dir,f,th:Math.min(.5,900/n.R),aE:o.aE,a1:n.R*.5+400,p:n,t:0,last:P.clone(),al:o.aE,ph:o.ph};G.st='take';delete save.dth;toast('Start')}}
 function setTgtStr(s){if(!s)return;if(s.startsWith('p:')){const p=G.pl.find(q=>q.n==s.slice(2));if(p)G.tgt={n:p.n,p}}else{const st=STN.find(q=>q.id==s);if(st)G.tgt={n:st.n,s:st};else{const p=POI.find(q=>q.id==s);if(p)G.tgt={n:p.n,poi:p}}}}
@@ -5051,7 +5143,7 @@ if(!BMS.on&&!ROV.on&&LZ.gt>0){LZ.gt-=dt;bmTxt('+'+LZ.got+' '+(ITM[LZ.gn]?ITM[LZ.
 function act(){if(pf||NXS.on||DTH.on)return;if(G.gi){if(I.tg)doIA(I.tg);else useSel()}else if(G.gm){if(CYB.intro)return;if(ROV.on)return rvExit();if(BMS.on)return bmPlace();const R=GR;if(R.ph!='walk')return;const cb=!R.free&&cybNear();if(cb)return cybUse(cb);const gi=R.free&&groundInteract();if(gi)return groundUse(gi);const t=extTarget();if(t&&t.k=='ship')return enterInt();useSel()}}
 function extTarget(){const R=GR,sh=R.ship;if(R.ph!='walk'||!sh)return null;const fr=sh.userData.free,zl=(fr?SHX.rf+.6:8.2)*SHX.S,ry=sh.rotation.y,x=sh.position.x+zl*Math.sin(ry),z=sh.position.z+zl*Math.cos(ry);if(Math.hypot(R.x-x,R.z-z)<(fr?6.5:9))return{k:'ship'};return null}
 function rest(){VS.h=10;save.ls.w=save.ls.f=100;save.suit.int=100;save.suit.o2=save.suit.en=100;toast('Ausgeruht – Gesundheit, Wasser und Nahrung voll');sfx('lvl')}
-function vit(dt){if(!G.on)return;save.pt+=dt;G.dc=(G.dc||0)-dt;if((vt.sv+=dt)>20){vt.sv=0;store()}const w=!!(G.gi||G.gm);if(vt.on!==w){vt.on=w;ui.style.display=w?'block':'none'}
+function vit(dt){if(!G.on)return;laUI();save.pt+=dt;G.dc=(G.dc||0)-dt;if((vt.sv+=dt)>20){vt.sv=0;store()}const w=!!(G.gi||G.gm);if(vt.on!==w){vt.on=w;ui.style.display=w?'block':'none'}
 bt.st.style.display=w?'none':'';bt.ac.style.display=bt.jp.style.display=bt.cr.style.display=w?'':'none';bt.tl.style.display=G.gm&&!G.gi?'':'none';{const jv=G.gm&&!G.gi&&eqd('jet')?'':'none';if(bt.jt.style.display!=jv)bt.jt.style.display=jv}
 if(w){sT(bt.dn,'Zurück');sT(bt.up,'Vorwärts');sT(bt.bo,'Rennen')}else{sT(bt.dn,'Schub −');sT(bt.up,'Schub +');sT(bt.bo,'Boost');bt.wp.style.display=bt.vw.style.display=bt.ld.style.display=''}
 ['fi','br','fa','hu','hd','hy'].forEach(k=>bt[k].style.display=w||G.st!='fly'?'none':'');bt.so.style.display=G.st=='docked'&&!w?'':'none';if(G.gi){bt.wp.style.display=bt.vw.style.display=bt.ld.style.display='none'}
@@ -5137,7 +5229,8 @@ var KSY=[
 {k:'en',n:'Energie',ic:'⚡',d:'Bordbatterie · lädt gelandet und angedockt · leer = kein Boost',o:[[{ezelle:1},20],[{ezellexl:1},45],[{fusionszelle:1},100]]},
 {k:'o2',n:'Sauerstoff',ic:'💨',d:'Kabinenluft · leer = der Anzug lädt an Bord keinen Sauerstoff',o:[[{sauerstoff:2},10],[{o2pat:1},15]]},
 {k:'ls',n:'Lebenserhaltung',sn:'Lebenserh.',ic:'♻',d:'Filter und Wasserrecycler · leer = kein Wasser und keine Nahrung an Bord',o:[[{Ersatzteile:1,Wasser:2},25],[{Elektronik:1,polymer:1},30]]},
-{k:'hs',n:'Hitzeschild',ic:'☄',d:'Schützt beim Eintritt in Atmosphären · schwach = schnellere Überhitzung',o:[[{titanplatte:1},25],[{stahl:2},10]]}];
+{k:'hs',n:'Hitzeschild',ic:'☄',d:'Schützt beim Eintritt in Atmosphären · schwach = schnellere Überhitzung',o:[[{titanplatte:1},25],[{stahl:2},10]]},
+{k:'la',n:'Landeassistent',sn:'Landeassist',ic:'🛬',d:'Bremst in Bodennähe, richtet das Schiff aus, schwebt und setzt sanft auf · Taste K',v:()=>laOn()?1:0,add:()=>{},fit:()=>0,tog:1,lvf:()=>laOn()?'g':'y',o:[[{},0]]}];
 KSY.forEach(s=>{if(!s.v){s.v=()=>clamp(save.ks[s.k]/100,0,1);s.add=g=>{save.ks[s.k]=Math.min(100,save.ks[s.k]+g)}}if(!s.fit)s.fit=()=>s.v()<.995});
 /* Wirkungen (werden in SPEC, boStep, Hitze und lsStep abgefragt) */
 function kEF(){const k=save.ks;return k&&k.an<25?.7:1}
@@ -5146,7 +5239,7 @@ function kHSf(){const k=save.ks;return k&&k.hs<25?1.5:1}
 /* Farbstufe: g = gut, y = mittel, r = kritisch */
 function kLv(s){const v=s.v();let l=s.lvf?s.lvf(v):v<(s.r||.25)?'r':v<(s.y||.6)?'y':'g';if(s.k=='hs'){const h=PH.heat||0;if(h>85)l='r';else if(h>55&&l=='g')l='y'}return l}
 const KCOL={g:'#6dff8e',y:'#ffb347',r:'#ff5a4a'};
-function kVal(s){const v=s.v();return s.cn?(save.hd|0)+'/5':Math.round(v*100)+' %'}
+function kVal(s){const v=s.v();if(s.tog)return laOn()?'AN':'AUS';return s.cn?(save.hd|0)+'/5':Math.round(v*100)+' %'}
 function kCan(c){for(const id in c)if(cntIn(KKS,id)<c[id])return 0;return 1}
 function kCostT(c){return Object.entries(c).map(([id,n])=>n+'× '+(ITM[id]?ITM[id].n:id)).join(' + ')}
 function kGainT(s,g){return s.kg?'+'+fmtKg(g):s.cn?'+'+g:'+'+g+' %'}
@@ -5188,11 +5281,11 @@ const tm=KAI.t,L=KSY.map(kLv),nr=L.filter(l=>l=='r').length,ny=L.filter(l=>l=='y
 x.fillStyle='#7fe8ff';x.font='700 30px Orbitron,Rajdhani,Arial';x.fillText('KAI · SCHIFFSSTATUS',22,44);
 x.textAlign='right';x.font='700 26px Rajdhani,Arial';x.fillStyle=nr?(tm*2%1<.5?'#ff5a4a':'#ff9a8a'):ny?'#ffb347':'#6dff8e';x.fillText(nr?'⚠ '+nr+' KRITISCH':ny?ny+' PRÜFEN':'● ALLES OK',W-22,44);x.textAlign='left';
 x.fillStyle='rgba(95,220,255,.25)';x.fillRect(22,56,W-44,2);
-const cw=(W-44-3*10)/4,ch=150;KSY.forEach((s,i)=>{const cx=22+(i%4)*(cw+10),cy=72+Math.floor(i/4)*(ch+12),l=L[i],c=KCOL[l],p=l=='r'?.5+.5*Math.sin(tm*7):0;
+const nc=KSY.length>8?5:4,cw=(W-44-(nc-1)*10)/nc,ch=150;KSY.forEach((s,i)=>{const cx=22+(i%nc)*(cw+10),cy=72+Math.floor(i/nc)*(ch+12),l=L[i],c=KCOL[l],p=l=='r'?.5+.5*Math.sin(tm*7):0;
 x.fillStyle=l=='r'?'rgba(255,60,40,'+(.16+p*.22)+')':l=='y'?'rgba(255,170,60,.13)':'rgba(80,255,140,.08)';x.fillRect(cx,cy,cw,ch);x.strokeStyle=c;x.lineWidth=l=='r'?4:2;x.strokeRect(cx+1,cy+1,cw-2,ch-2);
 x.beginPath();x.arc(cx+30,cy+32,15,0,6.29);x.fillStyle=c;x.shadowColor=c;x.shadowBlur=18;x.fill();x.shadowBlur=0;
-x.fillStyle='#e6f6ff';const nm=(s.sn||s.n).toUpperCase();let fs=20;x.font='700 20px Rajdhani,Arial';while(fs>13&&x.measureText(nm).width>cw-62){fs--;x.font='700 '+fs+'px Rajdhani,Arial'}x.fillText(nm,cx+54,cy+39);
-x.fillStyle=c;x.font='700 46px Rajdhani,Arial';x.fillText(kVal(s),cx+14,cy+104);
+x.fillStyle='#e6f6ff';const nm=(s.sn||s.n).toUpperCase();let fs=20;x.font='700 20px Rajdhani,Arial';while(fs>(nc>4?10:13)&&x.measureText(nm).width>cw-62){fs--;x.font='700 '+fs+'px Rajdhani,Arial'}x.fillText(nm,cx+54,cy+39);
+x.fillStyle=c;x.font='700 '+(nc>4?34:46)+'px Rajdhani,Arial';x.fillText(kVal(s),cx+14,cy+104);
 x.fillStyle='rgba(255,255,255,.1)';x.fillRect(cx+14,cy+122,cw-28,12);x.fillStyle=c;x.fillRect(cx+14,cy+122,(cw-28)*s.v(),12)});
 x.fillStyle='rgba(95,220,255,.25)';x.fillRect(22,H-50,W-44,2);x.font='600 21px Rajdhani,Arial';x.fillStyle=nr?'#ffb0a0':'#9fd8ec';
 const msg=KAI.msg&&T-KAI.mt<40?'KAI: '+KAI.msg:nr?'KAI: Reparatur nötig – Bildschirm antippen':'KAI: Alle Systeme arbeiten normal';x.fillText(msg.length>64?msg.slice(0,62)+'…':msg,22,H-20);
@@ -5220,7 +5313,7 @@ x.textAlign='right';x.fillStyle='#7fe8ff';x.fillText('[E] KAI ÖFFNEN',W-22,H-20
 #kai .uft{justify-content:center;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}#kai .uft .ubt{min-height:52px;font-size:17px;padding:8px 22px}
 `;document.head.appendChild(st)}
 function kaiEl(){if(KAI.el)return KAI.el;const d=document.createElement('div');d.id='kai';d.className='upc kai';wrap.appendChild(d);KAI.el=d;
-d.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const a=b.dataset.a,s=KSY.find(q=>q.k==b.dataset.k);if(a=='close')return kaiClose();if(a=='auto')return kaiAuto();if(s&&(a=='fix'||a=='full'))kaiAct(s,a=='full')});return d}
+d.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const a=b.dataset.a,s=KSY.find(q=>q.k==b.dataset.k);if(a=='close')return kaiClose();if(a=='auto')return kaiAuto();if(s&&s.tog)return laTog();if(s&&(a=='fix'||a=='full'))kaiAct(s,a=='full')});return d}
 function kaiCard(s){return '<div class="kc" id="kc-'+s.k+'"><div class="kh"><span class="kli" id="kl-'+s.k+'"></span><span class="kn">'+s.ic+' '+s.n.toUpperCase()+'</span><span class="kv" id="kv-'+s.k+'"></span></div>'
 +'<div class="kbar"><i id="kb-'+s.k+'"></i></div><div class="kd" id="kd-'+s.k+'"></div><div class="kco" id="kk-'+s.k+'"></div>'
 +'<div class="ka"><button class="ubt" data-a="fix" data-k="'+s.k+'" id="kf-'+s.k+'"></button><button class="ubt" data-a="full" data-k="'+s.k+'" id="kg-'+s.k+'"></button></div></div>'}
@@ -5232,6 +5325,7 @@ function kaiUpd(){const d=KAI.el;if(!d)return;const st=(id,v,p)=>{const e=el(id)
 KSY.forEach(s=>{const l=kLv(s),c=KCOL[l],v=s.v();if(l=='r')nr++;else if(l=='y')ny++;const cd=el('kc-'+s.k);if(cd&&cd.className!='kc '+l)cd.className='kc '+l;
 const li=el('kl-'+s.k);if(li){li.style.background=c;li.style.boxShadow='0 0 10px '+c}st('kv-'+s.k,kVal(s));const b=el('kb-'+s.k);if(b){b.style.width=(v*100).toFixed(1)+'%';b.style.background=c}
 st('kd-'+s.k,s.d+(s.k=='hs'?' · Hitze jetzt '+Math.round(PH.heat||0)+' %':s.k=='fuel'?' · '+fmtKg(save.fuel)+' / '+SPEC().cap/1000+' t':''));
+if(s.tog){const kk=el('kk-'+s.k),h=laOn()?'<span class="ok">✓ An – bremst, richtet aus und setzt sanft auf</span>':'<span class="no">Aus – Handlandung, harte Landungen beschädigen die Hülle</span>';if(kk&&kk.dataset.h!=h){kk.innerHTML=h;kk.dataset.h=h}st('kf-'+s.k,laOn()?'Ausschalten':'Einschalten');const fg=el('kg-'+s.k),fx=el('kf-'+s.k);if(fx)fx.disabled=false;if(fg&&fg.style.display!='none')fg.style.display='none';return}
 const ful=!s.fit(Math.min(...s.o.map(o=>o[1])));const h=ful?'<span class="ok">✓ '+(s.cn?'Alle Steckplätze belegt':'Voll / in Ordnung')+'</span>':s.o.map(o=>{const ok=kCan(o[0]);return '<b class="'+(ok?'ok':'no')+'">'+kCostT(o[0])+'</b> → '+kGainT(s,o[1])+' <small>(da: '+Object.keys(o[0]).map(id=>cntIn(KKS,id)).join('/')+')</small>'}).join('<br>');
 const kk=el('kk-'+s.k);if(kk&&kk.dataset.h!=h){kk.innerHTML=h;kk.dataset.h=h}
 const op=kOpt(s),fx=el('kf-'+s.k),fg=el('kg-'+s.k),vb=s.k=='fuel'||s.k=='hy'||s.k=='en'||s.k=='o2'?'Auffüllen':'Reparieren';
