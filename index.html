@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>DigoSky Beta 3.29</title>
+<title>DigoSky Beta 3.30</title>
 <style>
 :root{color-scheme:dark;--bg:#02030a;--fg:#e8ecff;--ac:#55ccff;--card:#10142bd9;--gold:#ffcc33;box-sizing:border-box}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;touch-action:none}
@@ -252,7 +252,7 @@ MOON.cell=moonGrid(L.map((c,i)=>[i,c,c.r*2.05]));
 const RY=[];L.forEach((c,i)=>{if(c.f&2){const big=c.r>.02,len=big?(c.a>.99&&c.r>.024&&c.y<0?32:16):9,K=big?84:18,tt=new V3(0,1,0).cross(t.set(c.x,c.y,c.z));if(tt.lengthSq()<1e-6)tt.set(1,0,0);tt.normalize();const t2=new V3().crossVectors(t,tt);
 const rs=[];for(let k=0;k<K;k++)rs.push(r()*6.2832-3.1416,(.08+r()*.3)*(big?1:.7),(.4+r()*.6)*(big?1:.7),len*(.35+r()*.65));RY.push({i,len,t1:tt,t2,rs,I:big?1:.6})}});
 MOON.RY=RY;MOON.rcell=moonGrid(RY.map((q,k)=>[k,L[q.i],L[q.i].r*q.len]));
-/* Selene: Krater im Stadtgebiet abflachen */const se=typeof STN!='undefined'&&STN.find(s=>s.at!=null&&G.pl[s.at]===p&&s.gnd);MOON.S=se?new V3(...se.dir).normalize():null;MOON.S1=100/R;MOON.S2=170/R;
+/* Luna City: Krater im Stadtgebiet abflachen */const se=typeof STN!='undefined'&&STN.find(s=>s.at!=null&&G.pl[s.at]===p&&s.gnd);MOON.S=se?new V3(...se.dir).normalize():null;MOON.S1=100/R;MOON.S2=170/R;
 MOON.ok=1}
 function moonGrid(list){const NX=144,NY=72,cells=Array.from({length:NX*NY},()=>[]);
 for(const[i,c,ri] of list){const la=Math.asin(Math.max(-1,Math.min(1,c.y))),lo=Math.atan2(c.z,c.x),a=Math.min(3.1,ri*1.02),la0=la-a,la1=la+a;
@@ -439,7 +439,7 @@ L.agl=Math.max(0,na-(L.gh||0)-4.5);L.vr=v.dot(L.up);L.hs=Math.sqrt(Math.max(0,v.
 if(!on){if(L.act)laOff();L.act=0;L.hv=0;L.brk=0;return}
 L.act=1;L.cap=laCap(L.agl);L.capD=laCapD(L.agl);
 const k=keys;L.force=!!((k.ControlLeft||k.ControlRight||G.vd)&&(G.thrA||0)>.95&&fw.dot(L.up)<-.5);
-/* Selene: Landefeld 1 */
+/* Luna City: Landefeld 1 */
 L.sel=null;L.selD=1e9;const cs=STN.find(s=>s.city&&!s.dead);if(cs&&cs.ports&&cs.ports.length&&P.distanceTo(cs.pos)<4000){const q=cs.ports.find(q=>!q.st)||cs.ports[0];if(L.up.dot(q.n)>.35){L.sel=q;L.selD=P.distanceTo(q.D);if(L.up.dot(q.n)<.75)L.selD=Math.max(L.selD,1600)}}
 /* Auto-Landen abbrechen bei eigener Eingabe */
 if(L.al&&(k.KeyW||k.KeyS||k.KeyA||k.KeyD||k.Space||G.up||G.dw||G.vu||G.bo||k.KeyB||G.brk)){L.al=0;toast('Auto-Landen abgebrochen – Handsteuerung')}
@@ -448,11 +448,11 @@ L.hv=L.agl<LA_HOV||L.al?1:0;
 /* Ansagen */
 if(L.agl<20000&&L.vr<-3&&L.ann!=near.n&&T-L.annT>20){L.ann=near.n;L.annT=T;laSay('Annäherung an '+near.n+'. Landeassistent aktiv.')}
 if(L.agl>30000)L.ann='';
-if(L.hv&&!L.hz){L.hz=1;laSay(L.sel&&L.selD<1500?'Landezone erfasst – Landefeld 1 von Selene markiert.':'Landezone erfasst.')}if(L.agl>LA_HOV*2)L.hz=0;
+if(L.hv&&!L.hz){L.hz=1;laSay(L.sel&&L.selD<1500?'Landezone erfasst – Landefeld 1 – Luna City markiert.':'Landezone erfasst.')}if(L.agl>LA_HOV*2)L.hz=0;
 /* Landebeine */
 if(L.al||L.agl<45)gear.visible=true;
-/* Selene: Auto-Landen endet im Andockautopiloten */
-if(L.al&&L.sel&&DK.ok&&DK.port&&DK.port.s===L.sel.s){L.al=0;laSay('Landefeld 1 erreicht – Andockautopilot übernimmt.');dockBegin(DK.port)}}
+/* Luna City: Auto-Landen endet im Andockautopiloten */
+if(L.al&&L.sel&&DK.ok&&DK.port&&DK.port.s===L.sel.s){L.al=0;laSay('Landefeld 1 – Luna City erreicht – Andockautopilot übernimmt.');dockBegin(DK.port)}}
 function laOff(){LA.al=0;LA.hv=0;LA.bS=0;LA.brk=0}
 /* Boost unter 5 km gesperrt (ausser beim Wegfliegen mit der Nase nach oben) */
 function laBoOk(want,fw){if(!want||!LA.act||LA.agl>=LA_BO||fw.dot(LA.up)>.3)return want;wOnce('labo','Landeassistent: Boost unter '+fmtD(LA_BO)+' gesperrt',5);return false}
@@ -477,7 +477,7 @@ function laTouch(n){LA.al=0;LA.hz=0;laSay('Aufgesetzt auf '+n.n+'.')}
 function laCanAuto(){return LA.act&&LA.agl<LA_ALN&&G.st=='fly'}
 /* Taste L: ueber der Schwebezone mit eigener Landeplattform/Bake bleibt der bisherige Landeautopilot zur Basis */
 function laLKey(){return laCanAuto()&&(LA.agl<LA_HOV||LA.al||!(G.near&&landPad(G.near)))}
-function laAuto(){if(!laCanAuto())return toast(laOn()?'Auto-Landen: erst unter '+fmtD(LA_ALN)+' über Grund':'Landeassistent ist aus ['+kl(save.kb.KeyK||'KeyK')+']');LA.al=LA.al?0:1;if(LA.al){G.thr=0;laSay(LA.sel&&LA.selD<1500?'Auto-Landen – Anflug auf Landefeld 1.':'Auto-Landen – sinke senkrecht.')}else toast('Auto-Landen aus')}
+function laAuto(){if(!laCanAuto())return toast(laOn()?'Auto-Landen: erst unter '+fmtD(LA_ALN)+' über Grund':'Landeassistent ist aus ['+kl(save.kb.KeyK||'KeyK')+']');LA.al=LA.al?0:1;if(LA.al){G.thr=0;laSay(LA.sel&&LA.selD<1500?'Auto-Landen – Anflug auf Landefeld 1 – Luna City.':'Auto-Landen – sinke senkrecht.')}else toast('Auto-Landen aus')}
 function laTog(){save.la=laOn()?0:1;store();laOff();if(laOn())laSay('Landeassistent an.');else{kSay('Landeassistent aus – Handlandung.');toast('🤖 KAI: Landeassistent aus – harte Landungen beschädigen die Hülle')}sfx('ui');if(KAI.on)kaiUpd()}
 /* Anzeigen im Raum: Landezonen-Kreis, Landefeld 1, Bremsschub (einmal gebaut, danach nur bewegt) */
 function laMk(){const rm=new THREE.MeshBasicMaterial({color:0x6dff8e,transparent:true,opacity:.75,depthWrite:false,side:THREE.DoubleSide,toneMapped:false});
@@ -499,7 +499,7 @@ let h='<div style="margin-top:5px;padding:3px 7px;border-left:3px solid '+sc+';b
 +'<br>Über Grund <b>'+fmtD(L.agl)+'</b> · Sinken <b style="color:'+sc+'">'+(L.vr>0.05?'+':L.vr<-.05?'−':'')+Math.abs(L.vr).toFixed(Math.abs(L.vr)<10?1:0)+' m/s</b> · Vorwärts <b>'+Math.round(L.hs)+' m/s</b>';
 if(L.agl<LA_HOV*2)h+='<br>Landezone <b style="color:'+(L.zok?'#6dff8e':'#ff5a4a')+'">● '+(L.wet?'Wasser':L.zok?'flach genug':'zu steil')+'</b>';
 if(L.act&&L.sel&&L.selD<3000){const to=L.t3.copy(L.sel.D).sub(ship.position),dz=to.dot(L.up);to.addScaledVector(L.up,-dz);const fw=F.set(0,0,-1).applyQuaternion(ship.quaternion),rg=PT2.set(1,0,0).applyQuaternion(ship.quaternion),a=Math.atan2(to.dot(rg),to.dot(fw))*180/Math.PI,ar=['⬆','⬈','➡','⬊','⬇','⬋','⬅','⬉'][((Math.round(a/45)%8)+8)%8];
-h+='<br><b style="color:#55ddff">LANDEFELD 1</b> · Selene '+ar+' '+fmtD(to.length())+(L.al?' · Anflug läuft':' · ['+kl(save.kb.KeyL||'KeyL')+'] Auto-Landen')}
+h+='<br><b style="color:#55ddff">LANDEFELD 1 – LUNA CITY</b> '+ar+' '+fmtD(to.length())+(L.al?' · Anflug läuft':' · ['+kl(save.kb.KeyL||'KeyL')+'] Auto-Landen')}
 else if(L.act&&L.agl<LA_ALN&&!L.al)h+='<br><span style="color:#6f9">'+(laLKey()?'['+kl(save.kb.KeyL||'KeyL')+'] ':'')+'Auto-Landen'+(laLKey()?'':' (Knopf)')+'</span>';
 return h+'</div>'}
 /* Knoepfe (Cockpit-HUD, auch Handy): nur bei Aenderung ins DOM schreiben */
@@ -1015,7 +1015,7 @@ const sp=(c,s)=>{const q=new THREE.Sprite(new THREE.SpriteMaterial({map:GD,color
 const T3s=[1,2,3].map(i=>cloudTex(i*7));R.cl=Array.from({length:45},(_,i)=>{const s=new THREE.Sprite(new THREE.SpriteMaterial({map:T3s[i%3],transparent:true,opacity:.85,depthWrite:false})),w=220+Math.random()*200;s.scale.set(w,w*.32,1);s.position.set((Math.random()-.5)*3200,170+Math.random()*130,(Math.random()-.5)*3200);GS.add(s);return s});
 R.x=fr?3:-16;R.z=fr?27:18;if(fr&&R.ship){R.x+=R.ship.position.x;R.z+=R.ship.position.z}R.yaw=fr?Math.PI:-.727;R.pit=-.03;locoReset(R);if(fr)trans();
 bt.dn.textContent='Zurück';bt.up.textContent='Vorwärts';bt.bo.textContent='Rennen';bt.wp.style.display=bt.vw.style.display='none';xh.style.display='none';
-sysGround(fr);qlDens();pfCompile(GS,GC);if(R.mc){toast('Willkommen in der Mondstadt Selene – die Ankunftshalle mit der Luftschleuse liegt geradeaus');G.tt=6}if(!fr){CYB.o2=100;toast(save.sk?'Energiekern aktiv – steig ein und starte das Schiff':'Notlandung! Der Energiekern ist zerbrochen.')}G.tt=6}
+sysGround(fr);qlDens();pfCompile(GS,GC);if(R.mc){toast('Willkommen in Luna City – die Ankunftshalle mit der Luftschleuse liegt geradeaus');G.tt=6}if(!fr){CYB.o2=100;toast(save.sk?'Energiekern aktiv – steig ein und starte das Schiff':'Notlandung! Der Energiekern ist zerbrochen.')}G.tt=6}
 function gOff(){if(!G.gm)return;G.gm=0;mgOff();if(CYB.sc)CYB.sc.style.display='none';if(CYB.dust){CYB.dust.forEach(q=>GS.remove(q));CYB.dust=null}CYB.storm=0;GR.ph='';bt.dn.textContent='Schub −';bt.up.textContent='Schub +';bt.bo.textContent='Boost';bt.wp.style.display=bt.vw.style.display=''}
 function exitGround(){gOff();FC.init=0;FC.bl=1;trans(.8);save.crash=1;save.sk=1;G.near=G.pl[3];mEvt('repair');save.coins+=50;store();setV(0);G.thr=0;G.st='fly';parkOrbit(G.pl[3],4.5);G.fov=75;toast('Abgehoben! +50 Münzen – ab jetzt gehört dir das All. Viel Erfolg, Pilot');G.tt=5}
 function repair(){const R=GR;if(R.ph!='walk'||G.gi)return;if(!save.sk)return toast('Ohne Energiekern startet das Schiff nicht – finde zuerst einen Cyberkristall');if(Math.hypot(R.x,R.z)>32)return toast('Geh näher an dein Schiff');R.ph='rep';R.t=0;sfx('ab')}
@@ -1604,7 +1604,7 @@ const M2=document.createElement('div');M2.id='m2';
 M2.innerHTML='<canvas id="m3"></canvas><div class="mvig"></div><div class="mgr"></div>'
 +'<header class="mt"><div class="lg">'+EMB+'<div class="lgt">'+[...'DIGOSKY'].map((c,i)=>'<span style="--i:'+i+'">'+c+'</span>').join('')+'</div></div><div class="sb">WANDERER VX-9 · EXPEDITION SOL</div></header>'
 +'<div id="mst"></div><nav id="mn"></nav><section id="mp"></section>'
-+'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.29</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
++'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.30</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
 +'<div id="mfade"></div><input type="file" id="mfile" accept=".json,.txt,application/json,text/plain" style="display:none">';
 wrap.appendChild(M2);
 const mp=el('mp'),NAV=[['play','SPIEL STARTEN',0],['new','NEUES SPIEL',0],['load','SPIELSTAND LADEN',0],['mis','MISSIONEN',1],['char','CHARAKTER',1],['ship','RAUMSCHIFF',1],['kod','KODEX',1],['set','EINSTELLUNGEN',2],['prof','SPIELERPROFIL',2]],MNG=['KAMPAGNE','BORDSYSTEME','SYSTEM'];
@@ -2744,7 +2744,7 @@ const STN=[
 {id:'valhalla',n:'Basis Valhalla',f:'helion',at:19,k:2.6,dir:[.2,.5,1],ty:'ring',r:150,prod:['Wassereis','Helium-3'],need:['Nahrung','Medizin','Ersatzteile','Elektronik'],svc:['fuel','rep'],d:'Helion-Basis über Kallisto – ausserhalb von Jupiters tödlichen Strahlungsgürteln.'},
 {id:'kronos',n:'Kronos-Observatorium',f:'helion',at:20,k:2.4,dir:[-.4,.3,1],ty:'obs',r:160,prod:['Methan','Elektronik'],need:['Tholine','Organik-Proben','Ersatzteile','Nahrung','Wassereis'],svc:['rep','fuel'],d:'Radioobservatorium im Titan-Orbit. Hier wurde das Signal zuerst entdeckt.'},
 {id:'stille',n:'Station Tiefe Stille',f:'helion',at:22,k:2.8,dir:[.5,-.3,1],ty:'dead',r:150,dead:1,prod:[],need:[],svc:[],d:'Vor 40 Jahren aufgegeben. Offiziell wegen Budgetkürzungen.'},
-{id:'selene',n:'Landebasis Selene',f:'union',at:14,dir:[.45,.62,.64],ty:'gnd',gnd:1,city:1,r:90,prod:['Helium-3','Regolith','Wassereis'],need:['Nahrung','Medizin','Elektronik'],svc:['rep','fuel'],d:'Bodenstation der Union auf dem Mond. Sie gewinnt Helium-3 aus dem Regolith – der Sonnenwind lagert es seit Milliarden Jahren dort ab. Zwei Landebuchten auf Stelzen über dem Gelände.'},
+{id:'selene',n:'Luna City',f:'union',at:14,dir:[.45,.62,.64],ty:'gnd',gnd:1,city:1,r:90,prod:['Helium-3','Regolith','Wassereis'],need:['Nahrung','Medizin','Elektronik'],svc:['rep','fuel'],d:'Luna City – die Mondstadt der Union. Schlanke Türme, Gartenkuppeln und eine Hochbahn rund um den grossen Mittelturm. Sie gewinnt Helium-3 aus dem Regolith – der Sonnenwind lagert es seit Milliarden Jahren dort ab. Zwei Landebuchten auf Stelzen über dem Gelände.'},
 {id:'tharsis',n:'Bodenhafen Tharsis',f:'mars',at:4,dir:[-.35,.72,.6],ty:'gnd',gnd:1,r:90,prod:['Eisenerz','Salze'],need:['Nahrung','Elektronik','Ersatzteile'],svc:['rep','fuel'],d:'Landehafen des Mars-Kollektivs. Der Marsstaub ist reich an Eisenoxid – daher die rote Farbe. Bei nur 1 % des irdischen Luftdrucks wird mit dem Triebwerk gebremst, nicht mit Fallschirmen.'}];
 const ECOEV={};
 function ecoInit(){STN.forEach(s=>{const e=save.eco[s.id]=save.eco[s.id]||{};TRADE.forEach(g=>{if(e[g]==null)e[g]=s.prod.includes(g)?90:s.need.includes(g)?8:25})})}
@@ -3022,7 +3022,7 @@ if(p&&!p.I){if(p.atm){E.sky=[p.atm.map(v=>v*.35),p.atm.map(v=>v*.8)];E.bg=p.atm.
 geoProfile(E,p);if(!E.sky)E.bg=[.004,.005,.01];if(n=='Mond')mgSite(E);return E}
 function gColE(f,x,z){if(GR.E.geo)return geoCol(f,x,z);const E=GR.E,P=E.pal,n=fbm(x/11,z/11,3.3,3);let c=mx(mx(P[0],P[1],f.e*1.7-.35),P[2],sm(.6,.74,f.e)*.7);if(E.fx)c=E.fx(c,f,x,z,f.h);return c.map(v=>v*(.82+.36*n))}
 /*-- Ausrüstung im Schiff --*/
-PAN.umwelt=()=>{const cs=G.st=='docked'&&G.cur&&G.cur.city?G.cur:null,p=G.land&&G.land.p||(cs&&cs.body),T=envT(p),req=envReq(p,T),miss=req.filter(k=>!eqd(k));const II=p&&p.I||{};return{t:'🛰 Umweltanalyse · '+(p?p.n:'')+(cs?' · Mondstadt '+cs.n.replace('Landebasis ',''):''),r:[['Temperatur jetzt: '+Math.round(T)+' °C · Schwerkraft '+(II.g!=null?II.g+' m/s²':'?'),null],['Atmosphäre: '+(II.p?II.p+' bar · '+II.co:'Vakuum')+(II.air?' · atembar':' · nicht atembar'),null],['Strahlung: '+['gering','mässig','hoch','tödlich'][II.rad||0],null],...req.map(k=>[(eqd(k)?'✓ ':'✗ FEHLT: ')+MODS[k].n,null]),[miss.length?'⚠ Trotzdem aussteigen (gefährlich!)':'Rampe öffnen',()=>{I2.ack=1;I.rampOn=1;sfx('ab');panel(null)}]]}};
+PAN.umwelt=()=>{const cs=G.st=='docked'&&G.cur&&G.cur.city?G.cur:null,p=G.land&&G.land.p||(cs&&cs.body),T=envT(p),req=envReq(p,T),miss=req.filter(k=>!eqd(k));const II=p&&p.I||{};return{t:'🛰 Umweltanalyse · '+(p?p.n:'')+(cs?' · '+cs.n:''),r:[['Temperatur jetzt: '+Math.round(T)+' °C · Schwerkraft '+(II.g!=null?II.g+' m/s²':'?'),null],['Atmosphäre: '+(II.p?II.p+' bar · '+II.co:'Vakuum')+(II.air?' · atembar':' · nicht atembar'),null],['Strahlung: '+['gering','mässig','hoch','tödlich'][II.rad||0],null],...req.map(k=>[(eqd(k)?'✓ ':'✗ FEHLT: ')+MODS[k].n,null]),[miss.length?'⚠ Trotzdem aussteigen (gefährlich!)':'Rampe öffnen',()=>{I2.ack=1;I.rampOn=1;sfx('ab');panel(null)}]]}};
 const I2={ack:0};
 function envT(p){if(!p||!p.I)return-80;const I=p.I;if(p.n=='Erde')return 16;const ph=G.land&&G.land.ph!=null?G.land.ph:.35,s=Math.sin(ph*6.283);return I.T[0]+(I.T[1]-I.T[0])*clamp(s*.9+.4,0,1)}
 /*-- Planetenoberfläche: Extras --*/
@@ -3077,7 +3077,7 @@ if(!hbI&&E.liq&&E.liq.lava&&gY(R.x,R.z)<.6){miss.push('LAVA');hurt+=2}
 if(hurt){S2.int=Math.max(0,(S2.int==null?100:S2.int)-hurt*dt*3);SUH+=hurt*dt;if(SUH>=1){SUH=0;VS.h=Math.max(0,VS.h-1);sfx('hit');flashR(.4)}caution('suit',miss.join(' · '),3)}else if(S2.o2<25&&!E.air&&!hbI)caution('o2','SAUERSTOFF '+Math.round(S2.o2)+' % – zurück zum Schiff',8);
 if(VS.h<=0){if(R.free&&save.crash){dthStart(1,dthWhyF(miss[0]));return}VS.h=4;S2.o2=Math.max(S2.o2,30);S2.en=Math.max(S2.en,30);toast('Bewusstlos! KAI hat dich mit der Notwinde ins Schiff gezogen.');G.tt=6;enterInt()}}
 function groundHud(){const R=GR,E=R.E,S2=save.suit,T=R.T==null?16:R.T;if(!E)return;const tg=(R.sites||[]).find(o=>!save.poi[o.s.id])||null;let ar='';if(tg){const S3=Math.sin(R.yaw),C3=Math.cos(R.yaw),dx=tg.x-R.x,dz=tg.z-R.z,a=Math.atan2(C3*dx-S3*dz,-S3*dx-C3*dz);ar='<br>'+tg.s.n+': '+['↑','↗','→','↘','↓','↙','←','↖'][(Math.round(a/.7854)+8)%8]+' '+Math.round(Math.hypot(dx,dz))+' m'}
-const h=R.daylt;hud.innerHTML='<b>'+(R.pl?R.pl.n:'Erde')+(R.mc?' · Mondstadt Selene':'')+'</b>'+(HB.in?' · <b style="color:#7fe8a0">🏠 '+(R.mc?'IN SELENE':'IN DER BASIS')+' · Luft</b>':'')+' · '+(h>.6?'Tag':h>.05?'Dämmerung':'Nacht')+' · '+Math.round(T)+' °C<br>Schwerkraft '+E.g+' m/s² · Boden: '+E.soil[0]+(E.p?'<br>Druck '+(E.p<.01?'Spuren':E.p+' bar'):'<br>Vakuum')+ar+(ROV.on?'':'<br>Rucksack: '+save.iv.bp.filter(q=>!q).length+' Plätze frei');
+const h=R.daylt;hud.innerHTML='<b>'+(R.pl?R.pl.n:'Erde')+(R.mc?' · Luna City':'')+'</b>'+(HB.in?' · <b style="color:#7fe8a0">🏠 '+(R.mc?'IN LUNA CITY':'IN DER BASIS')+' · Luft</b>':'')+' · '+(h>.6?'Tag':h>.05?'Dämmerung':'Nacht')+' · '+Math.round(T)+' °C<br>Schwerkraft '+E.g+' m/s² · Boden: '+E.soil[0]+(E.p?'<br>Druck '+(E.p<.01?'Spuren':E.p+' bar'):'<br>Vakuum')+ar+(ROV.on?'':'<br>Rucksack: '+save.iv.bp.filter(q=>!q).length+' Plätze frei');
 const w=(v,c)=>'<b style="color:'+(v<25?'#f66':c)+'">'+Math.round(v)+'%</b>';el('vs2').innerHTML=(E.rad>=2?'<b style="color:'+(eqd('strahl')?'#fc6':'#f44')+'">☢ Strahlung '+['','','hoch','tödlich'][E.rad]+'</b>':'')+(S2.int<60?' <b style="color:#f9a">Anzug '+Math.round(S2.int)+' % – Reparaturpaket</b>':'')}
 
 /*==== DIALOGE ====*/
@@ -3939,8 +3939,8 @@ GEO.sm.R=GEO.sm.rs.map(g=>{const m=new THREE.InstancedMesh(g,GEO.mR,Math.ceil(GE
 function geoWin(cx,cz){const S=GEO.sm,C=12,ci=Math.floor(cx/C),cj=Math.floor(cz/C),P=GEO.P,M=new THREE.Matrix4(),Q=new THREE.Quaternion(),E3=new THREE.Euler(),V=new THREE.Vector3(),Sc=new THREE.Vector3(),liq=GR.E.liq;
 [S.P,S.R].forEach(L=>L.forEach(m=>m.count=0));const put=(m,x,z,s,emb,r)=>{const cap=m.instanceMatrix.count;if(m.count>=cap)return;const y=geoGY(x,z);if(liq&&y<.4)return;V.set(x,y-emb*s,z);E3.set((r()-.5)*.5,r()*6.283,(r()-.5)*.5);Q.setFromEuler(E3);Sc.set(s*(.8+r()*.4),s*(.6+r()*.5),s*(.8+r()*.4));M.compose(V,Q,Sc);M.toArray(m.instanceMatrix.array,m.count*16);const t=S.tint(r);m.instanceColor.array.set(t,m.count*3);m.count++};
 for(let i=ci-4;i<=ci+4;i++)for(let j=cj-4;j<=cj+4;j++){const r=rng((i*73856093^j*19349663^(GR.sd*1000|0))|0),near=Math.abs(i-ci)<=2&&Math.abs(j-cj)<=2,cl=.3+1.4*sm(.3,.75,fbm((i*C)/70+GR.sd,(j*C)/70,13.1,3)),np=Math.round(S.pn*cl*(.6+r()*.8)),nr=Math.round(S.rn*cl*(.5+r()));
-for(let k=0;k<nr;k++){const x=(i+r())*C,z=(j+r())*C;if(Math.hypot(x,z)<14)continue;put(S.R[k%3],x,z,.14+Math.pow(r(),2.2)*.5,.3,r)}
-if(near)for(let k=0;k<np;k++){const x=(i+r())*C,z=(j+r())*C;if(Math.hypot(x,z)<9)continue;put(S.P[k%3],x,z,.03+Math.pow(r(),2.6)*.14,.35,r)}}
+for(let k=0;k<nr;k++){const x=(i+r())*C,z=(j+r())*C;if(Math.hypot(x,z)<14||lcFree(x,z))continue;put(S.R[k%3],x,z,.14+Math.pow(r(),2.2)*.5,.3,r)}
+if(near)for(let k=0;k<np;k++){const x=(i+r())*C,z=(j+r())*C;if(Math.hypot(x,z)<9||lcFree(x,z))continue;put(S.P[k%3],x,z,.03+Math.pow(r(),2.6)*.14,.35,r)}}
 [S.P,S.R].forEach(L=>L.forEach(m=>{m.instanceMatrix.needsUpdate=true;m.instanceColor.needsUpdate=true}))}
 /* Fundorte, Rohstoffe und Landeplatz frei halten (nach gPlanetExtras) */
 function geoClear(){const R=GR,keep=[...(R.sites||[]).map(s=>[s.x,s.z,14]),...(R.nodes||[]).map(n=>[n.x,n.z,4]),[0,0,22],...(R.mc?[[0,0,MCR+8]]:[])];GEO.lod.forEach(s=>s.it.forEach(t=>{if(keep.some(k=>Math.hypot(k[0]-t.x,k[1]-t.z)<k[2]+t.r*.6))t.x=null}));
@@ -4026,8 +4026,8 @@ const ITM={};
 ['erw_schild','Erweiterung: Schild','sch',900,1,'up','#7fe8ff','An Bord benutzen: Hülle und Hitzeschild eine Stufe stärker.','Bauplan: Forschung Stufe 3',2000,'hull'],
 ['zelt','Rundzelt','bas',40,5,'tent','#e8d8a8','Aufblasbares Rundzelt mit Luftschleuse. Drinnen gibt es Luft: Bett, Tisch, Kleiderschrank, Vorratskisten und Werkbank. Anbauten verbinden sich mit begehbaren Gängen.','Startbauplan',80],
 ['habitat','Habitat-Modul','bas',300,2,'hab','#d8e2f0','Grosses Druckmodul mit Luftschleuse, Küche und Etagenbetten. Lebenserhaltung: drinnen füllt sich alles auf (braucht Strom).','Bauplan: Forschung Stufe 2 · Gaia',900],
-['solar','Solarpanel','bas',60,10,'solar','#5aa8ff','Erzeugt 1 kW Strom für die Basis (nachts nur mit Batterie).','Bauplan: Forschung Stufe 1 · Landebasis Selene',160],
-['batterie','Batterie','bas',80,10,'batt','#ffe060','Speichert Solarstrom für die Nacht.','Bauplan: Forschung Stufe 1 · Landebasis Selene',150],
+['solar','Solarpanel','bas',60,10,'solar','#5aa8ff','Erzeugt 1 kW Strom für die Basis (nachts nur mit Batterie).','Bauplan: Forschung Stufe 1 · Luna City',160],
+['batterie','Batterie','bas',80,10,'batt','#ffe060','Speichert Solarstrom für die Nacht.','Bauplan: Forschung Stufe 1 · Luna City',150],
 ['o2gen','Sauerstoff-Generator','bas',120,5,'gen','#9ef0ff','Erzeugt Sauerstoff (6 pro Stunde) und füllt in 15 m deinen Anzug. Braucht Strom.','Bauplan: Forschung Stufe 2 · Bodenhafen Tharsis',380],
 ['wex','Wasser-Extraktor','bas',150,5,'pump','#4ab0ff','Gewinnt Wasser aus dem Boden (8 pro Stunde). Braucht Strom.','Bauplan: Forschung Stufe 1 · Ceres-Börse',300],
 ['abohrer','Automatischer Bohrer','bas',260,5,'adrill','#ffb070','Baut den Hauptrohstoff des Planeten ab, auch wenn du weg bist (10 pro Stunde). Braucht Strom.','Bauplan: Forschung Stufe 2 · Ceres-Börse',650],
@@ -4035,7 +4035,7 @@ const ITM={};
 ['licht','Lichtmast','bas',30,10,'mast','#fff2a0','Beleuchtet die Basis in der Nacht.','Startbauplan',50],
 ['funk','Funkbake','bas',50,5,'radio','#ff7ad0','Basis erscheint auf der Karte. Erträge holt eine Lastdrohne ab, sobald dein Schiff im Orbit ist.','Bauplan: Forschung Stufe 1',220],
 ['plattform','Landeplattform','bas',900,2,'pad','#ffcc33','Landefeld mit Leitlichtern: Landungen hier kosten nur halb so viel Treibstoff.','Bauplan: Forschung Stufe 3 · Bodenhafen Tharsis',1400],
-['rover','Rover','bas',1400,1,'rover','#ffb35a','Sechsrädriges Fahrzeug für weite Strecken. E = einsteigen, W/S fahren, A/D lenken.','Bauplan: Forschung Stufe 3 · Landebasis Selene',2600],
+['rover','Rover','bas',1400,1,'rover','#ffb35a','Sechsrädriges Fahrzeug für weite Strecken. E = einsteigen, W/S fahren, A/D lenken.','Bauplan: Forschung Stufe 3 · Luna City',2600],
 ['ration','Ration','ver',1,20,'food','#ffcc66','Gefriergetrocknete Mahlzeit. +45 % Nahrung.','Fabrikator · Ausrüster',12],
 ['wbeutel','Wasserbeutel','ver',1,20,'drop','#4ab0ff','+45 % Wasser.','Fabrikator · Ausrüster',8],
 ['stim','Stimulans','ver',1,10,'stim','#ff7ad0','40 Sekunden lang 50 % schneller.','Bauplan: Forschung Stufe 2',70],
@@ -4739,7 +4739,7 @@ const seat=new THREE.Object3D();seat.position.set(0,1.61,.43);g.add(seat);const 
 else if(t=='bake'){add(Cy(.25,.4,1.6,8),D,0,.8,0);g.userData.blink=add(new THREE.SphereGeometry(.18,10,8),new THREE.MeshBasicMaterial({color:0xffcc33}),0,1.75,0);g.add(beam(0xffcc33,.18))}
 return g}
 function bmGhostMat(g,ok){const m=ok?BMS.mg||(BMS.mg=new THREE.MeshBasicMaterial({color:0x40ff90,transparent:true,opacity:.38,depthWrite:false})):BMS.mr||(BMS.mr=new THREE.MeshBasicMaterial({color:0xff4050,transparent:true,opacity:.38,depthWrite:false}));g.traverse(o=>{if(o.isMesh){o.material=m;o.castShadow=false}})}
-function bmStart(id){if(GR.mc&&G.gm)return toast('In der Mondstadt Selene ist Bauen nicht erlaubt – lande dafür anderswo auf dem Mond');if(!(G.gm&&!G.gi&&GR.ph=='walk')||HB.in)return toast('Bauteile stellst du draussen auf einem Planeten auf');if(!GR.free)return toast('Erst das Schiff startklar machen');if(ROV.on)return;if(BMS.on)bmEnd();BMS.on=1;BMS.id=id;BMS.rot=GR.yaw;BMS.g=bmModel(id);BMS.g.traverse(o=>{o.userData.ncr=1});GS.add(BMS.g);bmGhostMat(BMS.g,1);sfx('ui')}
+function bmStart(id){if(GR.mc&&G.gm)return toast('In Luna City ist Bauen nicht erlaubt – lande dafür anderswo auf dem Mond');if(!(G.gm&&!G.gi&&GR.ph=='walk')||HB.in)return toast('Bauteile stellst du draussen auf einem Planeten auf');if(!GR.free)return toast('Erst das Schiff startklar machen');if(ROV.on)return;if(BMS.on)bmEnd();BMS.on=1;BMS.id=id;BMS.rot=GR.yaw;BMS.g=bmModel(id);BMS.g.traverse(o=>{o.userData.ncr=1});GS.add(BMS.g);bmGhostMat(BMS.g,1);sfx('ui')}
 function bmEnd(){if(BMS.g&&BMS.g.parent)BMS.g.parent.remove(BMS.g);BMS.on=0;BMS.g=null;bmTxt('')}
 function bmStep(dt){if(!BMS.on)return;if(selItem()!=BMS.id||!(G.gm&&!G.gi&&GR.ph=='walk')){bmEnd();return}const R=GR,r=BMR[BMS.id]||1,h=aimRay(Math.max(14,r*2.4));let x,z;if(h.hit){x=h.p.x;z=h.p.z}else{const d=Math.max(5,r+3);x=R.x-Math.sin(R.yaw)*d;z=R.z-Math.cos(R.yaw)*d}
 const pd=Math.hypot(x-R.x,z-R.z),mn=r+.9;if(pd<mn){const a=Math.atan2(x-R.x,z-R.z)||0;x=R.x+Math.sin(a)*mn;z=R.z+Math.cos(a)*mn}BMS.x=x;BMS.z=z;
@@ -4991,8 +4991,8 @@ if(HB.need&&HB.need.length){const m=HB.need.shift();if(!m.ig&&HB.M.includes(m))h
 HB.A.forEach(A=>{if(!A.h)return;const to=A.op?1:0;if(Math.abs(A.ho-to)<.002)return;A.ho+=(to-A.ho)*Math.min(1,dt*6);const x=A.ho*1.12;A.h[0].position.x=x;A.h[1].position.x=x;A.h[2].position.x=x})}
 
 
-/*==== 3.26: MONDSTADT SELENE – begehbare Stadt rund um die Landebucht ====*/
-/* Betreten: angedockt an einer Station mit city (Selene) -> Rampe -> enterGround(1) mit GR.mc. Das Schiff steht auf Landefeld 1 (Ursprung).
+/*==== 3.26: MONDSTADT LUNA CITY (bis 3.29 Selene) – begehbare Stadt rund um die Landebucht ====*/
+/* Betreten: angedockt an einer Station mit city (Luna City) -> Rampe -> enterGround(1) mit GR.mc. Das Schiff steht auf Landefeld 1 (Ursprung).
    Begehbar (ueber hbBuild, Schleuse/Gaenge/Innenraum wie die Basis): Ankunftshalle (Schleuse), Handelshaus, Werkstatt, Kantine (MCX).
    Alles andere ist Kulisse: in Bezirke geteilt, je Bezirk wenige zusammengefasste Netze mit Vertex-Farben (lo = immer, hi = nur in der Naehe),
    Wiederholungen als InstancedMesh (Solarfeld, Container, Lampen, Baeume, Blinklichter, Rover, Figuren). Kollision: kleine Kreise mit Flag (c[3]=1). */
@@ -5003,18 +5003,21 @@ var CTY={on:0,s:null,g:null,mods:[],cells:[],an:[],bl:[],rv:null,fg:null,h0:0,lt
 
 /*-- Materialien (einmal angelegt, Vertex-Farben fuer fast alles) --*/
 function mcMats(){if(CTY.mats)return CTY.mats;const S=o=>new THREE.MeshStandardMaterial(o),B=o=>new THREE.MeshBasicMaterial(o);
-const pad=hbTex(256,256,(x,w,h)=>{x.fillStyle='#55585e';x.fillRect(0,0,w,h);const n=x.createImageData(w,h);for(let i=0;i<n.data.length;i+=4){const v=(Math.random()*26)|0;n.data[i]=n.data[i+1]=n.data[i+2]=v;n.data[i+3]=40}x.putImageData(n,0,0);
-x.strokeStyle='#e8b420';x.lineWidth=7;x.beginPath();x.arc(128,128,112,0,6.3);x.stroke();x.lineWidth=3;x.beginPath();x.arc(128,128,96,0,6.3);x.stroke();x.fillStyle='#f2f2f2';x.font='bold 120px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('S',128,134);
-x.fillStyle='#e8b420';for(let i=0;i<12;i++){const a=i/12*6.283;x.save();x.translate(128+Math.cos(a)*104,128+Math.sin(a)*104);x.rotate(a);x.fillRect(-3,-9,6,18);x.restore()}});
-const road=hbTex(64,256,(x,w,h)=>{x.fillStyle='#3a3b3e';x.fillRect(0,0,w,h);const n=x.createImageData(w,h);for(let i=0;i<n.data.length;i+=4){const v=(Math.random()*30)|0;n.data[i]=n.data[i+1]=n.data[i+2]=v;n.data[i+3]=50}x.putImageData(n,0,0);x.fillStyle='#d8c060';x.fillRect(30,10,4,90);x.fillRect(30,138,4,90);x.fillStyle='#bbb';x.fillRect(2,0,3,h);x.fillRect(w-5,0,3,h)});road.wrapS=road.wrapT=THREE.RepeatWrapping;
-CTY.mats={p:S({vertexColors:true,metalness:.18,roughness:.68,emissive:0x1c1f24}),m:S({vertexColors:true,metalness:.72,roughness:.38,emissive:0x101216}),
+const pad=hbTex(512,512,(x,w,h)=>{x.fillStyle='#121828';x.fillRect(0,0,w,h);const n=x.createImageData(w,h);for(let i=0;i<n.data.length;i+=4){const v=(Math.random()*14)|0;n.data[i]=n.data[i+1]=v;n.data[i+2]=v+6;n.data[i+3]=50}x.putImageData(n,0,0);
+x.shadowColor='#4ab8ff';x.shadowBlur=18;x.strokeStyle='#4ab8ff';x.lineWidth=12;x.beginPath();x.arc(256,256,226,0,6.3);x.stroke();x.strokeStyle='#9a5cff';x.lineWidth=5;x.beginPath();x.arc(256,256,192,0,6.3);x.stroke();
+x.strokeStyle='#bfe8ff';x.lineWidth=12;x.beginPath();x.arc(214,196,58,-2.2,2.1);x.stroke();x.fillStyle='#eaf6ff';x.font='bold 200px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('1',272,290);
+x.fillStyle='#4ab8ff';for(let i=0;i<16;i++){const a=i/16*6.283;x.save();x.translate(256+Math.cos(a)*209,256+Math.sin(a)*209);x.rotate(a);x.fillRect(-4,-14,8,28);x.restore()}});
+const road=hbTex(64,256,(x,w,h)=>{x.fillStyle='#1c2130';x.fillRect(0,0,w,h);const n=x.createImageData(w,h);for(let i=0;i<n.data.length;i+=4){const v=(Math.random()*24)|0;n.data[i]=n.data[i+1]=v;n.data[i+2]=v+8;n.data[i+3]=50}x.putImageData(n,0,0);x.fillStyle='#4ab8ff';x.fillRect(30,10,4,90);x.fillRect(30,138,4,90);x.fillStyle='#7a8cb8';x.fillRect(2,0,3,h);x.fillRect(w-5,0,3,h)});road.wrapS=road.wrapT=THREE.RepeatWrapping;
+CTY.mats={p:S({vertexColors:true,metalness:.3,roughness:.55,emissive:0x121a2c}),m:S({vertexColors:true,metalness:.75,roughness:.32,emissive:0x0c1220}),
 rg:S({vertexColors:true,roughness:1,metalness:0,flatShading:true,emissive:0x141414}),gw:B({vertexColors:true,toneMapped:false}),
-gl:S({color:0xb8e4ff,metalness:.25,roughness:.06,transparent:true,opacity:.22,depthWrite:false,side:THREE.DoubleSide}),
-gn:S({color:0x4a9a3c,roughness:.9}),pad:S({map:pad,metalness:.3,roughness:.75,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),
-road:S({map:road,roughness:.95,metalness:.05,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}),ln:new THREE.LineBasicMaterial({color:0x9fb0c2}),
+gl:S({color:0x9fd0ff,emissive:0x0a1838,metalness:.3,roughness:.05,transparent:true,opacity:.26,depthWrite:false,side:THREE.DoubleSide}),
+gn:S({color:0x4a9a3c,roughness:.9}),pad:S({map:pad,emissiveMap:pad,emissive:0xffffff,emissiveIntensity:.7,metalness:.55,roughness:.3,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3}),
+road:S({map:road,roughness:.42,metalness:.35,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),ln:new THREE.LineBasicMaterial({color:0x9fb0c2}),
 inst:S({metalness:.35,roughness:.55}),sol:S({color:0x1a2c5a,emissive:0x060c1c,metalness:.9,roughness:.18}),
-bl:[B({color:0xff3030,toneMapped:false}),B({color:0xffffff,toneMapped:false}),B({color:0x40ff90,toneMapped:false})],
-sign:{}};return CTY.mats}
+bl:[B({color:0xff3030,toneMapped:false}),B({color:0xffffff,toneMapped:false}),B({color:0x40c8ff,toneMapped:false})],
+sign:{}};const LT=lcTex(),EV=lcEnv();Object.assign(CTY.mats,{tw:S({vertexColors:true,map:LT.win,emissiveMap:LT.win,emissive:0xffffff,emissiveIntensity:.95,metalness:.55,roughness:.32,envMap:EV,envMapIntensity:.8}),
+scr:B({map:LT.scr,toneMapped:false}),lsg:B({map:LT.sgn,toneMapped:false,side:THREE.DoubleSide}),bn:S({map:LT.bn,emissiveMap:LT.bn,emissive:0xffffff,emissiveIntensity:.45,roughness:.85,transparent:true,alphaTest:.5,side:THREE.DoubleSide})});
+[CTY.mats.m,CTY.mats.p,CTY.mats.road].forEach(m=>{m.envMap=EV;m.envMapIntensity=.6});CTY.mats.pad.envMap=EV;CTY.mats.pad.envMapIntensity=.7;return CTY.mats}
 function mcGeo(){if(CTY.geo)return CTY.geo;CTY.geo={b:new THREE.BoxGeometry(1,1,1),c:new THREE.CylinderGeometry(.5,.5,1,16),c8:new THREE.CylinderGeometry(.5,.5,1,8),c24:new THREE.CylinderGeometry(.5,.5,1,24),
 s:new THREE.SphereGeometry(.5,12,8),hs:new THREE.SphereGeometry(.5,32,12,0,Math.PI*2,0,Math.PI/2),cn:new THREE.ConeGeometry(.5,1,10),cn4:new THREE.ConeGeometry(.5,1,4),pl:new THREE.PlaneGeometry(1,1),
 hc:new THREE.CylinderGeometry(.5,.5,1,18,1,false,0,Math.PI),ic:new THREE.IcosahedronGeometry(.5,0),ic1:new THREE.IcosahedronGeometry(.5,1),tr:new THREE.TorusGeometry(.5,.06,6,28)};CTY.geo.hc.rotateZ(Math.PI/2);return CTY.geo}
@@ -5047,7 +5050,7 @@ else{ad(G.s,'p',sk,0,hip+.82,0,.24,.27,.24);ad(G.s,'p',o.hair||0x3a2a1c,0,hip+.8
 [-.24,.24].forEach(q=>ad(G.c8,'p',suit,q,hip+.25,o.arm?.12:0,.11,.55,.11,o.arm?-.5:0));if(o.ap)ad(G.b,'p',o.ap,0,hip+.25,.13,.34,.5,.03)}
 
 /*-- Bausteine der Kulisse --*/
-const MCW=0xf0f2f4,MCD=0x3a3f48,MCG=0x8a8780,MCO=0xff8a30,MCY=0xffcc33,MCL=0xffd890,MCB=0x7cc8ff;
+const MCW=0xdfe6f2,MCD=0x2a3142,MCG=0x8a8780,MCO=0xff8a30,MCY=0xffcc33,MCL=0xbfe2ff,MCB=0x7cc8ff;/* 3.30: Fenster kuehl-blau statt warm */
 function mcDome(B,x,y,z,r,o){o=o||{};const G=mcGeo(),wh=o.wh||1.6;/* Ring-Sockel aus Regolith, Glaskuppel, Rippen, Lichter */
 B.lo.add(G.c24,'p',0xd8dce2,x,y+wh/2,z,r*2,wh,r*2);B.lo.add(G.c24,'rg',MCG,x,y+.5,z,r*2+2.2,1,r*2+2.2);
 const gm=new THREE.Mesh(mcGeo().hs,mcMats().gl);gm.position.set(x,y+wh,z);gm.scale.set(r*2,(o.hy||r)*2,r*2);gm.renderOrder=2;CTY.g.add(gm);
@@ -5088,11 +5091,11 @@ function mcCont(x,z,ry,st,seed){const r=rng(seed),C=[0xd0602a,0x2a6ac8,0xe8b420,
 function mcPad(B,x,z,r,app){const G=mcGeo(),y=CTY.h0;B.lo.add(G.c24,'p',0x4a4d52,x,y+.12,z,r*2+1.4,.24,r*2+1.4);B.lo.add(G.c24,'rg',MCG,x,y-.3,z,r*2+4,.6,r*2+4);
 CTY.pb.add(hbG('pc'+r,()=>new THREE.CircleGeometry(r,48)),'pad',0xffffff,x,y+.25,z,1,1,1,0,-Math.PI/2);
 const n=Math.round(r*1.2);for(let i=0;i<n;i++){const a=i/n*6.283;CTY.bl.push([x+Math.sin(a)*(r+.45),y+.38,z+Math.cos(a)*(r+.45),2,i%2]);B.hi.add(G.c8,'m',MCD,x+Math.sin(a)*(r+.45),y+.3,z+Math.cos(a)*(r+.45),.4,.16,.4)}
-if(app)for(let i=1;i<=6;i++)[-1,1].forEach(q=>{const px=x+app[0]*(r+i*4)+app[1]*q*3,pz=z+app[1]*(r+i*4)-app[0]*q*3;CTY.lmp.push([px,y+.45,pz,.35,0xffc860]);B.hi.add(G.c8,'m',MCD,px,y+.2,pz,.3,.4,.3)})}
+if(app)for(let i=1;i<=6;i++)[-1,1].forEach(q=>{const px=x+app[0]*(r+i*4)+app[1]*q*3,pz=z+app[1]*(r+i*4)-app[0]*q*3;CTY.lmp.push([px,y+.45,pz,.35,0x7fd0ff]);B.hi.add(G.c8,'m',MCD,px,y+.2,pz,.3,.4,.3)})}
 /* Strasse: Band auf dem flachen Boden, Kantenlichter */
 function mcRoad(ax,az,bx,bz,w){const dx=bx-ax,dz=bz-az,L=Math.hypot(dx,dz),ry=Math.atan2(dx,dz),m=new THREE.Mesh(mcGeo().pl,mcMats().road);m.rotation.set(-Math.PI/2,0,ry,'YXZ');m.rotation.set(-Math.PI/2,0,0);m.rotateOnWorldAxis(Y3,ry);
-m.scale.set(w,L,1);m.position.set((ax+bx)/2,CTY.h0+.07,(az+bz)/2);m.receiveShadow=true;CTY.road.push([m,L/24]);const n=Math.floor(L/14);for(let i=0;i<=n;i++){const t=n?i/n:0;[-1,1].forEach(q=>CTY.lmp.push([ax+dx*t+Math.cos(ry)*q*(w/2+.4),CTY.h0+.2,az+dz*t-Math.sin(ry)*q*(w/2+.4),.22,q>0?0x55ccff:0xffc860]))}}
-function mcLamp(B,x,z,h){const G=mcGeo(),y=CTY.h0;B.lo.add(G.c8,'m',MCD,x,y+h/2,z,.18,h,.18);B.hi.add(G.b,'p',0xc8ccd4,x,y+h+.05,z,.7,.18,.4);CTY.lmp.push([x,y+h-.06,z,.45,0xfff0d0]);mcCol(x,z,.25)}
+m.scale.set(w,L,1);m.position.set((ax+bx)/2,CTY.h0+.07,(az+bz)/2);m.receiveShadow=true;CTY.road.push([m,L/24]);const n=Math.floor(L/14);for(let i=0;i<=n;i++){const t=n?i/n:0;[-1,1].forEach(q=>CTY.lmp.push([ax+dx*t+Math.cos(ry)*q*(w/2+.4),CTY.h0+.2,az+dz*t-Math.sin(ry)*q*(w/2+.4),.22,q>0?0x55ccff:0xa47cff]))}}
+function mcLamp(B,x,z,h){const G=mcGeo(),y=CTY.h0;B.lo.add(G.c8,'m',MCD,x,y+h/2,z,.18,h,.18);B.hi.add(G.b,'p',0xc8ccd4,x,y+h+.05,z,.7,.18,.4);CTY.lmp.push([x,y+h-.06,z,.45,0xd8ecff]);mcCol(x,z,.25)}
 function mcSignPost(x,z,ry,t,c,h){const G=mcGeo(),y=CTY.h0,B=CTY.cur;h=h||3;[-1.9,1.9].forEach(q=>{B.lo.add(G.c8,'m',MCD,x+Math.cos(ry)*q,y+h/2,z-Math.sin(ry)*q,.2,h,.2);mcCol(x+Math.cos(ry)*q,z-Math.sin(ry)*q,.25)});
 B.lo.add(G.b,'p',0x2a2e36,x-Math.sin(ry)*.05,y+h+.4,z-Math.cos(ry)*.05,4.5,1.2,.06,ry);CTY.sgn.push([x+Math.sin(ry)*.01,y+h+.4,z+Math.cos(ry)*.01,ry,t,c])}
 /* alle Schilder: ein Textur-Atlas, ein Netz */
@@ -5111,7 +5114,7 @@ CTY.mods=[['cHub',0,58,1],['cShop',-19,62],['cWerk',19,62],['cKant',0,78.5]].map
 /* 1 Landefeld 1 mit dem Schiff, Strasse zur Ankunftshalle, Platz, Schilder, Denkmal */
 let B=mcCell(0,20,40);mcPad(B,0,0,18,[0,-1]);mcRoad(0,19,0,47,7);mcRoad(-9,40,9,40,14);
 [[-7.5,30],[7.5,30],[-7.5,44],[7.5,44],[-15,38],[15,38]].forEach(([x,z])=>mcLamp(B,x,z,4.2));
-mcSignPost(-10,21.5,PI,'MONDSTADT SELENE','#7fd8ff',3.2);mcSignPost(10,21.5,PI,'UNION · LANDEBASIS','#ffcc33',3.2);
+mcSignPost(-10,21.5,PI,'LUNA CITY','#7fd8ff',3.2);mcSignPost(10,21.5,PI,'UNION · LANDEBASIS','#ffcc33',3.2);
 mcSignPost(-19,53,PI,'HANDELSHAUS','#ffcc33',2.6);mcSignPost(19,53,PI,'WERKSTATT','#ff9a50',2.6);mcSignPost(10,72,PI*.75,'KANTINE','#7fe8a0',2.6);mcSignPost(-9,49.5,PI,'ANKUNFT · SCHLEUSE','#7fd8ff',2.6);
 B.lo.add(G.c24,'p',0xc8ccd4,-12,y+.4,46,3,.8,3);B.lo.add(G.c8,'m',0xd0d4da,-12,y+5,46,.16,9,.16);mcCol(-12,46,1.6);
 {const f=new THREE.Mesh(hbG('fp',()=>new THREE.PlaneGeometry(1.5,.95,4,1)),hbMats().fg);f.position.set(-11.1,y+8.7,46);f.scale.set(1.3,1.3,1);g.add(f)}
@@ -5133,13 +5136,12 @@ mcRoad(-19,0,-96.5,0,6);mcRoad(19,0,96.5,0,6);mcRoad(0,-19,0,-96.5,6);mcRoad(-47
 /* 5 Wohnviertel im Westen: Fassmodule mit Regolith, Wohntuerme, Gewaechshaeuser, Roehren */
 B=mcCell(-58,46,36);
 mcBarrel(B,-50,y+.1,16,13,3.2,PI/2);mcBarrel(B,-50,y+.1,34,13,3.2,PI/2,0xe6dcc8);mcBarrel(B,-74,y+.1,14,13,3.2,0);mcBarrel(B,-74,y+.1,32,13,3.2,0);mcBarrel(B,-48,y+.1,62,13,3.2,PI/2,0xe6dcc8);
-mcTower(B,-70,y,54,4.8,4,0xf0f2f4);mcTower(B,-34,y,80,4.2,5);
+mcTower(B,-70,y,54,4.8,4,0xf0f2f4);/* 3.30: (-34,80) ist jetzt der Bannerturm */
 mcTube(B,-50,22.4,-50,27.6,y+2,1.2);mcTube(B,-74,16.4,-74,29.6,y+2,1.2);mcTube(B,-70.5,49.2,-71.5,34.6,y+2,1.2);mcTube(B,-37.2,77.3,-48,68.8,y+2,1.2);
 [[-64,24],[-64,40],[-56,52],[-40,70]].forEach(([x,z])=>mcLamp(B,x,z,4.2));
 B=mcCell(-100,80,56);const CW2=B;mcTower(B,-110,y,54,4,3,0xe8e2d4);mcDome(B,-118,y,30,8,{green:12,hy:6});mcTube(B,-111.3,50.2,-115.5,37.6,y+2,1.1);mcDome(B,-74,y,120,9.5,{green:16,hy:7});
 /* 6 Grosse Parkkuppel hinter der Kantine (ausserhalb der Ringstrasse), hohe Roehren zu den Bezirken */
-B=mcCell(0,134,28);mcDome(B,0,y,134,24,{green:60,hy:15,wh:2.2});
-mcTube(B,-23.1,129.6,-66,121.5,y+5.2,1.5);mcTube(B,21.8,125.2,67.4,106.7,y+5.2,1.5);
+/* 3.30: Parkkuppel ersetzt durch Luna City Skyline (lcBuild) */
 /* 7 Industrie im Osten: Abbauanlage, Silos, Foerderband ueber die Ringstrasse zur Halde, Schaufelradbagger */
 B=mcCell(100,52,52);const CNE=B;
 {const x=70,z=30;B.lo.add(G.b,'p',0xdfe3e8,x,y+5,z,24,10,14);B.lo.add(G.b,'rg',MCG,x,y+10.4,z,24.6,.9,14.6);B.lo.add(G.b,'m',MCD,x,y+.6,z,24.4,1.2,14.4);
@@ -5169,8 +5171,8 @@ const dsh=new THREE.Mesh(new THREE.SphereGeometry(7,28,10,0,2*PI,0,1.0),new THRE
 B.lo.add(G.c8,'m',MCD,x+Math.sin(.6)*2.6,y+12.7,z+Math.cos(.6)*2.6,.14,5.4,.14,.6,-.85,0,'YXZ');CTY.bl.push([x,y+14.6,z,0]);mcColRing(x,z,3.4)}
 B=CPW;mcMast(B,126,y,112,26,2.2);
 /* Lampen an der Ringstrasse (aussen) */B=mcCell(0,0,112);for(let i=0;i<14;i++){const a=i/14*2*PI+.1;mcLamp(B,Math.sin(a)*(RR+5.4),Math.cos(a)*(RR+5.4),5)}
-mcInst();let calls=0;CTY.cells.forEach(c=>{calls+=c.lo.done(c.glo,1);calls+=c.hi.done(c.ghi,0);g.add(c.glo,c.ghi);c.lo=c.hi=null});
-CTY.pb.done(g,0);mcSigns();mcRoadMerge();mcMovers();CTY.ms=performance.now()-CTY.t0;CTY.calls=calls}
+lcBuild();mcInst();let calls=0;CTY.cells.forEach(c=>{calls+=c.lo.done(c.glo,1);calls+=c.hi.done(c.ghi,0);g.add(c.glo,c.ghi);c.lo=c.hi=null});
+CTY.pb.done(g,0);mcSigns();mcRoadMerge();mcMovers();lcFinish();CTY.ms=performance.now()-CTY.t0;CTY.calls=calls}
 /* Strassen: alle Baender in ein Netz (Textur wiederholt sich ueber die Laenge) */
 function mcRoadMerge(){const L=CTY.road;if(!L.length)return;const P=[],N=[],U=[],I=[];let v=0;L.forEach(([m,rep])=>{m.updateMatrix();const g=mcGeo().pl,p=g.attributes.position,uv=g.attributes.uv;for(let i=0;i<p.count;i++){MCP.fromBufferAttribute(p,i).applyMatrix4(m.matrix);P.push(MCP.x,MCP.y,MCP.z);N.push(0,1,0);U.push(uv.getX(i),uv.getY(i)*rep)}g.index.array.forEach(q=>I.push(q+v));v+=p.count;if(m.parent)m.parent.remove(m)});
 const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(P,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));geo.setIndex(I);geo.computeBoundingSphere();const m=new THREE.Mesh(geo,mcMats().road);m.receiveShadow=true;CTY.g.add(m)}
@@ -5197,7 +5199,7 @@ function mcPut(im,i,x,y,z,ry,sx,sy,sz,rx){const o=MCO3;o.position.set(x,y,z);o.r
 function mcStep(dt){if(!CTY.on||!G.gm||!GR.mc)return;const R=GR,y=CTY.h0,cp=GC.position,t=(CTY.t+=dt);
 /* Detailstufen: hi-Teile nur in der Naehe (3 x pro Sekunde pruefen) */if((CTY.lodT-=dt)<=0){CTY.lodT=.33;const lim=[70,105,150][qlTier()]||105;CTY.cells.forEach(c=>{const d=Math.hypot(cp.x-c.x,cp.z-c.z)-c.r;c.ghi.visible=d<lim})}
 /* Blinklichter */if(CTY.blk)CTY.blk.forEach(([m,c,ph])=>{m.visible=c==2?(Math.floor(t*2.5)%2==ph):c==1?(t*1.1+ph*.5)%2<.12:(t*.9+ph*.3)%1.6<.55});
-CTY.an.forEach(a=>{if(a[0]=='spin')a[1].rotation.z+=dt*a[2]});
+CTY.an.forEach(a=>{if(a[0]=='spin')a[1].rotation.z+=dt*a[2]});lcStep(dt);
 /* Rover */const RV=CTY.rv;if(RV){const RR=100;RV.L.forEach((r,i)=>{let x,z,ry;if(r.k=='ring'){r.t+=dt*r.v*r.d/(2*Math.PI*RR);const a=r.t*2*Math.PI,rr=RR+r.lane;x=Math.sin(a)*rr;z=Math.cos(a)*rr;ry=a+(r.d>0?Math.PI/2:-Math.PI/2)+Math.PI}
 else{r.t+=dt*r.v/77*r.d;if(r.t>1){r.t=1;r.d=-1}if(r.t<0){r.t=0;r.d=1}const s=r.t;x=19+s*77;z=r.d>0?1.5:-1.5;ry=r.d>0?-Math.PI/2:Math.PI/2}
 /* vor dem Spieler anhalten */const dx=R.x-x,dz=R.z-z,dd=Math.hypot(dx,dz);if(dd<6&&!HB.in){if(r.k=='ring')r.t-=dt*r.v*r.d/(2*Math.PI*RR);else r.t-=dt*r.v/77*r.d;if(r.px!=null){x=r.px;z=r.pz;ry=r.pry}}
@@ -5210,13 +5212,13 @@ mcPut(F.tor,i,x,Y+1.3,z,ry,.4,.64,.28);let q=P(0,-.2);mcPut(F.pk,i,q[0],Y+1.35,q
 [-1,1].forEach((k,j)=>{q=P(k*.11,0);mcPut(F.lg,i*2+j,q[0],Y+.48,q[1],ry,.17,.96,.17,sw*.5*k);q=P(k*.25,0);mcPut(F.ar,i*2+j,q[0],Y+1.25,q[1],ry,.11,.58,.11,-sw*.45*k)})});
 ['tor','pk','hl','vi','lg','ar'].forEach(k=>F[k].instanceMatrix.needsUpdate=true)}}
 /* Ansprechen: Figuren in der Naehe */
-const MCTALK=['Willkommen in Selene! Die Kantine hinter der Ankunftshalle hat heute Algen-Lasagne.','Das Handelshaus kauft Elektronik und Medizin – hier oben ist beides knapp.','Vorsicht an der Ringstrasse, die Rover bremsen spät bei 1,6 m/s².','In der Werkstatt flicken sie dir die Hülle schneller als die Werft im Orbit.','Unter dem Regolith sind wir vor Strahlung und kleinen Meteoriten geschützt.','Helium-3 aus dem Regolith – deswegen gibt es Selene überhaupt.','Die grosse Kuppel ist unser Park. Echte Bäume, echte Luft, kein Helm.','Nachts wird es hier minus 170 Grad kalt. Lass den Anzug an, wenn du rausgehst.'];
+const MCTALK=['Willkommen in Luna City! Die Kantine hinter der Ankunftshalle hat heute Algen-Lasagne.','Das Handelshaus kauft Elektronik und Medizin – hier oben ist beides knapp.','Vorsicht an der Ringstrasse, die Rover bremsen spät bei 1,6 m/s².','In der Werkstatt flicken sie dir die Hülle schneller als die Werft im Orbit.','Unter dem Regolith sind wir vor Strahlung und kleinen Meteoriten geschützt.','Helium-3 aus dem Regolith – deswegen gibt es Luna City überhaupt.','Die Gartenkuppeln sind unser Park. Echte Bäume, echte Luft, kein Helm.','Nachts wird es hier minus 170 Grad kalt. Lass den Anzug an, wenn du rausgehst.'];
 function mcTarget(){if(!CTY.on||!CTY.fg||HB.in)return null;const R=GR;let b=null,bd=2.6;CTY.fg.L.forEach((f,i)=>{const d=Math.hypot(f.x-R.x,f.z-R.z);if(d<bd){bd=d;b={f,i}}});return b}
 function mcTalk(o){o.f.wait=3;sfx('ui');toast('🧑‍🚀 '+MCTALK[(o.i+Math.floor(CTY.t/20))%MCTALK.length]);G.tt=4.5}
 /*-- Aktionen in den begehbaren Stadt-Modulen --*/
 function mcTab(k){if(G.st!='docked'||!CTY.s)return toast('Der Stationsdienst ist nur erreichbar, wenn dein Schiff angedockt ist');STAB=k;stOpen(CTY.s)}
 function mcUse(o){const t=o.t;if(t=='hafen')return mcTab('dienst');if(t=='info')return mcTab('info');if(t=='jobs')return mcTab('jobs');if(t=='shop')return mcTab('markt');if(t=='ausr')return mcTab('ausr');if(t=='bp')return mcTab('bp');if(t=='werft')return mcTab('werft');
-if(t=='bench')return nxOpen('fab',{fm:'base',ttl:'🛠 WERKSTATT SELENE · CRAFTING-TISCH'});
+if(t=='bench')return nxOpen('fab',{fm:'base',ttl:'🛠 WERKSTATT LUNA CITY · CRAFTING-TISCH'});
 if(t=='kant'||t=='eat'){const L=save.ls;if(L.f>=95&&L.w>=95)return toast('Du bist satt – komm später wieder');if(save.coins<8)return toast('Eine Mahlzeit kostet 8 ● – zu wenig Münzen');save.coins-=8;L.w=L.f=100;VS.h=Math.min(10,VS.h+1);sfx('coin');store();return toast('🍲 Mahlzeit in der Kantine (−8 ●) – Wasser und Nahrung voll, Gesundheit +1')}
 if(t=='rest'){save.suit.en=100;save.suit.o2=100;sfx('pw');return toast('Kurz ausgeruht – Sauerstoff und Energie voll')}
 if(t=='crop')return toast('🌳 Der Zitronenbaum der Kantine – gepflegt vom Team der Parkkuppel');if(t=='talk')return toast('🧑 '+['„Schau dich ruhig um – Preise stehen am Terminal.“','„Die Hülle macht Geräusche? Bring sie her, wir machen das.“','„Heute frisch: Kartoffeln aus der Parkkuppel!“'][o.m.t=='cShop'?0:o.m.t=='cWerk'?1:2])}
@@ -5228,7 +5230,7 @@ counter:[3.2,1,'shop','Händler: Waren kaufen und verkaufen',MCF(B=>mcFigB(B,0,0
 kiosk:[1.2,.7,'ausr','Ausrüstung: Anzug-Teile und Module kaufen',(p,M)=>{hbB(p,M.dk,0,.9,0,1,1.8,.5);hbB(p,M.scr,0,1.3,.26,.8,.6,.02);hbB(p,M.or,0,1.86,.26,1,.08,.02);hbB(p,M.lt,0,.55,.3,.9,.06,.25)},[[0,0,.55]]],
 bpkiosk:[1.2,.7,'bp','Baupläne kaufen',(p,M)=>{hbB(p,M.dk,0,.9,0,1,1.8,.5);hbB(p,M.scr2,0,1.3,.26,.8,.6,.02);hbB(p,M.b,0,1.86,.26,1,.08,.02);hbB(p,M.lt,0,.55,.3,.9,.06,.25)},[[0,0,.55]]],
 hafen:[2.1,.7,'hafen','Hafenmeister: Tanken, Reparatur, Fracht',MCF(B=>mcFigB(B,0,0,-.6,0,{suit:0x3a5a8a,hair:0x6a4a2a,sit:1}),(p,M)=>HBF.console[4](p,M)),[[-.6,0,.5],[.6,0,.5],[0,-.6,.35]]],
-info:[1.4,.5,'info','Info-Terminal: Selene und die Fraktionen',(p,M)=>HBF.screen[4](p,M),[[0,0,.55]]],
+info:[1.4,.5,'info','Info-Terminal: Luna City und die Fraktionen',(p,M)=>HBF.screen[4](p,M),[[0,0,.55]]],
 jboard:[2,.4,'jobs','Auftragsbrett',(p,M)=>{[-.9,.9].forEach(x=>hbB(p,M.dk,x,1,0,.08,2,.12));hbB(p,M.dk,0,1.4,0,2,1.2,.06);hbB(p,M.scr,0,1.4,.035,1.85,1.05,.02);for(let i=0;i<3;i++)hbB(p,M.y,-.6+i*.6,1.7,.05,.45,.08,.01)},[[0,0,.6]]],
 seats:[2.4,.7,null,'',(p,M)=>{hbB(p,M.dk,0,.22,0,2.4,.08,.6);for(let i=0;i<4;i++){hbB(p,M.bed,-.9+i*.6,.45,0,.52,.1,.52);hbB(p,M.bed,-.9+i*.6,.75,-.24,.52,.55,.08)}[-1.1,1.1].forEach(x=>hbB(p,M.dk,x,.22,0,.08,.44,.5))},[[-.7,0,.45],[.7,0,.45]]],
 kbar:[3,.9,'kant','Kantine: Mahlzeit bestellen (8 ●)',MCF(B=>mcFigB(B,.6,0,-.7,0,{suit:0xf2f2f2,ap:0xf2f2f2,hair:0x2a1a10}),(p,M)=>{hbB(p,M.lt,0,.52,.15,3,1.04,.6);hbB(p,M.wood,0,1.07,.15,3.1,.06,.7);hbB(p,M.dk,0,1.9,-.85,3,.9,.4);hbB(p,M.scr2,-.6,2.1,-.64,1.2,.45,.02);for(let i=0;i<3;i++)hbC(p,M.or,-1+i*.5,1.16,.2,.2,.12);hbB(p,M.mat,1,1.12,.2,.5,.04,.35)}),[[-.9,0,.55],[.4,0,.55],[.6,-.7,.4]]],
@@ -5249,7 +5251,7 @@ arcs.forEach(([a0,al])=>{const pts=[new THREE.Vector2(r+.05,-.1),new THREE.Vecto
 const Rs=(r*r+ch*ch)/(2*ch),th=Math.asin(Math.min(1,r/Rs)),yc=wh+ch-Rs,d=.5,pts=[new THREE.Vector2(r+.45,wh-.25)];for(let i=0;i<=8;i++){const t=th*(1-i/8);pts.push(new THREE.Vector2(Math.max(.02,(Rs+d)*Math.sin(t)),yc+(Rs+d)*Math.cos(t)))}
 const g=new THREE.LatheGeometry(pts,28);bump(g,wh-.1,.04);const o=new THREE.Mesh(g,pc);o.castShadow=o.receiveShadow=true;S.add(o);
 /* Leuchten und Fenster werfen keinen Schatten (spart Zeichenaufrufe im Schattendurchgang) */const M=hbMats(),ns=new Set([M.glow,M.gl2,M.scr,M.scr2,M.or,mcWin()]);S.traverse(q=>{if(q.isMesh&&ns.has(q.material))q.castShadow=false})}
-/*-- Selene im Flug (stModel, Typ gnd): Kuppeln, Regolith-Module, Roehren, Solarfeld, Masten, Radiatoren, Kran rund um die Plattform --*/
+/*-- Luna City im Flug (stModel, Typ gnd): Kuppeln, Regolith-Module, Roehren, Solarfeld, Masten, Radiatoren, Kran rund um die Plattform --*/
 function mcOrbit(s,g,X){const b=s.body,u=new V3(...s.dir).normalize(),q=new THREE.Quaternion().setFromUnitVectors(Y3,u),R0=b.R,top=R0+s.hb,PI=Math.PI,{M,bx,cy,blink,WIN,TR,SOL}=X,
 det=new THREE.Group();g.add(det);g.userData.det=det;
 const WH=new THREE.MeshStandardMaterial({color:0xe8ecf0,metalness:.25,roughness:.55}),RG=new THREE.MeshStandardMaterial({color:0x8a8780,roughness:1,flatShading:true}),GLS=new THREE.MeshStandardMaterial({color:0xb8e4ff,metalness:.3,roughness:.05,transparent:true,opacity:.28,depthWrite:false,side:THREE.DoubleSide}),GRN=new THREE.MeshStandardMaterial({color:0x4a8a3c,roughness:.9}),YL=new THREE.MeshStandardMaterial({color:0xe8b420,metalness:.4,roughness:.5});
@@ -5266,15 +5268,214 @@ M(new THREE.SphereGeometry(5,14,6,0,PI*2,0,1),WH,4,h*.75,0,0,0,-1.1,f,0);M(new T
 tube=(a,c,r)=>{const A=site(a[0],a[1]).p.add(new V3(0,a[2],0)),C=a.length&&c[3]?new V3(c[0],c[2],c[1]):site(c[0],c[1]).p.add(new V3(0,c[2],0)),d=C.clone().sub(A),L=d.length(),o=M(new THREE.CylinderGeometry(r,r,L,12,1,true),WH,0,0,0,0,0,0,det,0);o.position.copy(A).addScaledVector(d,.5);o.quaternion.setFromUnitVectors(Y3,d.normalize());
 for(let i=1;i<L/9;i++){const w=M(new THREE.TorusGeometry(r+.3,.4,4,12),TR,0,0,0,0,0,0,det,0);w.position.copy(A).addScaledVector(d,i*9);w.quaternion.setFromUnitVectors(new V3(0,0,1),d)}};
 const H2=new THREE.MeshStandardMaterial({color:0xd8dde4,metalness:.3,roughness:.5});
-/* Kuppeln: grosser Park, mittlere Wohn-/Arbeitskuppeln */dome(0,100,30,1,1);dome(-112,42,14);dome(112,46,14);dome(-104,-104,13);dome(100,-108,15);dome(-150,-30,10,1,1);
+/* Kuppeln: mittlere Wohn-/Arbeitskuppeln (3.30: Parkkuppel -> Mittelturm in lcOrbit) */dome(-112,42,14);dome(112,46,14);dome(-104,-104,13);dome(100,-108,15);dome(-150,-30,10,1,1);
 barrel(-58,84,28,7,.45);barrel(58,84,28,7,-.45);barrel(-138,12,26,6.5,PI/2);barrel(138,12,26,6.5,PI/2);barrel(-40,-120,24,6,.2);
 tower(-152,74,7,3);tower(154,78,6.5,4);mast(-70,-138,62);mast(150,-62,48);
 /* Roehren zur Plattform und zwischen den Kuppeln (Endpunkt mit 4. Wert = lokaler Punkt am Deckrand) */
-tube([-112,42,6],[-75,28,-6,1],3.2);tube([112,46,6],[75,28,-6,1],3.2);tube([0,100,6],[0,36,-6,1],3.6);tube([-104,-104,6],[-60,-70,-6,1],3);tube([100,-108,6],[60,-70,-6,1],3);tube([-58,84,5],[-112,42,5],2.6);tube([58,84,5],[112,46,5],2.6);
+tube([-112,42,6],[-75,28,-6,1],3.2);tube([112,46,6],[75,28,-6,1],3.2);tube([-104,-104,6],[-60,-70,-6,1],3);tube([100,-108,6],[60,-70,-6,1],3);tube([-58,84,5],[-112,42,5],2.6);tube([58,84,5],[112,46,5],2.6);
 /* Solarfeld */{const f=at(30,-140,0);for(let i=0;i<5;i++)for(let j=0;j<9;j++)bx(9,.6,5.5,SOL,(j-4)*10.5,3.2+((i+j)%2)*.01,(i-2)*8,-.45,0,0,f,0);cy(1.2,1.2,3,6,TR,0,1.5,0,0,0,0,f,0)}
 /* Radiatoren am Kraftwerk */{const f=at(100,-108,0);[-1,1].forEach(k=>{for(let i=0;i<6;i++)bx(.5,14,12,WH,k*(18+i*4),9,0,0,0,0,f,0)})}
 /* Silos und Foerderband (Abbauanlage) */{const f=at(-150,-78,.3);[-8,0,8].forEach(x=>{cy(3.4,3.4,26,14,WH,x,13,0,0,0,0,f,1);M(new THREE.ConeGeometry(3.4,4,14),WH,x,28,0,0,0,0,f,0)});bx(26,14,16,H2,0,7,16,0,0,0,f,1);bx(28,1.6,17,RG,0,14.6,16,0,0,0,f,0);for(let i=0;i<5;i++)bx(3,1.2,.4,WIN,-10+i*5,9,24.1,0,0,0,f,0);blink(0,30.5,0,0xff3030,f,1.2)}
-/* Turmkran */{const f=at(-168,30,.8);bx(2,52,2,YL,0,26,0,0,0,0,f,1);bx(40,1.8,1.8,YL,-10,52,0,0,0,0,f,0);bx(5,3,3,TR,9,50.5,0,0,0,0,f,0);cy(.1,.1,24,4,TR,-26,40,0,0,0,0,f,0);blink(-30,53.2,0,0xff3030,f,1.1)}}
+/* Turmkran */{const f=at(-168,30,.8);bx(2,52,2,YL,0,26,0,0,0,0,f,1);bx(40,1.8,1.8,YL,-10,52,0,0,0,0,f,0);bx(5,3,3,TR,9,50.5,0,0,0,0,f,0);cy(.1,.1,24,4,TR,-26,40,0,0,0,0,f,0);blink(-30,53.2,0,0xff3030,f,1.1)}
+lcOrbit(s,g,{at,cy,TR},det,site)}
+
+/*==== 3.30: LUNA CITY – Skyline nach Bild 1 (Tuerme, Mittelturm mit Ringplattformen, Hochbahn, Gartenkuppeln, Antenne, Banner, Bildschirme), Landefeld, Licht, Flugverkehr ====*/
+/* Regeln: Kulisse nur ueber mcCell/mcBat (Sammelnetze) und Instanzen, Kollision nur mcCol/mcColRing/mcColBox (in LC.orb ausgeschaltet).
+   Zustand LC (CTY bleibt der Stadt-Zustand). Fenster = eine Textur (LC.tex.win) mit Emissive, Glanz = eine kleine Env-Map (LC.env), Leuchten = Halo-Punkte statt Bloom.
+   Flugverkehr: 3 feste Schiffe (Instanzen), werden nur bewegt. Neue Materialien in mcMats: tw (Fenster), scr (Bildschirm), lsg (Schild), bn (Banner). */
+var LC={on:0,orb:0,t:0,env:null,tex:null,hs:[],hb:[],pool:[],scr:[],cr:[],crt:[],rp:[],fl:null,ap:null,sh:null,L:[]};
+const LCB=0x4ab8ff,LCH=0xa8e4ff,LCV=0x9a5cff,LCK=0x1c2436,LCS=0x9aa8c8;
+/* Landefeld-Boden frei von Geroell (geoWin) */const lcFree=(x,z)=>!!(GR.mc&&CTY.on&&Math.abs(x)<43&&z>-29&&z<49);
+const lcCol=(x,z,r)=>{if(!LC.orb)mcCol(x,z,r)},lcRing=(x,z,r)=>{if(!LC.orb)mcColRing(x,z,r)},lcBox=(x,z,w,d,ry)=>{if(!LC.orb)mcColBox(x,z,w,d,ry)},lcBl=(x,y,z,c)=>{if(!LC.orb)CTY.bl.push([x,y,z,c])},lcHal=(L,x,y,z,c)=>{if(!LC.orb)L.push([x,y,z,c])};
+
+/*-- Texturen (einmal) --*/
+function lcTex(){if(LC.tex)return LC.tex;const r=rng(3301),T={};
+/* Fenster: 8 x 16 Felder auf 8 m x 16 m, blaue Lichtkante links, unterste Zeile dunkel (fuer Deckel) */
+T.win=hbTex(256,512,(x,w,h)=>{x.fillStyle='#0b1120';x.fillRect(0,0,w,h);x.fillStyle='#141d33';for(let i=0;i<8;i++)x.fillRect(i*32+30,0,2,h-24);
+for(let j=0;j<15;j++)for(let i=0;i<8;i++){const q=r(),c=q<.5?(q<.25?'#cfeeff':'#8fd2ff'):q<.6?'#b590ff':q<.66?'#6aa8ff':'#18223a';x.fillStyle=c;x.fillRect(i*32+6,j*32+8,22,15);if(q<.5){x.fillStyle='rgba(255,255,255,.35)';x.fillRect(i*32+6,j*32+8,22,3)}}
+x.fillStyle='#4ab8ff';x.fillRect(0,0,4,h-24);x.fillStyle='#0b1120';x.fillRect(0,h-24,w,24)});T.win.wrapS=T.win.wrapT=THREE.RepeatWrapping;T.win.anisotropy=4;
+/* Bildschirm: Planetenkarte (Erde), Raster, Bahnen, Texte */
+T.scr=hbTex(1024,576,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#071a38');g.addColorStop(1,'#030a1a');x.fillStyle=g;x.fillRect(0,0,w,h);
+x.strokeStyle='rgba(74,184,255,.13)';x.lineWidth=1;for(let i=0;i<w;i+=32){x.beginPath();x.moveTo(i,0);x.lineTo(i,h);x.stroke()}for(let j=0;j<h;j+=32){x.beginPath();x.moveTo(0,j);x.lineTo(w,j);x.stroke()}
+const cx=360,cy=288,R=200;const pg=x.createRadialGradient(cx-60,cy-60,20,cx,cy,R);pg.addColorStop(0,'#3aa0ff');pg.addColorStop(.7,'#1450a8');pg.addColorStop(1,'#08214a');x.fillStyle=pg;x.beginPath();x.arc(cx,cy,R,0,6.3);x.fill();
+x.save();x.beginPath();x.arc(cx,cy,R,0,6.3);x.clip();x.fillStyle='rgba(140,240,255,.55)';for(let i=0;i<46;i++){const a=r()*6.28,d=Math.sqrt(r())*R*.95,s=14+r()*44;x.beginPath();x.ellipse(cx+Math.cos(a)*d,cy+Math.sin(a)*d*.9,s,s*.6,r()*3,0,6.3);x.fill()}
+x.strokeStyle='rgba(180,235,255,.35)';x.lineWidth=1.5;for(let k=-3;k<=3;k++){x.beginPath();x.ellipse(cx,cy+k*R/4,Math.sqrt(1-(k/4)**2)*R,R*.06,0,0,6.3);x.stroke();x.beginPath();x.ellipse(cx,cy,R*Math.abs(k)/3.5,R,0,0,6.3);x.stroke()}x.restore();
+x.strokeStyle='#7fd8ff';x.lineWidth=4;x.shadowColor='#4ab8ff';x.shadowBlur=24;x.beginPath();x.arc(cx,cy,R+4,0,6.3);x.stroke();x.lineWidth=2;x.beginPath();x.ellipse(cx,cy,R*1.45,R*.42,-.35,0,6.3);x.stroke();
+x.fillStyle='#e8f6ff';x.beginPath();x.arc(cx+R*1.36,cy-R*.15,9,0,6.3);x.fill();x.shadowBlur=0;
+x.fillStyle='#9fe0ff';x.font='bold 40px sans-serif';x.fillText('LUNA CITY',640,90);x.font='26px sans-serif';x.fillStyle='#7fc8ff';
+['VERKEHRSLEITUNG','ERDE – MOND  384 400 km','LANDEFELD 1   FREI','LANDEFELD 2   BELEGT','HOCHBAHN   PÜNKTLICH'].forEach((t,i)=>x.fillText(t,640,150+i*46));
+for(let i=0;i<8;i++){x.fillStyle=i%3?'#4ab8ff':'#9a5cff';x.fillRect(640,400+i*16,40+r()*280,8)}x.strokeStyle='#4ab8ff';x.lineWidth=6;x.strokeRect(3,3,w-6,h-6)});
+/* Schild LUNA CITY mit Mondsichel */
+T.sgn=hbTex(1024,384,(x,w,h)=>{x.fillStyle='#08101f';x.fillRect(0,0,w,h);x.strokeStyle='#5ac8ff';x.lineWidth=10;x.shadowColor='#4ab8ff';x.shadowBlur=30;
+x.beginPath();[[60,20],[w-60,20],[w-14,h/2],[w-60,h-20],[60,h-20],[14,h/2]].forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b));x.closePath();x.stroke();
+x.lineWidth=12;x.beginPath();x.arc(w-200,104,64,-2.3,2.0);x.stroke();x.fillStyle='#eaf8ff';x.font='bold 150px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('Luna City',w/2-20,h/2+28)});
+/* Banner: violett mit Mondsichel */
+T.bn=hbTex(256,640,(x,w,h)=>{const g=x.createLinearGradient(0,0,w,0);g.addColorStop(0,'#2a1468');g.addColorStop(.5,'#4a24a8');g.addColorStop(1,'#2a1468');x.fillStyle=g;x.fillRect(0,0,w,h);x.fillStyle='#c8a8ff';x.fillRect(0,0,w,14);x.fillRect(14,0,6,h-60);x.fillRect(w-20,0,6,h-60);
+x.beginPath();x.moveTo(0,h-70);x.lineTo(w/2,h);x.lineTo(w,h-70);x.lineTo(w,h);x.lineTo(0,h);x.closePath();x.globalCompositeOperation='destination-out';x.fill();x.globalCompositeOperation='source-over';
+x.fillStyle='#eae0ff';x.shadowColor='#d8c0ff';x.shadowBlur=20;x.beginPath();x.arc(w/2,260,70,0,6.3);x.fill();x.globalCompositeOperation='destination-out';x.beginPath();x.arc(w/2+34,236,62,0,6.3);x.fill();x.globalCompositeOperation='source-over'});
+/* Landefeld-Boden: dunkle Platten mit Fugen; Leuchtstreifen als eigene Emissive-Textur */
+T.ap=hbTex(512,512,(x,w,h)=>{x.fillStyle='#0f1422';x.fillRect(0,0,w,h);for(let i=0;i<4;i++)for(let j=0;j<4;j++){const v=14+((r()*8)|0);x.fillStyle='rgb('+v+','+(v+4)+','+(v+16)+')';x.fillRect(i*128+3,j*128+3,122,122)}
+x.fillStyle='#1d2740';for(let i=0;i<=4;i++){x.fillRect(i*128-2,0,4,h);x.fillRect(0,i*128-2,w,4)}x.fillStyle='#2a6ac8';x.fillRect(0,250,w,12);x.fillRect(250,0,12,h)});
+T.apE=hbTex(512,512,(x,w,h)=>{x.fillStyle='#000';x.fillRect(0,0,w,h);x.fillStyle='#2f9cff';x.fillRect(0,252,w,8);x.fillRect(252,0,8,h);x.fillStyle='#163a70';x.fillRect(0,0,w,2);x.fillRect(0,0,2,h);
+x.fillStyle='#7fd8ff';for(let i=0;i<8;i++){x.fillRect(i*64+28,252,8,8);x.fillRect(252,i*64+28,8,8)}});[T.ap,T.apE].forEach(t=>{t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(4,3.8);t.anisotropy=4});
+/* weicher Leuchtpunkt fuer Halos und Spiegel-Flecken */
+T.gl=hbTex(64,64,(x,w,h)=>{const g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.25,'rgba(255,255,255,.45)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,64,64)});
+return LC.tex=T}
+/* kleine Env-Map (6 x 64 px): dunkler Himmel, Stadtlichter in Blau und Violett – fuer Glanz auf Boden, Landefeld und Rumpf */
+function lcEnv(){if(LC.env)return LC.env;const r=rng(77),F=[];for(let f=0;f<6;f++){const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,0,64);
+if(f==2){x.fillStyle='#04060e';x.fillRect(0,0,64,64);for(let i=0;i<30;i++){x.fillStyle='rgba(220,230,255,'+(.3+r()*.6)+')';x.fillRect(r()*64,r()*64,1,1)}}else if(f==3){x.fillStyle='#070912';x.fillRect(0,0,64,64)}
+else{g.addColorStop(0,'#04060e');g.addColorStop(.55,'#0b1634');g.addColorStop(1,'#141a2c');x.fillStyle=g;x.fillRect(0,0,64,64);for(let i=0;i<9;i++){const bw=3+r()*6,bh=8+r()*26,bx=r()*60;x.fillStyle='#0a0f1f';x.fillRect(bx,40-bh,bw,bh+24);for(let k=0;k<bh/3;k++){x.fillStyle=r()<.7?'#7fc8ff':'#a884ff';x.fillRect(bx+1,40-bh+k*3,bw-2,1)}}
+const q=x.createRadialGradient(20+r()*24,34,0,32,34,30);q.addColorStop(0,'rgba(90,150,255,.55)');q.addColorStop(1,'rgba(90,150,255,0)');x.fillStyle=q;x.fillRect(0,0,64,64)}F.push(c)}
+const t=new THREE.CubeTexture(F);t.needsUpdate=true;return LC.env=t}
+/* Geometrie mit Fenster-UVs: Seiten su x sv mal wiederholt, Deckel auf dunkle Zeile */
+function lcUV(k,base,su,sv){return hbG('lcu'+k+su.toFixed(1)+'_'+sv.toFixed(1),()=>{const g=base.clone(),uv=g.attributes.uv,nn=g.attributes.normal;for(let i=0;i<uv.count;i++){if(Math.abs(nn.getY(i))>.7)uv.setXY(i,.5,.01);else uv.setXY(i,uv.getX(i)*su,uv.getY(i)*sv)}return g})}
+const lcCyl=(n,t)=>hbG('lcc'+n+'_'+t,()=>new THREE.CylinderGeometry(.5*t,.5,1,n));
+/* Fenster-Zylinder (n Seiten, Verjuengung t) mit Radius r und Hoehe h */
+function lcTw(B,x,y,z,r,h,n,t,col,ry){const su=Math.max(1,Math.round(Math.PI*2*r/16)),sv=Math.max(.25,Math.round(h/8)/4);B.add(lcUV('c'+n+'_'+t,lcCyl(n,t),su,sv),'tw',col||LCS,x,y+h/2,z,r*2,h,r*2,ry||0)}
+/* gerades Teil zwischen zwei Punkten (Strebe, Kabel) */
+function lcLine(B,mk,col,a,b,th){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot(dx,dy,dz),hz=Math.hypot(dx,dz);B.add(mcGeo().b,mk,col,(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2,th,th,L,Math.atan2(dx,dz),-Math.atan2(dy,hz),0,'YXZ')}
+/* gebogenes Band (Hochbahn, Leuchtkanten): Radien R0..R1, Hoehe y0..y1, Winkel a0..a1 (0 = +z, Punkt = (sin a, cos a) * R), um (0,0) */
+function lcBandG(R0,R1,y0,y1,a0,a1,n){const k='lcb'+[R0,R1,y0,y1,a0,a1,n].map(v=>(+v).toFixed(2)).join('_');return hbG(k,()=>{const P=[],N=[],U=[],I=[];
+const q=(p,nr)=>{const o=P.length/3;p.forEach((v,i)=>{P.push(v[0],v[1],v[2]);N.push(nr[i][0],nr[i][1],nr[i][2]);U.push(i==1||i==2?1:0,i>1?1:0)});
+const ax=p[1][0]-p[0][0],ay=p[1][1]-p[0][1],az=p[1][2]-p[0][2],bx=p[2][0]-p[0][0],by=p[2][1]-p[0][1],bz=p[2][2]-p[0][2],cx=ay*bz-az*by,cy=az*bx-ax*bz,cz=ax*by-ay*bx,m=nr[0];
+if(cx*m[0]+cy*m[1]+cz*m[2]>=0)I.push(o,o+1,o+2,o,o+2,o+3);else I.push(o,o+2,o+1,o,o+3,o+2)};
+for(let i=0;i<n;i++){const A=a0+(a1-a0)*i/n,C=a0+(a1-a0)*(i+1)/n,sA=Math.sin(A),cA=Math.cos(A),sC=Math.sin(C),cC=Math.cos(C),p=(R,s,c,y)=>[R*s,y,R*c];
+const up=[0,1,0],dn=[0,-1,0],oA=[sA,0,cA],oC=[sC,0,cC],iA=[-sA,0,-cA],iC=[-sC,0,-cC];
+q([p(R0,sA,cA,y1),p(R1,sA,cA,y1),p(R1,sC,cC,y1),p(R0,sC,cC,y1)],[up,up,up,up]);q([p(R0,sA,cA,y0),p(R1,sA,cA,y0),p(R1,sC,cC,y0),p(R0,sC,cC,y0)],[dn,dn,dn,dn]);
+q([p(R1,sA,cA,y0),p(R1,sC,cC,y0),p(R1,sC,cC,y1),p(R1,sA,cA,y1)],[oA,oC,oC,oA]);q([p(R0,sA,cA,y0),p(R0,sC,cC,y0),p(R0,sC,cC,y1),p(R0,sA,cA,y1)],[iA,iC,iC,iA])}
+const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));g.setIndex(I);return g})}
+const lcTor=(R,t)=>hbG('lct'+R+'_'+t,()=>new THREE.TorusGeometry(R,t,6,Math.max(24,Math.round(R*5))).rotateX(Math.PI/2));
+
+/*-- schlanker Turm mit Spitze und blauen Lichtstreifen. o: n (Seiten), seg (Anteile der Hoehe), col, sp (Spitzen-Anteil) --*/
+function lcSpire(B,x,z,h,r,o){o=o||{};const G=mcGeo(),y=CTY.h0,n=o.n||6,seg=o.seg||[.42,.3,.28],col=o.col||LCS,t=.86;let yy=y,rr=r;const H=h*(1-(o.sp||.2));
+seg.forEach((f,si)=>{const hs=H*f;lcTw(B,x,yy,z,rr,hs,n,t,col,o.ry||0);
+const tilt=Math.atan2(rr*(1-t)/2,hs);for(let i=0;i<n;i+=(n>4?2:1)){const a=i/n*Math.PI*2+(o.ry||0),R0=rr*(1+t)/4+.06;B.add(G.b,'gw',si%2&&o.vi?LCV:LCB,x+Math.sin(a)*R0,yy+hs/2,z+Math.cos(a)*R0,.16,hs*.96,.16,a,-tilt,0,'YXZ')}
+B.add(lcCyl(n,1),'m',LCK,x,yy+hs+.2,z,rr*t*2+.9,.4,rr*t*2+.9,o.ry||0);B.add(lcCyl(n,1),'gw',si%2?LCV:LCB,x,yy+hs-.05,z,rr*t*2+.5,.22,rr*t*2+.5,o.ry||0);
+yy+=hs+.4;rr*=t*.82});
+const sh=h-H;B.add(mcGeo().cn,'m',0xc8d4ea,x,yy+sh*.33,z,rr*2.2,sh*.66,rr*2.2);B.add(G.c8,'m',0xd8e2f2,x,yy+sh*.66+sh*.17,z,.22,sh*.34,.22);B.add(G.s,'gw',LCH,x,yy+sh*.66,z,.5,.5,.5);
+lcBl(x,y+h+.2,z,0);lcHal(LC.hb,x,yy+sh*.66,z,LCH);
+B.add(G.c24,'m',LCK,x,y+.5,z,r*2+1.4,1,r*2+1.4);B.add(G.c24,'gw',LCB,x,y+1.02,z,r*2+1.5,.12,r*2+1.5);lcRing(x,z,r+.8)}
+
+/*-- grosser Mittelturm mit drei Ringplattformen, Spitze, zwei Nebenspitzen und Podest mit Bildschirm --*/
+function lcCore(B,x,z,o){o=o||{};const G=mcGeo(),y=CTY.h0,PI=Math.PI;
+lcTw(B,x,y,z,15,6,24,1,0x6a7898);B.add(G.c24,'m',LCK,x,y+6.3,z,31,.6,31);B.add(lcTor(15.4,.18),'gw',LCB,x,y+6.55,z,1,1,1);B.add(lcTor(15.1,.14),'gw',LCV,x,y+.4,z,1,1,1);
+const S=[[0,38,7.2],[38,70,6.2],[70,100,5],[100,122,3.6]];let rt=7.2;S.forEach(([a,b,r],i)=>{lcTw(B,x,y+6.6+a,z,r,b-a,12,.88,i%2?0x8a98bc:LCS);rt=r*.88;
+for(let k=0;k<6;k++){const an=k/6*PI*2+i*.26,R0=r*.94;B.add(G.b,'gw',i%2?LCV:LCB,x+Math.sin(an)*R0,y+6.6+(a+b)/2,z+Math.cos(an)*R0,.22,(b-a)*.94,.22,an,-Math.atan2(r*.12/2,b-a),0,'YXZ')}});
+const top=y+6.6+122;
+[[36,21],[66,16],[96,11.5]].forEach(([h,R],i)=>{const yr=y+6.6+h;B.add(G.c24,'m',0x1e2840,x,yr,z,R*2,1.6,R*2);lcTw(B,x,yr+.8,z,R*.9,2.6,24,.96,0x7a8ab0);B.add(G.c24,'m',LCK,x,yr+3.55,z,R*1.86,.3,R*1.86);
+B.add(lcTor(R,.24),'gw',LCB,x,yr,z,1,1,1);B.add(lcTor(+(R*.78).toFixed(1),.18),'gw',LCV,x,yr-.95,z,1,1,1);B.add(lcTor(+(R*.9).toFixed(1),.12),'gw',LCH,x,yr+3.75,z,1,1,1);
+const rs=S.find(s=>h>=s[0]&&h<s[1])[2];for(let k=0;k<8;k++){const an=k/8*PI*2+.2;lcLine(B,'m',0x3a4660,[x+Math.sin(an)*rs*.95,yr-9,z+Math.cos(an)*rs*.95],[x+Math.sin(an)*R*.8,yr-.6,z+Math.cos(an)*R*.8],.45)}
+for(let k=0;k<12;k++){const an=k/12*PI*2;lcHal(LC.hb,x+Math.sin(an)*R,yr,z+Math.cos(an)*R,k%2?LCB:LCH)}});
+B.add(G.cn,'m',0xc8d4ea,x,top+14,z,rt*2.4,28,rt*2.4);B.add(G.c8,'m',0xe0e8f6,x,top+28+9,z,.4,18,.4);B.add(G.s,'gw',LCH,x,top+24,z,1.1,1.1,1.1);lcBl(x,top+46.4,z,0);lcBl(x,top+20,z,1);lcHal(LC.hb,x,top+24,z,LCH);
+/* Nebenspitzen am Podest (wie im Bild: Buendel) */[[-11,-3,64,2.4],[10.5,4,82,2.6],[-6,10,52,2]].forEach(([dx,dz,h,r])=>lcSpire(B,x+dx,z+dz,h,r,{n:6,seg:[.5,.5],sp:.28,vi:1}));
+lcRing(x,z,15.6);if(o.scr!==0)lcScreen(B,x,y+13.2,z-13.6,PI,16,9,0)}
+
+/*-- Hochbahn: gebogene Fahrbahn mit Leuchtkanten, Schiene, Pfeilern (cx,cz = Mittelpunkt) --*/
+function lcRail(B,cx,cz,R,yt,a0,a1,skip){const G=mcGeo(),y=CTY.h0,L=Math.abs(a1-a0)*R,n=Math.max(8,Math.round(L/4));
+B.add(lcBandG(R-2.2,R+2.2,-1,0,a0,a1,n),'m',0x222a3e,cx,y+yt,cz,1,1,1);B.add(lcBandG(R+2.2,R+2.36,-.75,-.4,a0,a1,n),'gw',LCB,cx,y+yt,cz,1,1,1);B.add(lcBandG(R-2.36,R-2.2,-.75,-.4,a0,a1,n),'gw',LCV,cx,y+yt,cz,1,1,1);
+B.add(lcBandG(R-.35,R+.35,0,.55,a0,a1,n),'m',0x6a7488,cx,y+yt,cz,1,1,1);B.add(lcBandG(R+1.9,R+2.05,0,.9,a0,a1,n),'m',0x4a5470,cx,y+yt,cz,1,1,1);B.add(lcBandG(R-2.05,R-1.9,0,.9,a0,a1,n),'m',0x4a5470,cx,y+yt,cz,1,1,1);
+const np=Math.max(2,Math.round(L/14));for(let i=0;i<=np;i++){const a=a0+(a1-a0)*i/np,px=cx+Math.sin(a)*R,pz=cz+Math.cos(a)*R;if(skip&&skip.some(([sx,sz,sr])=>Math.hypot(px-sx,pz-sz)<sr))continue;
+B.add(G.c8,'m',0x30384e,px,y+(yt-1)/2,pz,1.5,yt-1,1.5);B.add(G.b,'m',LCK,px,y+yt-1.4,pz,5.4,.9,1.6,a+Math.PI/2);B.add(G.c8,'gw',LCB,px,y+yt*.7,pz,1.62,.2,1.62);lcCol(px,pz,1)}
+for(let i=0;i<Math.round(L/9);i++){const a=a0+(a1-a0)*(i+.5)/Math.round(L/9);lcHal(LC.hs,cx+Math.sin(a)*(R+2.3),y+yt-.55,cz+Math.cos(a)*(R+2.3),LCB)}}
+
+/*-- Antennenschuessel (Parabol), Ausrichtung ry (Gierwinkel) und Hoehenwinkel el --*/
+function lcDish(B,x,z,ry,el){const G=mcGeo(),y=CTY.h0,Rd=11,f=6.2;B.add(G.b,'m',0x2a3248,x,y+3,z,7,6,7,ry);B.add(G.b,'gw',LCB,x,y+5.4,z,7.1,.2,7.1,ry);B.add(G.c24,'m',0x3a4460,x,y+7,z,4.4,2,4.4);
+[-1,1].forEach(q=>B.add(G.b,'m',0x8a96b0,x+Math.cos(ry)*q*2.4,y+11,z-Math.sin(ry)*q*2.4,.8,8,1.6,ry));const yc=y+15;
+const dg=hbG('lcdish',()=>{const P=[];for(let i=0;i<=10;i++){const r=Rd*i/10;P.push(new THREE.Vector2(r,r*r/(4*f)))}for(let i=10;i>=0;i--){const r=Rd*i/10;P.push(new THREE.Vector2(r*.97,r*r/(4*f)-.45-(1-i/10)*.6))}const g=new THREE.LatheGeometry(P,36);g.computeVertexNormals();return g});
+const rx=Math.PI/2-el;B.add(dg,'p',0xdfe6f2,x,yc,z,1,1,1,ry,rx,0,'YXZ');const A=new V3(0,1,0).applyEuler(new THREE.Euler(rx,ry,0,'YXZ')),V0=new V3(x,yc,z),Fp=V0.clone().addScaledVector(A,f),Rm=V0.clone().addScaledVector(A,Rd*Rd/(4*f));
+B.add(lcTor(Rd,.22),'gw',LCB,Rm.x,Rm.y,Rm.z,1,1,1,ry,rx,0,'YXZ');const T=new V3(Math.cos(ry),0,-Math.sin(ry)),U=new V3().crossVectors(A,T).normalize();
+for(let k=0;k<3;k++){const a=k/3*Math.PI*2,P=Rm.clone().addScaledVector(T,Math.cos(a)*Rd*.98).addScaledVector(U,Math.sin(a)*Rd*.98);lcLine(B,'m',0xb8c4d8,[P.x,P.y,P.z],[Fp.x,Fp.y,Fp.z],.28)}
+B.add(G.s,'gw',LCH,Fp.x,Fp.y,Fp.z,1.1,1.1,1.1);lcHal(LC.hb,Fp.x,Fp.y,Fp.z,LCH);lcBl(x,yc+1,z,0);lcBox(x,z,7.6,7.6,ry)}
+
+/*-- Turm mit Untertassen-Plattform und violettem Banner mit Mondsichel --*/
+function lcBannerT(B,x,z,bd){const G=mcGeo(),y=CTY.h0,h=60;lcTw(B,x,y,z,4.2,h-8,10,.92,0x8090b4);for(let k=0;k<5;k++){const a=k/5*Math.PI*2;B.add(G.b,'gw',LCB,x+Math.sin(a)*4,y+(h-8)/2,z+Math.cos(a)*4,.18,h-9,.18,a)}
+const ys=y+h-8;B.add(G.c24,'m',0x1e2840,x,ys,z,18,2.2,18);B.add(lcTor(9,.22),'gw',LCB,x,ys,z,1,1,1);lcTw(B,x,ys+1.1,z,6.4,2.2,24,.9,0x7a8ab0);B.add(G.c24,'m',LCK,x,ys+3.4,z,12.4,.5,12.4);B.add(lcTor(6.2,.14),'gw',LCV,x,ys+3.7,z,1,1,1);
+B.add(G.c24,'m',0x2a3450,x,ys-2.2,z,10,2.4,10);B.add(lcTor(4.8,.14),'gw',LCV,x,ys-3.4,z,1,1,1);
+[[0,0,9],[2.4,1,5],[-2.2,-1.4,6]].forEach(([dx,dz,hh])=>{B.add(G.c8,'m',0xc8d4ea,x+dx,ys+3.6+hh/2,z+dz,.24,hh,.24);lcBl(x+dx,ys+3.8+hh,z+dz,0)});
+for(let k=0;k<12;k++){const a=k/12*Math.PI*2;lcHal(LC.hs,x+Math.sin(a)*9,ys,z+Math.cos(a)*9,LCB)}
+const ax=x+bd*7.5;B.add(G.b,'m',0x3a4660,x+bd*4,y+46,z,8,.5,.5);B.add(G.b,'m',0xb8c4d8,ax,y+45.6,z,5.8,.25,.25);B.add(G.pl,'bn',0xffffff,ax,y+38.4,z-.05,5.2,13.6,1,Math.PI);
+B.add(G.c24,'m',LCK,x,y+.6,z,10.6,1.2,10.6);B.add(G.c24,'gw',LCB,x,y+1.22,z,10.7,.12,10.7);lcRing(x,z,5.2)}
+
+/*-- Bildschirm mit Planetenkarte (Rahmen + Bild); fr=1: auf Pfosten --*/
+function lcScreen(B,x,y,z,ry,w,h,wall){const G=mcGeo(),s=Math.sin(ry),c=Math.cos(ry);B.add(G.b,'m',LCK,x-s*.22,y,z-c*.22,w+.8,h+.8,.3,ry);B.add(G.b,'gw',LCB,x-s*.05,y-h/2-.32,z-c*.05,w+.6,.14,.1,ry);B.add(G.b,'gw',LCB,x-s*.05,y+h/2+.32,z-c*.05,w+.6,.14,.1,ry);
+B.add(G.pl,'scr',0xffffff,x+s*.0,y,z+c*.0,w,h,1,ry);LC.pool.push([x+s*2.5,z+c*2.5,Math.max(w,h)*.7,LCB,.35]);
+if(!wall){const yb=CTY.h0;[-1,1].forEach(q=>{const px=x+c*q*(w/2-1),pz=z-s*q*(w/2-1);B.add(G.b,'m',0x2a3248,px-s*.4,(yb+y-h/2)/2,pz-c*.4,.7,y-h/2-yb+.4,.7,ry);lcCol(px-s*.4,pz-c*.4,.6)})}}
+
+/*-- Raumschiff (geparkt und im Flug), Nase lokal +z --*/
+function lcShipB(B,x,y,z,ry,s,legs){const G=mcGeo(),sn=Math.sin(ry),cs=Math.cos(ry),ad=(g,mk,col,lx,ly,lz,sx,sy,sz,rx,r2)=>B.add(g,mk,col,x+(lx*cs+lz*sn)*s,y+ly*s,z+(-lx*sn+lz*cs)*s,sx*s,sy*s,sz*s,ry+(r2||0),rx||0,0,'YXZ');
+ad(G.s,'m',0xc9d2e0,0,2.2,0,3.2,1.6,12);ad(G.b,'m',0x2a3248,0,2.95,-1,1.2,.5,7);ad(G.s,'gw',0x7fd8ff,0,2.75,3.2,1.4,.75,3.2);
+[-1,1].forEach(k=>{ad(G.b,'m',0xaab6ca,k*3.5,2.0,-1.6,6,.25,3.2,0,-k*.38);ad(G.b,'gw',LCB,k*6.35,2.0,-2.9,.25,.22,2.6,0,-k*.38);ad(G.c,'m',0x3a4258,k*1.4,2.1,-5.4,1.4,3.2,1.4,Math.PI/2);ad(G.c,'gw',LCB,k*1.4,2.1,-7.05,1.1,.2,1.1,Math.PI/2);ad(G.b,'gw',LCV,k*1.58,2.25,.5,.08,.16,6.5);
+if(legs){[2.4,-3].forEach(lz=>ad(G.c8,'m',0x4a5470,k*1.2,.75,lz,.22,1.5,.22));ad(G.b,'m',0x2a3248,k*1.2,.06,-.3,.6,.12,6.4)}});
+ad(G.b,'m',0x8a96b0,0,3.4,-4.3,.2,1.7,2.4,-.35)}
+
+/*-- Halle mit offenem Tor nach -x, Leuchtkanten, Bildschirm an der Suedwand --*/
+function lcHangar(B,x,z){const G=mcGeo(),y=CTY.h0,W=18,D=16,H=11;B.add(G.b,'p',0x2a3248,x+W/2,y+H/2,z,1.2,H,D);[-1,1].forEach(q=>{B.add(G.b,'p',0x2a3248,x,y+H/2,z+q*D/2,W,H,1.2);B.add(G.b,'gw',LCB,x-W/2-.62,y+H/2,z+q*(D/2),.12,H,.5);lcBox(x,z+q*D/2,W,1.2,0)});lcBox(x+W/2,z,1.2,D,0);
+B.add(G.b,'m',0x1e2638,x,y+H+.5,z,W+1.4,1,D+1.8);B.add(G.b,'gw',LCB,x-W/2-.72,y+H-.1,z,.14,.3,D+1.2);B.add(G.b,'gw',LCV,x,y+H+1.02,z,W+1.4,.08,D+1.8);
+for(let i=0;i<3;i++)B.add(G.b,'gw',LCH,x-4+i*4,y+H-.06,z,.5,.1,D-2);B.add(G.b,'m',0x141a28,x,y+.06,z,W-1,.12,D-1);lcScreen(B,x,y+6.4,z-D/2-.62,Math.PI,12,6.75,1);
+for(let i=0;i<5;i++)CTY.lmp.push([x-W/2+.2,y+.25,z-D/2+2+i*3,.22,LCB]);lcHal(LC.hs,x-W/2-.6,y+H-.1,z-D/2,LCB);lcHal(LC.hs,x-W/2-.6,y+H-.1,z+D/2,LCB)}
+
+/*-- Gelaender: Pfosten (Instanzen) + Handlauf und Fussleuchte (Sammelnetz) entlang eines Linienzugs --*/
+function lcRail2(B,P){const G=mcGeo(),y=CTY.h0;for(let i=0;i<P.length-1;i++){const[a,b]=[P[i],P[i+1]],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),ry=Math.atan2(dx,dz),n=Math.max(1,Math.round(L/2));
+B.add(G.b,'m',0x9aa6be,(a[0]+b[0])/2,y+1.1,(a[1]+b[1])/2,.08,.08,L,ry);B.add(G.b,'m',0x6a7690,(a[0]+b[0])/2,y+.6,(a[1]+b[1])/2,.05,.05,L,ry);B.add(G.b,'gw',LCB,(a[0]+b[0])/2,y+.12,(a[1]+b[1])/2,.06,.06,L,ry);
+for(let k=0;k<=n;k++){const t=k/n,px=a[0]+dx*t,pz=a[1]+dz*t;if(k<n||i==P.length-2)LC.rp.push([px,pz]);if(k%1==0&&k<n)lcCol(px+dx/n/2,pz+dz/n/2,.5)}}}
+
+/*-- Aufbau (in mcBuild, vor mcInst) --*/
+function lcBuild(){const R=GR,G=mcGeo(),y=CTY.h0,PI=Math.PI,mob=QL.mob;LC.on=1;LC.orb=0;LC.t=0;LC.hs=[];LC.hb=[];LC.pool=[];LC.cr=[];LC.crt=[];LC.rp=[];lcTex();lcEnv();
+/* Skyline hinter der Ankunftshalle: Mittelturm, Hochbahn (Ring um den Turm + Bogen ueber der Ringstrasse), Tuerme, Kuppeln mit Gaerten */
+let B=mcCell(0,128,70);const CX=0,CZ=135;lcCore(B.lo,CX,CZ);
+const X1=[[-14.9,109,4],[14.9,109,4]];lcRail(B.lo,CX,CZ,30,26,0,PI*2,X1.concat([[CX,CZ-30,3]]));lcRail(B.lo,0,0,110,15,-1.08,1.08,X1);
+for(let k=0;k<4;k++){const a=k/4*PI*2+PI/4;lcLine(B.lo,'m',0x232c42,[CX+Math.sin(a)*7.5,y+25.5,CZ+Math.cos(a)*7.5],[CX+Math.sin(a)*27.8,y+25.5,CZ+Math.cos(a)*27.8],3.2);lcLine(B.lo,'gw',LCB,[CX+Math.sin(a)*7.5,y+24.95,CZ+Math.cos(a)*7.5],[CX+Math.sin(a)*27.8,y+24.95,CZ+Math.cos(a)*27.8],.2)}
+[[-34,116,80,4,{n:6}],[34,114,94,4.5,{n:4,ry:PI/4,vi:1}],[-24,166,70,3.8,{n:8}],[20,166,104,4.2,{n:6,vi:1}],[-88,108,58,3.6,{n:4,ry:.3}],[88,124,72,4,{n:6}],[36,84,50,3.4,{n:6,vi:1,seg:[.55,.45]}],[-30,26,44,3.2,{n:4,ry:.6,seg:[.55,.45]}]]
+.forEach(([x,z,h,r,o])=>lcSpire(B.lo,x,z,h,r,o));
+mcDome(B,-52,y,140,12,{green:mob?10:18,hy:8});mcDome(B,52,y,146,11,{green:mob?9:16,hy:7.5});[[-52,140,10],[52,146,9]].forEach(([x,z,R])=>{for(let i=0;i<(mob?8:16);i++){const a=i*2.39,d=Math.sqrt((i+.5)/16)*R;LC.cr.push([x+Math.sin(a)*d,y+1.7,z+Math.cos(a)*d,.5+(i%3)*.25,i%3?LCV:0xc07cff])}});
+/* Antenne links (+x), Bannerturm rechts (-x, ersetzt den alten Wohnturm, die Roehre bleibt) */B=mcCell(44,70,30);lcDish(B.lo,52,70,-2.5,.62);B=mcCell(-34,80,14);lcBannerT(B.lo,-34,80,1);
+/* Landefeld: Halle mit geparkten Schiffen, Kisten, Gelaender, Bildschirmwand, Schild LUNA CITY, Kristalle */
+B=mcCell(30,22,34);lcHangar(B.lo,44,20);lcShipB(B.lo,44,y+.1,20,-PI/2,1,1);lcShipB(B.lo,29.5,y+.1,26,-PI/2-.25,.95,1);lcBox(29.5,26,3.2,11.4,-PI/2-.25);lcBox(29.5,26,12,3,-PI/2-.25);lcBox(44,20,3.2,11.4,-PI/2);
+[[34,33,0,0],[35.9,33.2,.3,0],[34.4,33.1,.1,1],[49,10,0,0],[47.1,10.2,-.2,0],[52,30.5,.4,0],[50.1,30.2,0,0]].forEach(([x,z,r,up],i)=>{const s=up?.9:1.2;LC.crt.push([x,y+(up?1.2+s/2:s/2),z,r,s,[0x3a4a6a,0x4a3a7a,0x2a3a5a][i%3]]);if(!up)lcCol(x,z,.9)});
+lcScreen(B.lo,30,y+6.6,52,PI,12,6.75,0);
+lcRail2(B.hi,[[-28,-24],[-4.5,-24]]);lcRail2(B.hi,[[4.5,-24],[28,-24]]);lcRail2(B.hi,[[32,37.5],[42,37.5]]);
+{const x=-26,z=42,ry=2.84,s=Math.sin(ry),c=Math.cos(ry);B=mcCell(-26,42,10);B.lo.add(G.b,'m',0x1c2436,x+s*.6,y+1.4,z+c*.6,12,2.8,2.4,ry);B.lo.add(G.b,'gw',LCB,x+s*1.82,y+.25,z+c*1.82,12,.14,.1,ry);B.lo.add(G.b,'m',LCK,x,y+2.8+2.3,z,11.6,4.6,.4,ry);B.lo.add(G.pl,'lsg',0xffffff,x+s*.21,y+5.1,z+c*.21,11.2,4.2,1,ry);lcBox(x+s*.6,z+c*.6,12,2.4,ry);
+for(let i=0;i<14;i++){const t=(i/13-.5)*12,d=2.4+(i%3)*.7;LC.cr.push([x+Math.cos(ry)*t+s*d,y+.2,z-Math.sin(ry)*t+c*d,.4+(i*7%5)*.12,i%2?LCV:LCB])}LC.pool.push([x+s*3,z+c*3,7,LCB,.3])}
+[[-14,-14],[14,-14],[-24,4],[24,4],[-12,14],[12,14]].forEach(([x,z],i)=>{for(let k=0;k<5;k++)LC.cr.push([x+(k-2)*.9,y+.2,z+(k%2)*.8,.35+(k%3)*.12,(i+k)%2?LCV:LCB])});
+/* Bildschirm an der Industriehalle (Westseite) */B=CTY.cells.find(c=>c.x==100&&c.z==52)||mcCell(70,30,20);lcScreen(B.lo,57.4,y+6.4,30,-PI/2,10,5.6,1);
+/* Landefeld-Boden: glaenzend, Leuchtstreifen, Bodenlichter */{const T=LC.tex,m=new THREE.Mesh(hbG('lcap',()=>new THREE.PlaneGeometry(84,76).rotateX(-PI/2)),new THREE.MeshStandardMaterial({map:T.ap,emissiveMap:T.apE,emissive:0xffffff,emissiveIntensity:1,metalness:.6,roughness:.24,envMap:LC.env,envMapIntensity:1.3,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));
+m.position.set(0,y+.045,10);m.receiveShadow=true;CTY.g.add(m);LC.ap=m;for(let i=0;i<11;i++)[-1,1].forEach(q=>{CTY.lmp.push([q*41.5,y+.12,-27+i*7.4,.2,LCB]);if(i<6)CTY.lmp.push([-40+i*16,y+.12,-27.5,.2,LCV])})}
+/* Halos fuer Lampen und kleine Lichter, Spiegel-Flecken unter Lampen auf dem Landefeld */
+CTY.lmp.forEach(([x,yy,z,s,c])=>{LC.hs.push([x,yy,z,c]);if(Math.abs(x)<42&&z>-29&&z<48&&yy-y>2)LC.pool.push([x,z,3.2,c,.55])});
+/* Licht: Mondnacht in Dunkelblau/Violett, Sonne schwach und kuehl, zwei echte Punktlichter */
+R.E.sunI=Math.min(R.E.sunI||1,mob?.75:.62);if(R.dl)R.dl.color.set(0xb4c4ff);GS.children.forEach(o=>{if(o.isHemisphereLight){o.color.set(0x5466c8);o.groundColor.set(0x1a1030);o.intensity=Math.max(o.intensity,.5)}});
+const p1=new THREE.PointLight(0x4ab8ff,.9,70,2);p1.position.set(10,y+18,30);const p2=new THREE.PointLight(0x9a5cff,1.4,110,2);p2.position.set(CX,y+18,CZ-26);CTY.g.add(p1,p2);
+/* Flugverkehr: 3 Schiffe im Verband, Schweif */
+const sb=mcBat();lcShipB(sb,0,0,0,0,.8,0);const tmp=new THREE.Group();sb.done(tmp,0);
+LC.fl={t:-(4+Math.random()*6),dur:1,p0:new V3(),p1:new V3(),m:tmp.children.map(c=>{const im=new THREE.InstancedMesh(c.geometry,c.material,3);im.frustumCulled=false;im.visible=false;CTY.g.add(im);return im}),
+tr:(()=>{const im=new THREE.InstancedMesh(hbG('lctr',()=>new THREE.ConeGeometry(.5,1,10,1,true).rotateX(-PI/2)),new THREE.MeshBasicMaterial({color:0x4ab8ff,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false,fog:false}),3);im.frustumCulled=false;im.visible=false;CTY.g.add(im);return im})()}}
+
+/*-- nach mcInst: Instanzen und Halos --*/
+function lcFinish(){if(!LC.on)return;const G=mcGeo(),o=new THREE.Object3D(),y=CTY.h0,T=lcTex(),M=mcMats();
+/* Kisten */if(LC.crt.length){const im=new THREE.InstancedMesh(G.b,new THREE.MeshStandardMaterial({map:hullTex(),metalness:.5,roughness:.45,envMap:LC.env}),LC.crt.length);LC.crt.forEach(([x,yy,z,r,s,c],i)=>{o.position.set(x,yy,z);o.rotation.set(0,r,0);o.scale.set(s*1.5,s,s);o.updateMatrix();im.setMatrixAt(i,o.matrix);im.setColorAt(i,MCC.set(c))});im.castShadow=im.receiveShadow=true;CTY.g.add(im)}
+/* Gelaender-Pfosten */if(LC.rp.length){const im=new THREE.InstancedMesh(G.c8,M.inst,LC.rp.length);LC.rp.forEach(([x,z],i)=>{o.position.set(x,y+.6,z);o.rotation.set(0,0,0);o.scale.set(.1,1.2,.1);o.updateMatrix();im.setMatrixAt(i,o.matrix)});CTY.g.add(im)}
+/* Kristalle und violette Pflanzen (leuchtend) */if(LC.cr.length){const im=new THREE.InstancedMesh(G.ic,new THREE.MeshBasicMaterial({toneMapped:false,transparent:true,opacity:.88}),LC.cr.length);LC.cr.forEach(([x,yy,z,s,c],i)=>{o.position.set(x,yy+s*.8,z);o.rotation.set(i*.7,i*1.3,i*.4);o.scale.set(s*.7,s*2.2,s*.7);o.updateMatrix();im.setMatrixAt(i,o.matrix);im.setColorAt(i,MCC.set(c))});CTY.g.add(im);LC.cr.forEach(([x,yy,z,s,c],i)=>{if(i%3==0)LC.hs.push([x,yy+s,z,c])})}
+/* Spiegel-Flecken auf glaenzendem Boden (flach, additiv) */if(LC.pool.length){const im=new THREE.InstancedMesh(G.pl,new THREE.MeshBasicMaterial({map:T.gl,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false}),LC.pool.length);
+LC.pool.forEach(([x,z,s,c,a],i)=>{o.position.set(x,y+.09,z);o.rotation.set(-Math.PI/2,0,0);o.scale.set(s,s,1);o.updateMatrix();im.setMatrixAt(i,o.matrix);im.setColorAt(i,MCC.set(c).multiplyScalar(a))});im.renderOrder=3;CTY.g.add(im)}
+/* Halos (statt Bloom): zwei Punktwolken, klein und gross */const pts=(L,sz)=>{if(!L.length)return null;const P=new Float32Array(L.length*3),C=new Float32Array(L.length*3);L.forEach(([x,yy,z,c],i)=>{P[i*3]=x;P[i*3+1]=yy;P[i*3+2]=z;MCC.set(c);C[i*3]=MCC.r;C[i*3+1]=MCC.g;C[i*3+2]=MCC.b});
+const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('color',new THREE.BufferAttribute(C,3));g.computeBoundingSphere();const p=new THREE.Points(g,new THREE.PointsMaterial({size:sz,map:T.gl,vertexColors:true,transparent:true,opacity:.75,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false,sizeAttenuation:true}));p.renderOrder=4;CTY.g.add(p);return p};
+LC.sh=pts(LC.hs,1.5);LC.hl=pts(LC.hb,QL.mob?5:6.5)}
+
+/*-- pro Bild: Flugverkehr, Bildschirm-Flimmern (keine neuen Objekte) --*/
+const LCV3=new V3(),LCQ=new THREE.Quaternion(),LCE=new THREE.Euler(),LCO=new THREE.Object3D();
+function lcStep(dt){if(!LC.on||!CTY.on)return;const t=(LC.t+=dt),F=LC.fl,M=mcMats();if(M.scr)M.scr.color.setScalar(.92+Math.sin(t*7.3)*.03+Math.sin(t*1.7)*.05);if(LC.hl)LC.hl.material.opacity=.68+Math.sin(t*2.2)*.08;
+if(!F)return;F.t+=dt;if(F.t<0){if(F.m[0].visible){F.m.forEach(m=>m.visible=false);F.tr.visible=false}return}
+if(!F.go){F.go=1;F.t=0;const a=Math.random()*6.283,cx=(Math.random()-.5)*80,cz=60+(Math.random()-.5)*90,hh=CTY.h0+60+Math.random()*40;F.p0.set(cx-Math.sin(a)*420,hh,cz-Math.cos(a)*420);F.p1.set(cx+Math.sin(a)*420,hh-8+Math.random()*16,cz+Math.cos(a)*420);F.dur=840/(48+Math.random()*24);F.m.forEach(m=>m.visible=true);F.tr.visible=true}
+const k=F.t/F.dur;if(k>=1){F.go=0;F.t=-(14+Math.random()*22);return}LCV3.subVectors(F.p1,F.p0);const yaw=Math.atan2(LCV3.x,LCV3.z),pit=-Math.atan2(LCV3.y,Math.hypot(LCV3.x,LCV3.z)),bank=Math.sin(t*.8)*.12;
+for(let i=0;i<3;i++){const off=i?(i==1?-1:1):0,back=i?-9:0;LCO.position.copy(F.p0).lerp(F.p1,k);LCO.rotation.set(pit,yaw,bank+off*.06,'YXZ');LCO.translateX(off*9);LCO.translateZ(back);LCO.translateY(i?-2:0);LCO.scale.setScalar(1);LCO.updateMatrix();F.m.forEach(m=>m.setMatrixAt(i,LCO.matrix));
+LCO.translateY(2.1*.8);LCO.translateZ(-7.1*.8-6.5);LCO.scale.set(1.1,1.1,13+Math.sin(t*30+i)*1.2);LCO.updateMatrix();F.tr.setMatrixAt(i,LCO.matrix)}F.m.forEach(m=>m.instanceMatrix.needsUpdate=true);F.tr.instanceMatrix.needsUpdate=true}
+
+/*-- im Flug (stModel): Mittelturm, Ringbahn und Tuerme auf der Stadtflaeche, ein Sammelnetz (Teile pro Ort ueber addM) --*/
+function lcOrbit(s,g,X,det,site){const B=mcBat(),k=1.35,PI=Math.PI;LC.orb=1;const h0=CTY.h0;lcTex();lcEnv();
+const P=(cx,cz,fn)=>{const S=site(cx,cz),Fm=new THREE.Matrix4().compose(S.p,new THREE.Quaternion().setFromUnitVectors(Y3,S.n),new V3(1,1,1)),px={add(geo,mk,col,x,y,z,sx,sy,sz,ry,rx,rz,ord){MCE.set(rx||0,ry||0,rz||0,ord||'XYZ');MCQ.setFromEuler(MCE);const m=new THREE.Matrix4().compose(new V3((x-cx)*k,(y-h0)*k,(z-cz)*k),MCQ,new V3(sx*k,sy*k,sz*k));m.premultiply(Fm);B.addM(geo,mk,col,m)}};fn(px);return S};
+try{P(0,128,b=>{lcCore(b,0,128,{scr:0});lcRail(b,0,128,30,26,0,PI*2,null)});const col=(x,z,r,h)=>{const f=X.at(x,z,0);X.cy(r,r,h,4,X.TR,0,h/2,0,0,0,0,f,{t:'c',r,hl:h/2}).visible=false};col(0,128,10,180);
+[[-62,128,80,4,{n:6}],[64,132,94,4.5,{n:4,ry:PI/4,vi:1}],[-40,182,70,3.8,{n:8}],[38,184,104,4.2,{n:6,vi:1}],[-96,92,58,3.6,{n:4}],[104,104,72,4,{n:6}],[-128,-20,64,4,{n:6,vi:1}],[132,-40,56,3.6,{n:4}]].forEach(([x,z,h,r,o])=>{P(x,z,b=>lcSpire(b,x,z,h,r,o));col(x,z,r*k,h*k)});
+P(-100,-60,b=>lcBannerT(b,-100,-60,1));col(-100,-60,6,82)}catch(e){console.warn(e)}LC.orb=0;B.done(det,1)}
 
 /*-- Beim Betreten eines Planeten: Laser, Funken, Basis, Rover aufbauen --*/
 function sysGround(fr){lzInit();jpInit();ROV.on=0;TL.hk=null;TL.drill=0;SC.t=0;bmEnd();HB.in=0;HB.cyc=null;HB.lt=null;hbClear();bmAll()}
@@ -5322,7 +5523,7 @@ if(s.svc.includes('mods')){h+='<h3>ANZUG-MODULE</h3>';Object.keys(MODS).forEach(
 else if(STAB=='jobs'){const off=jobsFor(s);h+='<h3>ANGEBOTE</h3>';off.forEach((j,i)=>{const has=save.jobs.some(q=>q.id==j.id);h+=R('<div><b>'+j.t+'</b><br><small>'+j.d+'</small></div>','<b style="color:#ffcc33">'+j.r+' ●</b>'+(j.bp?'<br><small>+ Bauplan '+BPN[j.bp]+'</small>':''),'<button class="t'+(has?'':' on')+'" data-j="'+i+'" '+(has||save.jobs.length>=3?'disabled':'')+'>'+(has?'angenommen':'Annehmen')+'</button>')});
 h+='<h3>AKTIV ('+save.jobs.length+'/3)</h3>'+(save.jobs.length?save.jobs.map((j,i)=>R('<div><b>'+j.t+'</b>'+(j.ty=='kill'?'<br><small>noch '+j.n+'</small>':'')+'</div>','',(j.ty=='deliver'&&j.st==s.id?'<button class="t on" data-jd="'+i+'" '+(have(j.g)>=j.n?'':'disabled')+'>Abliefern</button>':'')+'<button class="t" data-jx="'+i+'">Abbrechen</button>')).join(''):'<small class="unote">Keine.</small>')}
 else{h+='<p>'+s.d+'</p>'+(s.ports&&s.ports.length?'<p><small>Andockbuchten: '+s.ports.length+(G.dport&&G.dport.s===s?' · angedockt in '+G.dport.name:'')+'</small></p>':'')+'<h3>'+f.n.toUpperCase()+'</h3><p>'+f.d+'</p><h3>DEIN RUF</h3>'+Object.keys(FAC).filter(k=>k!='pirat'&&k!='waechter').map(k=>FAC[k].n+': <b style="color:'+FAC[k].c+'">'+Math.round(save.rep[k]||0)+'</b>').join(' · ')}
-h+='</div><div class="uft"><button class="t" data-a="inv">🚚 Frachtraum</button><span class="sp"></span>'+(G.gm&&GR.mc?'<button class="t on" data-a="close">🚶 Zurück in die Stadt</button>':'<button class="t on" data-a="undock">🚀 Abdocken</button>')+'</div>';SU.innerHTML=h;SU._tab=STAB;SU.scrollTop=sc}
+h+='</div><div class="uft"><button class="t" data-a="inv">🚚 Frachtraum</button><span class="sp"></span>'+(G.gm&&GR.mc?'<button class="t on" data-a="close">🚶 Zurück nach Luna City</button>':'<button class="t on" data-a="undock">🚀 Abdocken</button>')+'</div>';SU.innerHTML=h;SU._tab=STAB;SU.scrollTop=sc}
 SU.onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const d=b.dataset,s=G.cur,sp=SPEC(),rep=save.rep[s.f]||0;sfx('ui');
 if(d.tab)STAB=d.tab;else if(d.b){const[g,n]=d.b.split('|');for(let i=0;i<+n;i++){const p=price(s,g);if(save.coins<p||save.eco[s.id][g]<1||cgFull(g,1))break;save.coins-=p;save.eco[s.id][g]--;addTo(['cg'],g,1)}IVD=1;sfx('coin')}
 else if(d.s){const[g,n]=d.s.split('|'),tr=TRADE.includes(g);for(let i=0;i<+n;i++){if(!takeFrom(['cg','sh','bp','hb'],g,1))break;save.coins+=tr?price(s,g,1):Math.max(1,Math.round((ITM[g]?ITM[g].v:20)*.6*(1+clamp(rep,-60,80)/500)));if(save.eco[s.id][g]!=null)save.eco[s.id][g]++}hbDirty=1;sfx('coin')}
