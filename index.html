@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>DigoSky Beta 3.34</title>
+<title>DigoSky Beta 3.35</title>
 <style>
 :root{color-scheme:dark;--bg:#02030a;--fg:#e8ecff;--ac:#55ccff;--card:#10142bd9;--gold:#ffcc33;box-sizing:border-box}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;touch-action:none}
@@ -211,7 +211,8 @@ else{Object.assign(p,{t:'r',R:300+r()*1100,cap:r()<.3});if(r()<.4){p.atm=p.C.map
 yield* mkPJ(p);if(!s.loaded)return;G.pl.push(p);s.ps.push(p)}}
 function unloadSys(s){JB.q=JB.q.filter(j=>j.k!=='sys'+s.seed);(s.ps||[]).forEach(p=>p.o.forEach(o=>{S.remove(o);if(o.geometry)o.geometry.dispose();if(o.material){if(o.material.map&&!o.isSprite)o.material.map.dispose();o.material.dispose()}}));G.pl=G.pl.filter(p=>p.sys!=s);if(pat&&pat.p.sys==s)rmPatch();s.loaded=0}
 function sysUpd(P){if(typeof DTH!='undefined'&&DTH.on)return;let nb=null,nd=1e18,nl=null,nld=1e18,did=0;gal.forEach(s=>{const d=P.distanceTo(s.pos);if(!s.sol&&d<nd){nd=d;nb=s}if(!s.sol&&s.loaded&&d<nld){nld=d;nl=s}if(!s.loaded&&d<7e5&&!did){did=1;sysLoad(s)}else if(s.loaded&&!s.sol&&d>1.5e6&&!(HY.on&&HY.tg&&HY.tg.sys===s))unloadSys(s)});G.ns=nb;G.nsd=nd;if(nl){L2.position.copy(nl.pos);L2.color.setRGB(nl.col[0],nl.col[1],nl.col[2])}else L2.position.set(1e9,0,0)}
-function build(){S=new THREE.Scene();C=new THREE.PerspectiveCamera(75,1,.5,8e7);S.add(new THREE.AmbientLight(0x334466,.22));SUNL=new THREE.PointLight(0xfff0d8,1.75,0,0);S.add(SUNL);L2=new THREE.PointLight(0xffffff,1.5,1.2e6,1);L2.position.set(1e9,0,0);S.add(L2);GD=glow();mkGal();
+let AMBL=null;/* 3.35: Umgebungslicht im All (wird bei Luna City durch das Halbkugel-Licht der Bodenstadt ersetzt) */
+function build(){S=new THREE.Scene();C=new THREE.PerspectiveCamera(75,1,.5,8e7);AMBL=new THREE.AmbientLight(0x334466,.22);S.add(AMBL);LCF.hl=new THREE.HemisphereLight(0x5466c8,0x1a1030,0);S.add(LCF.hl);SUNL=new THREE.PointLight(0xfff0d8,1.75,0,0);S.add(SUNL);L2=new THREE.PointLight(0xffffff,1.5,1.2e6,1);L2.position.set(1e9,0,0);S.add(L2);GD=glow();mkGal();
 if(!save.seed)save.seed=1+Math.floor(Math.random()*1e6);const rr=rng(save.seed);G.pl=[];SP.forEach(s=>{const p=Object.assign({sd:rr()*90,lv:0,tint:[1,.8,.45],sys:gal[0]},s),a=rr()*6.28;
 p.pos=s.par!=null?G.pl[s.par].pos.clone().add(new V3(Math.cos(a)*s.d,0,Math.sin(a)*s.d)):s.d?new V3(Math.cos(a)*s.d,(rr()-.5)*s.d*.03,Math.sin(a)*s.d):new V3();if(s.c){p.A=hx(s.c[0]);p.B=hx(s.c[1]);p.C=hx(s.c[2])}
 let mo=null;if(p.tx=='mond'){moonInit(p,G.pl[s.par]);p.lv=9;mo=moonSmall(p);p._cn=mo.cn}mkP(p);if(mo){p._cn=null;moonMat(p,G.pl[s.par]);moonApply({nm:mo.nm,w:mo.w,h:mo.h,px:mo.px})}p.vis=p.sun?1:0;G.pl.push(p)});
@@ -253,7 +254,8 @@ MOON.cell=moonGrid(L.map((c,i)=>[i,c,c.r*2.05]));
 const RY=[];L.forEach((c,i)=>{if(c.f&2){const big=c.r>.02,len=big?(c.a>.99&&c.r>.024&&c.y<0?32:16):9,K=big?84:18,tt=new V3(0,1,0).cross(t.set(c.x,c.y,c.z));if(tt.lengthSq()<1e-6)tt.set(1,0,0);tt.normalize();const t2=new V3().crossVectors(t,tt);
 const rs=[];for(let k=0;k<K;k++)rs.push(r()*6.2832-3.1416,(.08+r()*.3)*(big?1:.7),(.4+r()*.6)*(big?1:.7),len*(.35+r()*.65));RY.push({i,len,t1:tt,t2,rs,I:big?1:.6})}});
 MOON.RY=RY;MOON.rcell=moonGrid(RY.map((q,k)=>[k,L[q.i],L[q.i].r*q.len]));
-/* Luna City: Krater im Stadtgebiet abflachen */const se=typeof STN!='undefined'&&STN.find(s=>s.at!=null&&G.pl[s.at]===p&&s.gnd);MOON.S=se?new V3(...se.dir).normalize():null;MOON.S1=100/R;MOON.S2=170/R;
+/* Luna City: Krater im Stadtgebiet abflachen */const se=typeof STN!='undefined'&&STN.find(s=>s.at!=null&&s.gnd&&s.city&&(G.pl[s.at]===p||!G.pl[s.at]));/* 3.35: beim Aufbau ist G.pl[at] noch leer */MOON.S=se?new V3(...se.dir).normalize():null;MOON.S1=100/R;MOON.S2=170/R;
+/* 3.35: Stadtflaeche eben (Hoehe der Mitte), Uebergang MCR..MCR+70 wie gInfo am Boden; Rg = R + hb (hb = Mitte + 5, siehe stnInit) */MOON.Sh=null;if(MOON.S){MOON.Sh=moonEval(MOON.S.x,MOON.S.y,MOON.S.z,0).h;MOON.Rg=R+MOON.Sh+5}
 MOON.ok=1}
 function moonGrid(list){const NX=144,NY=72,cells=Array.from({length:NX*NY},()=>[]);
 for(const[i,c,ri] of list){const la=Math.asin(Math.max(-1,Math.min(1,c.y))),lo=Math.atan2(c.z,c.x),a=Math.min(3.1,ri*1.02),la0=la-a,la1=la+a;
@@ -279,6 +281,7 @@ const q=Math.sqrt(d2)/r,a=CA[i],rm=r*R,cx=r>.0058,D=(r>.03?.13:cx?.24:.4)*(.35+.
 if(q<1){const t=cx?Math.max(0,(q-.42)/.58):q,pr=-D+(D+H)*(cx?Math.pow(t,1.5):t*t)+(cx&&r<.04?D*.5*Math.exp(-q*q*40)*(.5+.5*a):0),w=1-sm(.72,1.02,q);h=h*(1-w)+(9-MOON.mh*1.6+pr)*w+pr*(1-w);
 if(col){if(CF[i]&1&&q<.88)al=al*.3+.3*.7;else al+=(.12*a*a+(CF[i]&4?.3:0))*(.5+.5*sm(.2,.95,q))+(a>.8?.05:0)}}
 else{const o=q-1;h+=H*Math.exp(-o*o*7);if(col&&a>.6)al+=(.08*(a-.6)/.4+(CF[i]&4?.2:0))*Math.exp(-o*o*2.5)}}
+if(MOON.Sh!=null){const d=x*MOON.S.x+y*MOON.S.y+z*MOON.S.z;if(d>.55){const rg=MOON.Rg*Math.sqrt(Math.max(0,1-d*d))/d;if(rg<MCR+70)h=MOON.Sh+(h-MOON.Sh)*sm(MCR,MCR+70,rg)}}
 MRES.h=h<.3?.3:h;if(col){MRES.m=m;MRES.mt=MOON.mt;
 const rg=MOON.rcell,rc=moonCell(rg,x,y,z),re=rg.st[rc+1];for(let k=rg.st[rc];k<re;k++){const Q=MOON.RY[rg.ix[k]],i=Q.i,dx=x-CX[i],dy=y-CY[i],dz=z-CZ[i],d=Math.sqrt(dx*dx+dy*dy+dz*dz)/CR[i];if(d>Q.len||d<.9)continue;
 const az=Math.atan2(dx*Q.t2.x+dy*Q.t2.y+dz*Q.t2.z,dx*Q.t1.x+dy*Q.t1.y+dz*Q.t1.z);let v=0;const rs=Q.rs;for(let j=0;j<rs.length;j+=4){if(d>rs[j+3])continue;let da=Math.abs(az-rs[j]);if(da>3.1416)da=6.2832-da;const xx=da*d/(rs[j+1]*(1+d*.04));if(xx<3){const f=1-xx*xx/9;v+=rs[j+2]*f*f*(1-sm(.45*rs[j+3],rs[j+3],d))}}
@@ -289,6 +292,8 @@ return MRES}
 const MTN=[[.97,.975,1.0],[.94,.965,1.02],[1,.975,.955]],MHL=[1.03,.97,.92];
 function moonCol(x,y,z){const q=moonEval(x,y,z,1),m=q.m,t=MTN[q.mt],g=290*q.al;return[Math.min(255,g*(MHL[0]+(t[0]-MHL[0])*m)),Math.min(255,g*(MHL[1]+(t[1]-MHL[1])*m)),Math.min(255,g*(MHL[2]+(t[2]-MHL[2])*m))]}
 function moonH(u){return moonEval(u.x,u.y,u.z,0).h}
+/* 3.35: 0 in der Stadtflaeche von Luna City, 1 ausserhalb (Feinrelief mdH im Flug-Patch dort aus, wie am Boden) */
+function mcFlatK(x,y,z){if(MOON.Sh==null)return 1;const d=x*MOON.S.x+y*MOON.S.y+z*MOON.S.z;if(d<=.55)return 1;return sm(MCR,MCR+70,MOON.Rg*Math.sqrt(Math.max(0,1-d*d))/d)}
 /* Textur + Normal/Höhen-Karte, Zeitbudget-Aufgabe (einmalig). Pixel -> Richtung wie THREE.SphereGeometry (x = -cos) */
 function* moonTexJ(p,w,h,out){const cn=document.createElement('canvas');cn.width=w;cn.height=h;const cx=cn.getContext('2d'),im=cx.createImageData(w,h),d=im.data,H=new Float32Array(w*h);
 for(let j=0;j<h;j++){const la=(.5-(j+.5)/h)*Math.PI,cl=Math.cos(la),sl=Math.sin(la);for(let i=0;i<w;i++){const lo=(i+.5)/w*6.2832,x=-Math.cos(lo)*cl,z=Math.sin(lo)*cl,c=moonCol(x,sl,z),o=(j*w+i)*4;H[j*w+i]=MRES.h;d[o]=c[0];d[o+1]=c[1];d[o+2]=c[2];d[o+3]=255}if(out.prog)out.prog(j/h);yield}
@@ -320,12 +325,12 @@ function* moonHiJ(){const p=MOON.p,w=QL.mob?1024:2048,o={w,h:w/2};const t0=perfo
 function moonStart(){if(MOON.p&&!MOON.hi&&!MOON.run){MOON.run=1;jobAdd(moonHiJ(),'moonTex')}}
 
 function hAt(p,u){if(p.gas||p.sun)return 0;if(p===MOON.p&&MOON.ok)return moonH(u);if(p.t=='e'&&fbm(u.x*2+p.sd,u.y*2,u.z*2,6)<.53)return 0;const K=Math.max(2,p.R/260),a=Math.min(90,p.R*.06);return Math.max(0,fbm(u.x*K+p.sd,u.y*K,u.z*K,5)-.3)*a*1.6}
-function gH(p,P){if(!pat||pat.p!=p)return 0;T3.copy(P).sub(p.pos).addScaledVector(pat.dir,-p.R).applyQuaternion(pat.inv);const e=1-sm(.7*pat.half,pat.half,Math.max(Math.abs(T3.x),Math.abs(T3.z)));T3.copy(P).sub(p.pos).normalize();return(hAt(p,T3)+(p===MOON.p&&MOON.ok?mdH(T3.x,T3.y,T3.z):0))*e}
+function gH(p,P){if(!pat||pat.p!=p)return 0;T3.copy(P).sub(p.pos).addScaledVector(pat.dir,-p.R).applyQuaternion(pat.inv);const e=1-sm(.7*pat.half,pat.half,Math.max(Math.abs(T3.x),Math.abs(T3.z)));T3.copy(P).sub(p.pos).normalize();return(hAt(p,T3)+(p===MOON.p&&MOON.ok?mdH(T3.x,T3.y,T3.z)*mcFlatK(T3.x,T3.y,T3.z):0))*e}
 function bPatch(p,dir){PJ.p=p;const j=bPatchJ(p,dir);while(!j.next().done);}
 function* bPatchJ(p,dir){const half=Math.min(p.R*.35,2500),N=140,MDn=p===MOON.p&&MOON.ok,g=new THREE.PlaneGeometry(2*half,2*half,N,N);g.rotateX(-Math.PI/2);const q=new THREE.Quaternion().setFromUnitVectors(Y3,dir),ta=new V3(1,0,0).applyQuaternion(q),tb=new V3(0,0,1).applyQuaternion(q),pa=g.attributes.position,cl=new Float32Array(pa.count*3),u=new V3(),f=p.R/25;
 const aD=MDn?new Float32Array(pa.count):null,aR=MDn?new Float32Array(pa.count):null;
 for(let i=0;i<pa.count;i++){const x=pa.getX(i),z=pa.getZ(i);u.copy(dir).multiplyScalar(p.R).addScaledVector(ta,x).addScaledVector(tb,z).normalize();const e=1-sm(.7*half,half,Math.max(Math.abs(x),Math.abs(z))),c=MDn?moonTexel(u.x,u.y,u.z):cf(p,u.x,u.y,u.z,1),c0=c[0],c1=c[1],c2=c[2],dd=(.7+.6*fbm(u.x*f,u.y*f,u.z*f,2))/255;
-const mh=MDn?mdH(u.x,u.y,u.z):0,mk=MDn?dd*(1+.16*MLP.rim-.12*MLP.bowl):dd,rel=(hAt(p,u)+mh)*e;pa.setY(i,Math.sqrt(p.R*p.R-x*x-z*z)-p.R+rel);
+const mh=MDn?mdH(u.x,u.y,u.z)*mcFlatK(u.x,u.y,u.z):0,mk=MDn?dd*(1+.16*MLP.rim-.12*MLP.bowl):dd,rel=(hAt(p,u)+mh)*e;pa.setY(i,Math.sqrt(p.R*p.R-x*x-z*z)-p.R+rel);
 /* 3.33: Mond – Grundfarbe = Textur (wie die Kugel), Feinstruktur und Relief getrennt (zum Rand hin 1, weich eingeblendet) */if(MDn){cl[i*3]=c0/255;cl[i*3+1]=c1/255;cl[i*3+2]=c2/255;aD[i]=1+(mk*255-1)*e;aR[i]=rel}else{cl[i*3]=c0*mk;cl[i*3+1]=c1*mk;cl[i*3+2]=c2*mk}if(i%282==281||(MDn&&i%94==93))yield}
 g.setAttribute('color',new THREE.BufferAttribute(cl,3));if(MDn){g.setAttribute('aD',new THREE.BufferAttribute(aD,1));g.setAttribute('aR',new THREE.BufferAttribute(aR,1))}g.computeVertexNormals();const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4}));if(MDn)mdPatchMat(m.material);m.position.copy(p.pos).addScaledVector(dir,p.R);m.quaternion.copy(q);if(PJ.p!==p){g.dispose();m.material.dispose();return}const had=!!(pat&&pat.p===p);if(pat)rmPatch();S.add(m);pat={p,dir:dir.clone(),mesh:m,half,inv:q.clone().invert(),t0:had?-1e9:performance.now()};PJ.p=null;if(MDn)yield* mdRocksJ(pat)}
 const PJ={p:null};
@@ -1195,7 +1200,8 @@ function mbH(x,z){if(x!==MNL.cx||z!==MNL.cz)mbAt(x,z);return MNL.ch}
 /* Bodenfarbe = Mond-Textur am gleichen Ort x Patch-Feinstruktur x halbe relative Geologie-Helligkeit */
 function mbCol(c,x,z){if(x!==MNL.cx||z!==MNL.cz)mbAt(x,z);let r=0,g=0,b=0;if(MNL.C){const N=MNL.N,C=MNL.C,i=MNL.gx|0,j=MNL.gz|0,a=MNL.gx-i,q=MNL.gz-j,o=k=>(C[(j*N+i)*3+k]*(1-a)+C[(j*N+i+1)*3+k]*a)*(1-q)+(C[((j+1)*N+i)*3+k]*(1-a)+C[((j+1)*N+i+1)*3+k]*a)*q;r=o(0);g=o(1);b=o(2)}
 else{for(let k=0;k<4;k++){mbDir(x+(k&1?1.6:-1.6),z+(k&2?1.6:-1.6),MBD2);const t=moonTexel(MBD2.x,MBD2.y,MBD2.z);r+=t[0];g+=t[1];b+=t[2]}r/=4;g/=4;b/=4}
-const f=MNL.R/25,dd=.7+.6*fbm(MNL.dx*f,MNL.dy*f,MNL.dz*f,2),L=(c[0]*.3+c[1]*.59+c[2]*.11)/MNL.L0,m=1.07*dd*(1+.16*MNL.rim-.12*MNL.bowl)*clamp(1+(L-1)*.35,.7,1.3);/* 1,07: Ausgleich fuer die Schlagschatten am Boden (im Flug-Patch gibt es keine), gemessen im Bildvergleich */return[Math.min(255,r*m),Math.min(255,g*m),Math.min(255,b*m)]}
+const f=MNL.R/25,dd=.7+.6*fbm(MNL.dx*f,MNL.dy*f,MNL.dz*f,2),L=(c[0]*.3+c[1]*.59+c[2]*.11)/MNL.L0,m=1.07*dd*(1+.16*MNL.rim-.12*MNL.bowl)*clamp(1+(L-1)*.35,.7,1.3);/* 1,07: Ausgleich fuer die Schlagschatten am Boden (im Flug-Patch gibt es keine), gemessen im Bildvergleich */return[Math.min(255,r*m*MBK[0]),Math.min(255,g*m*MBK[1]),Math.min(255,b*m*MBK[2])]}
+/* 3.35: Abgleich Boden <-> Lande-Patch aus dem Flug (Bildvergleich gleiche Stelle, 100 m und 30 m): Boden war ca. 5 % dunkler und waermer */const MBK=[1.015,1.03,1.065];
 /* gleiches Mond-Lichtmodell wie die Kugel im All (rauer Regolith: Rueckstreuung, flacher Lichtabfall) */
 const MBL_I='float dNVm=saturate(dot(geometry.normal,geometry.viewDir));vec3 irradiance=dotNL*mix(1.,1.6/(dotNL+dNVm+.12),.6)*directLight.color;';
 /* gnd=1: Bodengelaende – zusaetzlich die Normal-Map der Mond-Kugel (gleiche Krater-Schattierung wie aus dem All, 1 m pro Pixel), in der Stadt ausgeblendet */
@@ -1675,7 +1681,7 @@ const M2=document.createElement('div');M2.id='m2';
 M2.innerHTML='<canvas id="m3"></canvas><div class="mvig"></div><div class="mgr"></div>'
 +'<header class="mt"><div class="lg">'+EMB+'<div class="lgt">'+[...'DIGOSKY'].map((c,i)=>'<span style="--i:'+i+'">'+c+'</span>').join('')+'</div></div><div class="sb">WANDERER VX-9 · EXPEDITION SOL</div></header>'
 +'<div id="mst"></div><nav id="mn"></nav><section id="mp"></section>'
-+'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.34</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
++'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.35</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
 +'<div id="mfade"></div><input type="file" id="mfile" accept=".json,.txt,application/json,text/plain" style="display:none">';
 wrap.appendChild(M2);
 const mp=el('mp'),NAV=[['play','SPIEL STARTEN',0],['new','NEUES SPIEL',0],['load','SPIELSTAND LADEN',0],['mis','MISSIONEN',1],['char','CHARAKTER',1],['ship','RAUMSCHIFF',1],['kod','KODEX',1],['set','EINSTELLUNGEN',2],['prof','SPIELERPROFIL',2]],MNG=['KAMPAGNE','BORDSYSTEME','SYSTEM'];
@@ -2880,6 +2886,7 @@ else if(s.ty=='rock'){const r=M(new THREE.IcosahedronGeometry(110,2),new THREE.M
 for(let i=0;i<9;i++){const a=i*.7,b=(i%3-1)*.5,x=Math.cos(a)*Math.cos(b)*100,y=Math.sin(b)*90,z=Math.sin(a)*Math.cos(b)*100,m=cy(9,9,40,12,H,x,y,z);m.lookAt(0,0,0);m.rotateX(PI/2);const w=gl(1.2,30,1.2,i%2?AMB:LED,0,0,9.3,0,0,0,m);blink(x*1.25,y*1.25,z*1.25,i%2?0xffcc33:0x55ccff)}
 M(new THREE.SphereGeometry(30,16,10,0,PI*2,0,PI/2),new THREE.MeshStandardMaterial({color:0x88ccff,transparent:true,opacity:.45,metalness:.9,roughness:.1}),0,82,0);cy(4,4,70,8,D,0,120,0);blink(0,158,0,0xff3030);
 cy(7,7,72,12,TR,0,-95,0);const q=bridge(new V3(0,-131,0),new V3(0,-1,0),new V3(0,0,-1),124,62);pad(q,-31,0,0,25,'1');pad(q,31,0,0,25,'2');blink(0,1,0,0xff3030,q,1.4)}
+else if(s.ty=='gnd'&&s.city){try{mcOrbit(s,g,{pad})}catch(e){console.warn(e)}}
 else if(s.ty=='gnd'){const R0=s.body.R,leg=(x,z)=>{const L=s.hd+(x*x+z*z)/(2*R0)+16;cy(2,2.6,L,8,TR,x,-3-L/2,z)};
 bx(150,3,72,DK2,0,-1.5,0);bx(150,3,34,DK2,0,-1.5,-53);[-70,-24,24,70].forEach(x=>[30,-30,-64].forEach(z=>leg(x,z)));
 [-1,1].forEach(k=>{gl(150,.4,.6,LED,0,.1,k*35.7);gl(.6,.4,106,LED,k*74.7,.1,-17)});
@@ -2887,7 +2894,7 @@ pad(g,-37,0,0,27,'1');pad(g,37,0,0,27,'2');
 bx(16,26,14,H,0,13,-58);bx(22,7,18,H,0,29.5,-58);gl(22.3,2.2,18.3,WIN,0,30,-58);cy(.6,.6,14,6,TR,0,40,-58);blink(0,47.5,-58,0xff3030,g,1.4);
 [-1,1].forEach(k=>{M(new THREE.SphereGeometry(10,18,10,0,PI*2,0,PI/2),H,k*52,0,-55);gl(6,1.2,.5,WIN,k*52,4,-45.3);cy(4,4,18,12,H,k*26,4.2,-62,0,0,PI/2);
 [-1,1].forEach(j=>{cy(.6,.8,14,6,TR,k*72,7,j*33,0,0,0,g,0);gl(2.6,1,2.6,WIN,k*72,14.3,j*33)})});
-if(s.city)try{mcOrbit(s,g,{M,bx,cy,gl,blink,WIN,TR,SOL})}catch(e){console.warn(e)}}
+}
 else{cy(30,30,120,16,H,0,0,0,0,0,PI/2);M(new THREE.SphereGeometry(95,28,12,0,PI*2,0,.62),new THREE.MeshStandardMaterial({color:0xe8ecf2,metalness:.4,roughness:.35,side:THREE.DoubleSide}),0,130,0,PI,0,0,g,{t:'c',r:57,hl:6,dy:39}).scale.y=.45;
 cy(3,3,110,8,D,0,85,0);M(new THREE.SphereGeometry(8,10,8),D,0,140,0);[-1,1].forEach(d=>bx(110,.6,38,SOL,d*130,0,0));[-1,1].forEach(d=>bx(20,3,3,TR,d*70,0,0));
 const ring=M(new THREE.TorusGeometry(70,8,8,40),H,0,-20,0,PI/2);g.userData.rot=ring;g.userData.om=.1;for(let i=0;i<10;i++){const a=i/10*PI*2;gl(1,3,6,WIN,Math.cos(a)*78,Math.sin(a)*78,0,0,0,a,ring)}
@@ -2964,8 +2971,8 @@ if(!isFinite(P.x+P.y+P.z)||q.t>25){DK.seq=null;P.copy(pt.A);ship.quaternion.copy
 return P.distanceTo(DKO)/Math.max(dt,1e-3)}
 /* Lichter der Buchten, Leitstrahl, Flutlicht in der Nähe */
 const DKC=[0x40ff90,0xffb030,0x4aa8ff],DKLS=[];
-function stAnim(dt){const P=ship.position;DKLS.length=0;for(const s of STN){if(!s.m)continue;const d=P.distanceTo(s.pos);s.m.visible=d<90000;if(s.m.userData.det){s.m.userData.det.visible=d<7000;if(d<7000&&s.m.userData.mv)s.m.userData.mv(dt)}if(!s.ports.length||d>s.br+5000)continue;
-for(const pt of s.ports){const st=pt.st,ch=Math.floor(T*5)%4;pt.lm.color.setHex(DKC[st]);pt.beam.material.color.setHex(DKC[st]);pt.bc.forEach((b,i)=>b.visible=st==2||i==ch);pt.beam.visible=(G.st=='fly'&&!st)||st==1;pt.beam.material.opacity=.045+.02*Math.sin(T*3);DKLS.push(pt)}}
+function stAnim(dt){const P=ship.position;DKLS.length=0;for(const s of STN){if(!s.m)continue;const d=P.distanceTo(s.pos);s.m.visible=d<90000;if(s.m.userData.mcf)mcfAnim(s,d,dt);else if(s.m.userData.det){s.m.userData.det.visible=d<7000;if(d<7000&&s.m.userData.mv)s.m.userData.mv(dt)}if(!s.ports.length||d>s.br+5000)continue;
+for(const pt of s.ports){const st=pt.st,ch=Math.floor(T*5)%4;pt.lm.color.setHex(DKC[st]);pt.beam.material.color.setHex(DKC[st]);if(!pt.city)pt.bc.forEach((b,i)=>b.visible=st==2||i==ch);pt.beam.visible=pt.city?st==1:(G.st=='fly'&&!st)||st==1;pt.beam.material.opacity=.045+.02*Math.sin(T*3);if(!pt.city)DKLS.push(pt)}}
 DKLS.sort((a,b)=>a.D.distanceToSquared(P)-b.D.distanceToSquared(P));DKL.forEach((L,i)=>{const pt=DKLS[i],e=pt?pt.D.distanceTo(P):1e9;if(e<1600){L.position.copy(pt.D).addScaledVector(pt.n,24);L.intensity=1.5*(1-sm(1000,1600,e))}else L.intensity=0})}
 /* Interaktionshinweis: E in der Mitte, Ladekreis rundherum */
 const DKH=mkd('position:absolute;left:0;top:0;display:none;z-index:6;pointer-events:none;transform:translate(-50%,-50%);text-align:center;font:600 12px system-ui;color:#e6f7ff;text-shadow:0 0 6px #000,0 0 2px #000;white-space:nowrap');
@@ -5318,37 +5325,99 @@ const Rs=(r*r+ch*ch)/(2*ch),th=Math.asin(Math.min(1,r/Rs)),yc=wh+ch-Rs,d=.5,pts=
 const g=new THREE.LatheGeometry(pts,28);bump(g,wh-.1,.04);const o=new THREE.Mesh(g,pc);o.castShadow=o.receiveShadow=true;S.add(o);
 /* Leuchten und Fenster werfen keinen Schatten (spart Zeichenaufrufe im Schattendurchgang) */const M=hbMats(),ns=new Set([M.glow,M.gl2,M.scr,M.scr2,M.or,mcWin()]);S.traverse(q=>{if(q.isMesh&&ns.has(q.material))q.castShadow=false})}
 /*-- Luna City im Flug (stModel, Typ gnd): Kuppeln, Regolith-Module, Roehren, Solarfeld, Masten, Radiatoren, Kran rund um die Plattform --*/
-function mcOrbit(s,g,X){const b=s.body,u=new V3(...s.dir).normalize(),q=new THREE.Quaternion().setFromUnitVectors(Y3,u),R0=b.R,top=R0+s.hb,PI=Math.PI,{M,bx,cy,blink,WIN,TR,SOL}=X,
-det=new THREE.Group();g.add(det);g.userData.det=det;
-const WH=new THREE.MeshStandardMaterial({color:0xe8ecf0,metalness:.25,roughness:.55}),RG=new THREE.MeshStandardMaterial({color:0x8a8780,roughness:1,flatShading:true}),GLS=new THREE.MeshStandardMaterial({color:0xb8e4ff,metalness:.3,roughness:.05,transparent:true,opacity:.28,depthWrite:false,side:THREE.DoubleSide}),GRN=new THREE.MeshStandardMaterial({color:0x4a8a3c,roughness:.9}),YL=new THREE.MeshStandardMaterial({color:0xe8b420,metalness:.4,roughness:.5});
-/* Bodenpunkt (lokal) und Normale fuer eine Stelle (x,z) */const site=(x,z)=>{const dl=new V3(x,top,z).normalize(),D=dl.clone().applyQuaternion(q),rr=R0+hAt(b,D);return{p:dl.clone().multiplyScalar(rr).sub(new V3(0,top,0)),n:dl}},
-at=(x,z,ry)=>{const S=site(x,z),f=new THREE.Group();f.position.copy(S.p);f.quaternion.setFromUnitVectors(Y3,S.n);f.rotateY(ry||0);det.add(f);return f};
-const dome=(x,z,r,glass,green)=>{const f=at(x,z,0);cy(r+3,r+5,8,24,RG,0,-3,0,0,0,0,f,0);M(new THREE.SphereGeometry(r,28,12,0,PI*2,0,PI/2),glass?GLS:WH,0,1,0,0,0,0,f,1).scale.y=glass?.62:.7;
-if(green){cy(r-.5,r-.5,.6,24,GRN,0,1.2,0,0,0,0,f,0);for(let i=0;i<14;i++){const a=i*2.4,d=(i%5+1)/6*r*.8;M(new THREE.ConeGeometry(2.4,6,6),GRN,Math.sin(a)*d,4.5,Math.cos(a)*d,0,0,0,f,0)}}
-if(!glass)for(let i=0;i<10;i++){const a=i/10*PI*2;bx(3,1.4,.4,WIN,Math.sin(a)*(r*.97),3.2,Math.cos(a)*(r*.97),0,a,0,f,0)}else for(let i=0;i<6;i++)M(new THREE.TorusGeometry(r,.35,4,24,PI),TR,0,1,0,0,i*PI/6,0,f,0).scale.y=.62;blink(0,r*(glass?.62:.7)+2.5,0,glass?0xffffff:0xff3030,f,1.4);return f},
-barrel=(x,z,len,r,ry)=>{const f=at(x,z,ry);M(new THREE.CylinderGeometry(r,r,len,16,1,false,0,PI),WH,0,0,0,0,0,PI/2,f,1);M(new THREE.CylinderGeometry(r+1.2,r+1.2,len*.86,12,1,true,0,PI),RG,0,0,0,0,0,PI/2,f,0);
-[-1,1].forEach(e=>{bx(.4,r*.5,r,WIN,e*(len/2+.1),r*.45,0,0,0,0,f,0)});for(let i=-2;i<=2;i++)[-1,1].forEach(k=>bx(3,1.2,.3,WIN,i*len/6,r*.4,k*(r+.05),0,0,0,f,0))},
-tower=(x,z,r,n)=>{const f=at(x,z,0);for(let i=0;i<n;i++){cy(r,r,9,20,i%2?WH:H2,0,4.5+i*9,0,0,0,0,f,1);for(let k=0;k<8;k++){if((k+i)%3==0)continue;const a=(k+i*.5)/8*PI*2;bx(2.6,2,.4,WIN,Math.sin(a)*r,5+i*9,Math.cos(a)*r,0,a,0,f,0)}}M(new THREE.SphereGeometry(r,16,8,0,PI*2,0,PI/2),WH,0,n*9,0,0,0,0,f,0);cy(.4,.4,10,6,TR,0,n*9+r+4,0,0,0,0,f,0);blink(0,n*9+r+9.5,0,0xff3030,f,1.2)},
-mast=(x,z,h)=>{const f=at(x,z,0);[[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([a,c])=>cy(.5,.5,h,6,TR,a*3,h/2,c*3,0,0,0,f,0));for(let i=1;i<h/8;i++)bx(6.4,.5,6.4,TR,0,i*8,0,0,0,0,f,0);cy(4,4,h,4,TR,0,h/2,0,0,0,0,f,{t:'c',r:4,hl:h/2}).visible=false;
-M(new THREE.SphereGeometry(5,14,6,0,PI*2,0,1),WH,4,h*.75,0,0,0,-1.1,f,0);M(new THREE.SphereGeometry(3.5,14,6,0,PI*2,0,1),WH,-3.5,h*.6,1,1.1,0,.6,f,0);blink(0,h+1.5,0,0xff3030,f,1.4)},
-tube=(a,c,r)=>{const A=site(a[0],a[1]).p.add(new V3(0,a[2],0)),C=a.length&&c[3]?new V3(c[0],c[2],c[1]):site(c[0],c[1]).p.add(new V3(0,c[2],0)),d=C.clone().sub(A),L=d.length(),o=M(new THREE.CylinderGeometry(r,r,L,12,1,true),WH,0,0,0,0,0,0,det,0);o.position.copy(A).addScaledVector(d,.5);o.quaternion.setFromUnitVectors(Y3,d.normalize());
-for(let i=1;i<L/9;i++){const w=M(new THREE.TorusGeometry(r+.3,.4,4,12),TR,0,0,0,0,0,0,det,0);w.position.copy(A).addScaledVector(d,i*9);w.quaternion.setFromUnitVectors(new V3(0,0,1),d)}};
-const H2=new THREE.MeshStandardMaterial({color:0xd8dde4,metalness:.3,roughness:.5});
-/* 3.33: gleicher Grundriss wie am Boden (1 m = 1 Einheit); unter dem Andock-Deck (x ±75, z -70..36) steht nichts */const fo=(x,z)=>!(Math.abs(x)<78&&z>-73&&z<39);
-[[-118,30,8,1,1],[-74,120,9.5,1,1],[-52,140,12,1,1],[52,146,11,1,1],[0,78.5,5.6,1,0],[0,58,5.2],[-19,62,4.4],[19,62,4.6],[34,-78,6],[46,-76,4.4],[-32,-82,4.6],[-62,-50,6.5,1,1]].forEach(([x,z,r,gl,gr])=>{if(fo(x,z))dome(x,z,r,gl,gr)});
-[[-48,62,13,3.2,PI/2],[64,-108,10,2.6,.5],[82,-96,10,2.6,.9],[-64,-108,10,2.6,-.5],[-82,-96,10,2.6,-.9]].forEach(a=>barrel(...a));
-tower(-70,54,4.8,2);tower(-110,54,4,1);mast(-112,-66,34);mast(126,112,26);
-/* Solarfeld */{const f=at(0,-136,0);for(let i=0;i<4;i++)for(let j=0;j<20;j++)bx(4.2,.3,2.6,SOL,(j-9.5)*5.2,1.7,(i-1.5)*6,-.55,0,0,f,0)}
-/* Kraftwerk mit Radiatoren */{const f=at(74,104,0);cy(7,7,5,20,WH,0,2.5,0,0,0,0,f,1);M(new THREE.SphereGeometry(7,16,8,0,PI*2,0,PI/2),WH,0,5,0,0,0,0,f,0).scale.y=.65;[-1,1].forEach(k=>{for(let i=0;i<6;i++)bx(.15,7,6,WH,k*(10.5+i*2.6),5,0,0,0,0,f,0)})}
-/* Abbauanlage mit Silos */{const f=at(70,30,0);bx(24,10,14,H2,0,5,0,0,0,0,f,1);bx(24.6,.9,14.6,RG,0,10.4,0,0,0,0,f,0);[-6,0,6].forEach(x=>{cy(2.7,2.7,18,12,WH,x,9,13,0,0,0,f,1);M(new THREE.ConeGeometry(2.7,2.8,12),WH,x,19.4,13,0,0,0,f,0)});for(let i=0;i<6;i++)bx(2.2,.7,.2,WIN,-10+i*4,7.5,-7.05,0,0,0,f,0);blink(0,21.4,13,0xff3030,f,1.2)}
-/* Turmkran */{const f=at(128,20,0);bx(1.4,28,1.4,YL,0,14,0,0,0,0,f,1);bx(22,1,1,YL,-4,28.4,0,0,0,0,f,0);blink(-14.8,29.2,0,0xff3030,f,1.1)}
-/* 3.33: Buero-Hochhaeuser, Wohntuerme, Fabriken, Gewaechshaeuser, Hangar (wie am Boden) */
-[[-125,-95,72,6],[-140,-58,56,5.4],[-150,-22,84,6.4],[128,-104,64,5.6]].forEach(([x,z,h,r])=>{const f=at(x,z,0),s2=r*1.41;bx(s2,h,s2,H2,0,h/2,0,0,0,0,f,1);for(let k=0;k<4;k++){const a=k*PI/2;bx(s2*.8,h*.7,.2,WIN,Math.sin(a)*(s2/2+.05),h*.55,Math.cos(a)*(s2/2+.05),0,a,0,f,0)}blink(0,h+5,0,0xff3030,f,1)});
-[[-118,96,48,6],[-100,132,40,5],[-152,28,36,5]].forEach(([x,z,h,r])=>{const f=at(x,z,0);cy(r,r,h,16,H2,0,h/2,0,0,0,0,f,1);for(let k=0;k<6;k++)bx(2.4,h*.8,.3,WIN,Math.sin(k*1.05)*r,h*.5,Math.cos(k*1.05)*r,0,k*1.05,0,f,0);blink(0,h+4,0,0xff3030,f,1)});
-[[122,-72,22,15],[146,-38,17,13]].forEach(([x,z,w,d])=>{const f=at(x,z,-PI/2);bx(w,9,d,WH,0,4.5,0,0,0,0,f,1);cy(.8,.8,10,8,WH,-w*.3,14,-d*.3,0,0,0,f,0)});
-[[-100,-122,.4],[100,-122,-.4]].forEach(([x,z,ry])=>{const f=at(x,z,ry);bx(8.4,4.2,18,GLS,0,2.4,0,0,0,0,f,0)});
-{const f=at(150,-8,-PI/2);M(new THREE.CylinderGeometry(8,8,22,16,1,false,0,PI),WH,0,0,0,0,0,PI/2,f,1)}
-lcOrbit(s,g,{at,cy,TR},det,site);try{mvOrbit(s,g,det,site)}catch(e){console.warn(e)}}
+/*==== 3.35: LUNA CITY AUS EINER QUELLE – das Flug-Modell wird mit DENSELBEN Bau-Funktionen gebaut wie die Bodenstadt
+   (mcBuild mit lcBuild/ccBuild/mvStop, hbBuild-Huellen, Kuppelgaerten aus flGenJ), in einer Sandbox (Bodenzustand sichern, bauen, zuruecksetzen),
+   danach auf die Mondkugel gebogen und pro Material zusammengelegt. Keine eigene Stadtbeschreibung mehr fuer das Flug-Modell.
+   Abbildung Boden -> Stationsrahmen: Richtung D = normiert(x, Rg, z) (gleich wie mbDir am Boden, Rg = R + hb), Radius = R + Hc + (y - h0),
+   Hc = Mondhoehe der Stadtmitte; die Stadtflaeche ist im Mond selbst abgeflacht (MOON.Sh in moonEval, gleich wie gInfo am Boden).
+   Detailstufen (gleiche Teile, nur weniger): B.b grosse Teile ab 6 m (bis 60 km sichtbar), B.m mittlere 1,5-6 m (bis 2,5 km), B.f fein: hi-Zellen, Pflanzen, Kleinteile unter 1,5 m (nur nah). Andocken auf Landefeld 1 am Boden (kein Deck mehr). ====*/
+var LCF={s:null,st:0,h0:0,Hc:0,Rg:327,top:327,R:327,B:null,O:null,pl:[],hl:null,k:0,fd:1e9};
+const MCFV=new V3(),MCFV2=new V3(),MCFQ=new THREE.Quaternion(),MCFM=new THREE.Matrix4();
+/* Boden (x,y,z) -> Stationsrahmen; n (optional) = Bodenoben an dieser Stelle */
+function mcfP(x,y,z,o,n){const D=MCFV.set(x,LCF.Rg,z).normalize(),r=LCF.R+LCF.Hc+(y-LCF.h0);o.set(D.x*r,D.y*r-LCF.top,D.z*r);if(n)n.copy(D);return o}
+function mcfSetup(s){const b=s.body;LCF.s=s;LCF.R=b.R;LCF.Rg=LCF.top=b.R+(s.hb||0);LCF.Hc=hAt(b,PT.set(...s.dir).normalize())+.35}/* +0,35 m: Stadtboden sicher ueber dem Mond-Gelaende (Kugelnetz/Patch), sonst verdeckt das Gelaende den 5 cm hohen Stadtboden */
+/* Sandbox: Bodenzustand sichern, Stadt wie enterGround -> mcBuild -> hbBuild -> flGenJ -> ein mcStep bauen, Zustand zurueck.
+   Liefert die Gruppe in Bodenkoordinaten plus hi-Gruppen, Kollisionskreise, Gleiter und Fahrspuren. */
+function mcfSnap(s){const objs={GR,CTY,LC,CC,FL,HB,MVF,MNL},bak={},gm=G.gm,gp=GC.position.clone();let out=null,gpt=GEO.pt;
+for(const k in objs){const o=objs[k],c={};for(const f in o){const v=o[f];c[f]=v&&(v.isVector3||v.isMatrix3)?{__v:v,c:v.clone()}:v}bak[k]=c}
+try{G.gm=1;const R=GR;Object.assign(R,{free:1,pl:s.body,ne:true,E:ENV(s.body),mc:s,cg:{},rayL:[],nodes:[],sites:[],emit:[],items:[],x:0,z:30,y:null,hc:null,ph:'walk'});
+R.sd=[...s.body.n].reduce((a,c)=>a+c.charCodeAt(0),0)*7.3%80;
+Object.assign(HB,{M:[],C:[],A:[],rg:[],ia:[],ob:[],dc:[],dk:[],cg:null,dg:null,need:null,cur:null,in:0,lt:null});MVF.rov=null;MVF.bs=null;CC.car=CC.ped=CC.dr=CC.rb=null;
+mbSetup(R.E,new V3(...s.dir).normalize(),s.body.R+(s.hb||0),s.body);CTY.fl=0;const h0=CTY.h0=gInfo(0,0).h;CTY.fl=1;
+/* Hoehenraster wie gTerrain (gY/hgt lesen GR.hg): in der Stadt eben, ringsum aus gInfo; Geologie-Patch des letzten Bodenbesuchs aus */
+{const w=NG+1,HG=new Float32Array(w*w).fill(h0);for(let j=0;j<w;j++){const z=j*CS-SZ/2;if(Math.abs(z)>MCR+220)continue;for(let i=0;i<w;i++){const x=i*CS-SZ/2,r=Math.hypot(x,z);if(r>MCR-2&&r<MCR+220)HG[j*w+i]=gInfo(x,z).h}}R.hg=HG}gpt=GEO.pt;GEO.pt=null;
+R.g=new THREE.Group();GC.position.set(0,h0+400,0);mcBuild();try{hbBuild()}catch(e){console.warn(e)}
+/* Kuppelgaerten, Beete und Pflanzen am Schild (gleicher Erzeuger wie am Boden) */try{FL.sid++;const j=flGenJ(FL.sid,R);let n=0;while(!j.next().done&&n++<2e5);}catch(e){console.warn(e)}
+try{mcStep(.02)}catch(e){console.warn(e)}
+const ex=new Set(),C=CC.car;if(C){(C.F||[]).forEach(F=>F&&[...F.N,...F.F].forEach(p=>ex.add(p.im)));if(C.pool)ex.add(C.pool)}
+out={g:R.g,h0,hi:new Set(CTY.cells.map(c=>c.ghi)),ex,cg:R.cg,car:C,L:CC.L,lt:[]};R.g.traverse(o=>{if(o.isPointLight)out.lt.push(o)})}catch(e){console.warn('mcfSnap',e)}
+const mats=CTY.mats,geo=CTY.geo;for(const k in objs){const o=objs[k],c=bak[k];for(const f in o)if(!(f in c))delete o[f];for(const f in c){const v=c[f];if(v&&v.__v){v.__v.copy(v.c);o[f]=v.__v}else o[f]=v}}
+if(mats)CTY.mats=mats;if(geo)CTY.geo=geo;G.gm=gm;GEO.pt=gpt;GC.position.copy(gp);return out}
+/* grosse Dreiecke (Flaechen, Dachplatten) vor dem Biegen teilen, bis keine Kante laenger als L ist (sonst liegt die Mitte als Sehne unter dem gekruemmten Boden) */
+function mcfSub(g,L){const h2=(u,v)=>(u.x-v.x)**2+(u.z-v.z)**2;/* nur waagrechte Ausdehnung zaehlt: senkrechte Kanten bleiben beim Biegen gerade */const p=g.attributes.position,ix=g.index,nt=ix?ix.count/3:p.count/3,L2=L*L,A=new V3(),B=new V3(),C=new V3(),e2=t=>{const a=ix?ix.getX(t*3):t*3,b=ix?ix.getX(t*3+1):t*3+1,c=ix?ix.getX(t*3+2):t*3+2;A.fromBufferAttribute(p,a);B.fromBufferAttribute(p,b);C.fromBufferAttribute(p,c);return Math.max(h2(A,B),h2(B,C),h2(C,A))};
+let big=false;for(let t=0;t<nt&&!big;t++)if(e2(t)>L2)big=true;if(!big)return g;
+/* gleichmaessig teilen: Dreieck mit laengster Kante e in n x n Teildreiecke (n = aufrunden(e / L)), alle Attribute baryzentrisch */
+const ng=ix?g.toNonIndexed():g,names=Object.keys(ng.attributes),at=names.map(k=>ng.attributes[k]),P0=ng.attributes.position,n3=P0.count/3,ns=new Uint16Array(n3);let tot=0;
+for(let t=0;t<n3;t++){A.fromBufferAttribute(P0,t*3);B.fromBufferAttribute(P0,t*3+1);C.fromBufferAttribute(P0,t*3+2);const n=Math.max(1,Math.min(64,Math.ceil(Math.sqrt(Math.max(h2(A,B),h2(B,C),h2(C,A)))/L)));ns[t]=n;tot+=n*n}
+const out=at.map(a=>new Float32Array(tot*3*a.itemSize));let o=0;const put=(t,w1,w2)=>{const w0=1-w1-w2;for(let k=0;k<at.length;k++){const a=at[k].array,w=at[k].itemSize,O=out[k],b0=t*3*w;for(let c=0;c<w;c++)O[o*w+c]=w0*a[b0+c]+w1*a[b0+w+c]+w2*a[b0+2*w+c]}o++};
+for(let t=0;t<n3;t++){const n=ns[t];for(let i=0;i<n;i++)for(let j=0;j<n-i;j++){put(t,i/n,j/n);put(t,(i+1)/n,j/n);put(t,i/n,(j+1)/n);if(j<n-1-i){put(t,(i+1)/n,j/n);put(t,(i+1)/n,(j+1)/n);put(t,i/n,(j+1)/n)}}}
+const r=new THREE.BufferGeometry();names.forEach((k,j)=>r.setAttribute(k,new THREE.BufferAttribute(out[j],at[j].itemSize,at[j].normalized)));g.dispose();if(ng!==g)ng.dispose();return r}
+/* Biegen und Zusammenlegen: pro Material + Attributsatz ein Netz, getrennt grob/fein; InstancedMesh: jede Instanz starr gebogen */
+function* mcfBakeJ(sn,par,res){const g=sn.g,hi=sn.hi,P=new V3(),Nn=new V3(),Q=MCFQ,grp={},inst=[],solo=[],B={b:new THREE.Group(),m:new THREE.Group(),f:new THREE.Group()},BL=[B.b,B.m,B.f],tri=[0,0,0];
+g.updateMatrixWorld(true);const vis=o=>{for(let p=o;p&&p!==g;p=p.parent)if(!p.visible&&!hi.has(p))return false;return true},inHi=o=>{for(let p=o;p&&p!==g;p=p.parent)if(hi.has(p))return true;return false};
+const bendGeo=(geo,mw,line)=>{let G2=geo.clone();G2.applyMatrix4(mw);if(!line)G2=mcfSub(G2,10);const p=G2.attributes.position,n=G2.attributes.normal;for(let i=0;i<p.count;i++){P.fromBufferAttribute(p,i);mcfP(P.x,P.y,P.z,P,Nn);p.setXYZ(i,P.x,P.y,P.z);if(n){Q.setFromUnitVectors(Y3,Nn);P.fromBufferAttribute(n,i).applyQuaternion(Q);n.setXYZ(i,P.x,P.y,P.z)}}
+if(!line&&mw.determinant()<0&&G2.index){const a=G2.index.array;for(let i=0;i<a.length;i+=3){const t=a[i+1];a[i+1]=a[i+2];a[i+2]=t}}G2.computeBoundingSphere();return G2};
+g.traverse(o=>{if(o.isLight||o.isSprite||sn.ex.has(o))return;if(!(o.isMesh||o.isPoints||o.isLine))return;if(!vis(o))return;const geo=o.geometry;if(!geo||!geo.attributes.position)return;
+if(o.isInstancedMesh){if(o.count)inst.push(o);return}
+const mt=o.material;if(!geo.boundingSphere)geo.computeBoundingSphere();const rr=geo.boundingSphere.radius*o.matrixWorld.getMaxScaleOnAxis(),fine=inHi(o)||!!geo.attributes.aE||rr<1.5?2:rr<6?1:0;
+if(o.isPoints||o.isLine||Array.isArray(mt)||o.renderOrder){solo.push([o,fine]);return}
+const sig=Object.keys(geo.attributes).sort().map(k=>k+geo.attributes[k].itemSize).join(','),key=mt.uuid+'|'+sig+'|'+fine+(o.castShadow?1:0)+(o.receiveShadow?1:0);
+(grp[key]=grp[key]||{mt,fine,L:[],cs:o.castShadow,rs:o.receiveShadow}).L.push(o)});
+let tb=performance.now();const yb=function*(){if(performance.now()-tb>6){yield;tb=performance.now()}};
+for(const key in grp){yield* yb();const G0=grp[key],parts=G0.L.map(o=>bendGeo(o.geometry,o.matrixWorld,0)),names=Object.keys(parts[0].attributes);let nv=0,ni=0;parts.forEach(q=>{nv+=q.attributes.position.count;ni+=q.index?q.index.count:q.attributes.position.count});
+const out=new THREE.BufferGeometry();names.forEach(k=>{const a0=parts[0].attributes[k],w=a0.itemSize,A=new Float32Array(nv*w);let o2=0;parts.forEach(q=>{const a=q.attributes[k];if(a.isInterleavedBufferAttribute){for(let i=0;i<a.count;i++){A[o2+i*w]=a.getX(i);if(w>1)A[o2+i*w+1]=a.getY(i);if(w>2)A[o2+i*w+2]=a.getZ(i);if(w>3)A[o2+i*w+3]=a.getW(i)}}else A.set(a.array.subarray(0,a.count*w),o2);o2+=a.count*w});out.setAttribute(k,new THREE.BufferAttribute(A,w,a0.normalized))});
+const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);let oi=0,ov=0;parts.forEach(q=>{if(q.index){const a=q.index.array;for(let i=0;i<q.index.count;i++)I[oi++]=a[i]+ov}else for(let i=0;i<q.attributes.position.count;i++)I[oi++]=i+ov;ov+=q.attributes.position.count;q.dispose()});out.setIndex(new THREE.BufferAttribute(I,1));out.computeBoundingSphere();
+const m=new THREE.Mesh(out,G0.mt);m.castShadow=G0.cs;m.receiveShadow=G0.rs;m.matrixAutoUpdate=false;BL[G0.fine].add(m);tri[G0.fine]+=ni/3}
+solo.forEach(([o,fine])=>{const geo=bendGeo(o.geometry,o.matrixWorld,o.isLine||o.isPoints),m=o.isPoints?new THREE.Points(geo,o.material):o.isLineSegments?new THREE.LineSegments(geo,o.material):o.isLine?new THREE.Line(geo,o.material):new THREE.Mesh(geo,o.material);m.renderOrder=o.renderOrder;m.castShadow=o.castShadow;m.receiveShadow=o.receiveShadow;m.matrixAutoUpdate=false;m.frustumCulled=o.frustumCulled;BL[fine].add(m)});
+const R4=new THREE.Matrix4(),Om=new THREE.Matrix4();for(const o of inst){yield* yb();const n=o.count,geo=o.geometry;if(!geo.boundingSphere)geo.computeBoundingSphere();const m=new THREE.InstancedMesh(geo,o.material,n);let mxs=0,k=0;
+for(let i=0;i<n;i++){o.getMatrixAt(i,Om);const e=Om.elements;if(e[0]==1&&e[5]==1&&e[10]==1&&e[12]==0&&e[13]==0&&e[14]==0)continue;/* noch nicht gesetzte Instanz */
+if(o.instanceColor&&k!==i)o.instanceColor.array.copyWithin(k*3,i*3,i*3+3);Om.premultiply(o.matrixWorld);P.setFromMatrixPosition(Om);const x=P.x,y=P.y,z=P.z;mcfP(x,y,z,P,Nn);Q.setFromUnitVectors(Y3,Nn);R4.makeRotationFromQuaternion(Q);MCFV2.set(x,y,z).applyQuaternion(Q);Om.premultiply(R4);Om.elements[12]+=P.x-MCFV2.x;Om.elements[13]+=P.y-MCFV2.y;Om.elements[14]+=P.z-MCFV2.z;m.setMatrixAt(k++,Om);mxs=Math.max(mxs,Om.getMaxScaleOnAxis())}
+if(!k)continue;m.count=k;if(o.instanceColor)m.instanceColor=new THREE.InstancedBufferAttribute(o.instanceColor.array.slice(0,k*3),3);
+m.castShadow=o.castShadow;m.receiveShadow=o.receiveShadow;m.renderOrder=o.renderOrder;m.frustumCulled=false;const rr=geo.boundingSphere.radius*mxs,fine=inHi(o)||!!geo.attributes.aE||rr<1?2:rr<4?1:0;BL[fine].add(m);tri[fine]+=k*(geo.index?geo.index.count:geo.attributes.position.count)/3}
+par.add(B.b,B.m,B.f);res.B=B;res.tri=tri}
+/* Kollision fuer das Schiff (Stationsrahmen wie colBuild): Hoehenraster aus den Bodenmodellen (2 m), daraus Zylinder auf den Kollisionskreisen der Bodenstadt */
+function mcfCol(sn,s){const N=230,CS=2,O=N*CS/2,H=new Float32Array(N*N).fill(-1e9),P=new V3(),M=new THREE.Matrix4(),h0=sn.h0;
+const put=(x,y,z)=>{const i=((x+O)/CS)|0,j=((z+O)/CS)|0;if(i>=0&&j>=0&&i<N&&j<N){const k=j*N+i;if(y>H[k])H[k]=y}};
+sn.g.updateMatrixWorld(true);sn.g.traverse(o=>{if(!o.isMesh||sn.ex.has(o)||!o.geometry||!o.geometry.attributes.position)return;const mt=o.material;if(mt&&(mt.blending==THREE.AdditiveBlending||(mt.transparent&&mt.opacity<.35)))return;const p=o.geometry.attributes.position;
+if(o.isInstancedMesh){const st=Math.max(1,p.count>>4);for(let n=0;n<o.count;n++){o.getMatrixAt(n,M);M.premultiply(o.matrixWorld);for(let i=0;i<p.count;i+=st){P.fromBufferAttribute(p,i).applyMatrix4(M);put(P.x,P.y,P.z)}}}else for(let i=0;i<p.count;i++){P.fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld);put(P.x,P.y,P.z)}});
+const top=(x,z,r)=>{let t=-1e9;for(let j=Math.max(0,((z-r+O)/CS)|0);j<=Math.min(N-1,((z+r+O)/CS)|0);j++)for(let i=Math.max(0,((x-r+O)/CS)|0);i<=Math.min(N-1,((x+r+O)/CS)|0);i++)t=Math.max(t,H[j*N+i]);return t};
+const L=[];for(const k in sn.cg)for(const c of sn.cg[k]){const[x,z,r]=c;if(r<.8)continue;const t=top(x,z,r)-h0;if(t<2.5)continue;
+const hl=t/2,c3=mcfP(x,h0+hl,z,new V3(),Nn0),q=new THREE.Quaternion().setFromUnitVectors(Y3,Nn0).invert();L.push({t:'c',c:c3,q,r,hl,rot:false,br:Math.hypot(r,hl),city:1})}
+s.col=(s.col||[]).filter(c=>!c.city).concat(L);s.br=s.col.reduce((m,c)=>Math.max(m,c.c.length()+c.br),0);return L.length}
+const Nn0=new V3();
+/* Gleiter im Flug-Modell: dieselben Fahrzeuge wie am Boden (Arten, Farben, Fahrspuren aus ccFinish der Sandbox), ferne Stufe "lite", gebogen */
+function mcfCars(sn,s,det){const C=sn.car,L=sn.L;if(!C||!L)return;const F=LCF.mvF=C.cnt.map((c,k)=>c?mvFleet(k,c,0,det,MCFM,1):null),y0=sn.h0,S=MVS0,O={t:0};
+s.m.userData.mv=dt=>{const t=(O.t+=dt);S.t=t;F.forEach(f=>f&&mvBegin(f));for(let i=0;i<C.n;i++){const m=C.m[i],f=F[m];if(!f)continue;const li=C.lane[i];let x,y,z,ry;
+if(li<0){x=C.x[i];y=C.y[i];z=C.z[i];ry=C.ry[i]}else{const l=L[li];const s2=C.s[i]=(C.s[i]+l.v*.75*dt)%l.len,u0=s2/l.ds,j0=Math.floor(u0)%l.n,j1=(j0+1)%l.n,u=u0-Math.floor(u0);x=l.X[j0]+(l.X[j1]-l.X[j0])*u;z=l.Z[j0]+(l.Z[j1]-l.Z[j0])*u;y=y0+l.yb+C.hb[i]+(l.hi?Math.sin(s2*.02+C.ph[i])*2:0);ry=l.A[j0]}
+mcfP(x,y,z,MCFV2,Nn0);MCFQ.setFromUnitVectors(Y3,Nn0);MCFM.makeRotationFromQuaternion(MCFQ);PT.set(x,y,z).applyQuaternion(MCFQ);MCFM.elements[12]=MCFV2.x-PT.x;MCFM.elements[13]=MCFV2.y-PT.y;MCFM.elements[14]=MCFV2.z-PT.z;
+S.ph=C.ph[i];S.sp=t*(m==3?20:26)+C.ph[i]*5;S.tl=-.4;mvPut(f,0,x,y,z,ry,0,0,C.col[i],S)}F.forEach(f=>f&&mvEnd(f))};s.m.userData.mv(0)}
+/* Aufbau als Zeitbudget-Aufgabe (einmal pro Spiel, beim Anflug unter 65 km; Sandbox ein Schritt, Biegen/Zusammenlegen in kleinen Schritten) */
+function* mcfJob(s){yield;const sn=mcfSnap(s);if(!sn){LCF.st=9;return}yield;LCF.h0=sn.h0;const det=s.m.userData.det,t0=performance.now(),r={};yield* mcfBakeJ(sn,det,r);LCF.B=r.B;LCF.tri=r.tri;yield;
+LCF.nc=mcfCol(sn,s);yield;try{mcfCars(sn,s,det)}catch(e){console.warn(e)}
+/* die zwei Punktlichter der Stadt (blau am Landefeld, violett am Mittelturm) – im Flug-Modell immer vorhanden, Staerke nach Entfernung */
+sn.lt.slice(0,2).forEach((l,i)=>{const q=LCF.pl[i];if(!q)return;q.color.copy(l.color);q.distance=l.distance;q.decay=l.decay;q.userData.I=l.intensity;l.updateMatrixWorld();const p=l.getWorldPosition(new V3());mcfP(p.x,p.y,p.z,q.position)});
+LCF.ms=performance.now()-t0;LCF.st=3}
+/* Flug-Modell anlegen (aus stModel): leere Gruppe fuer die Stadt, Andockbucht auf Landefeld 1 am Boden, Lichter (ohne Deck, ohne Ersatzformen) */
+function mcOrbit(s,g,X){mcfSetup(s);const det=new THREE.Group();det.visible=false;g.add(det);g.userData.det=det;g.userData.mcf=1;
+/* Landefeld 1: Schiff steht nach dem Aussteigen bei (0,0) mit den Fuessen auf dem Boden -> Dockpunkt D = Bucht + 3,2 m (wie stnInit) */
+const ft=typeof SHX!='undefined'&&isFinite(SHX.foot)&&isFinite(SHX.S)?-SHX.foot*SHX.S:2.6,P=mcfP(0,LCF.h0+ft-3.2,0,new V3());const pg=X.pad(g,P.x,P.y,P.z,18,'1'),pt=s.ports[s.ports.length-1];pt.city=1;
+pg.children.forEach(o=>{if(o!==pt.beam){o.visible=false;if(o.userData.c)o.userData.c=0}});
+for(let i=0;i<2;i++){const l=new THREE.PointLight(0,0,1,2);l.userData.I=0;g.add(l);LCF.pl.push(l)}}
+/* pro Bild aus stAnim: Aufbau anstossen, Detailstufe, Lichter wie am Boden (Halbkugel-Licht Mondnacht), Gleiter */
+function mcfAnim(s,d,dt){const det=s.m.userData.det;if(!LCF.st&&d<65000&&!G.gm){LCF.st=1;jobAdd(mcfJob(s),'mcf')}/* Aufbau schon weit draussen, damit die Stadt nie aufpoppt */
+const k=LCF.st==3?1-sm(1200,3500,d):0;LCF.k=k;if(LCF.hl){LCF.hl.intensity=.5*k;if(k>0)LCF.hl.position.set(...s.dir)}if(AMBL)AMBL.intensity=.22*(1-k);LCF.pl.forEach(l=>l.intensity=l.userData.I*k);
+det.visible=LCF.st==3&&d<60000;if(!det.visible)return;const q=qlTier(),lim=[200,300,450][q]||300;LCF.B.f.visible=d<lim;LCF.B.m.visible=d<([1800,2500,3500][q]||2500);
+/* Gleiter nur bis 7 km (wie 3.34), danach Flotten aus */const near=d<7000;if(near!==LCF.mvOn){LCF.mvOn=near;(LCF.mvF||[]).forEach(f=>f&&[...f.N,...f.F].forEach(p=>p.im.visible=near&&p.im.count>0))}if(near&&s.m.userData.mv)s.m.userData.mv(dt)}
 
 /*==== 3.30: LUNA CITY – Skyline nach Bild 1 (Tuerme, Mittelturm mit Ringplattformen, Hochbahn, Gartenkuppeln, Antenne, Banner, Bildschirme), Landefeld, Licht, Flugverkehr ====*/
 /* Regeln: Kulisse nur ueber mcCell/mcBat (Sammelnetze) und Instanzen, Kollision nur mcCol/mcColRing/mcColBox (in LC.orb ausgeschaltet).
@@ -5588,11 +5657,7 @@ for(let i=0;i<3;i++){const off=i?(i==1?-1:1):0,back=i?-9:0;LCO.position.copy(F.p
 LCO.translateY(2.1*.8);LCO.translateZ(-7.1*.8-6.5);LCO.scale.set(1.1,1.1,13+Math.sin(t*30+i)*1.2);LCO.updateMatrix();F.tr.setMatrixAt(i,LCO.matrix)}F.m.forEach(m=>m.instanceMatrix.needsUpdate=true);F.tr.instanceMatrix.needsUpdate=true}
 
 /*-- im Flug (stModel): Mittelturm, Ringbahn und Tuerme auf der Stadtflaeche, ein Sammelnetz (Teile pro Ort ueber addM) --*/
-function lcOrbit(s,g,X,det,site){const B=mcBat(),k=1,PI=Math.PI;LC.orb=1;const h0=CTY.h0;lcTex();lcEnv();/* 3.33: Massstab 1 und gleiche Lage wie am Boden (lcBuild) */
-const P=(cx,cz,fn)=>{const S=site(cx,cz),Fm=new THREE.Matrix4().compose(S.p,new THREE.Quaternion().setFromUnitVectors(Y3,S.n),new V3(1,1,1)),px={add(geo,mk,col,x,y,z,sx,sy,sz,ry,rx,rz,ord){MCE.set(rx||0,ry||0,rz||0,ord||'XYZ');MCQ.setFromEuler(MCE);const m=new THREE.Matrix4().compose(new V3((x-cx)*k,(y-h0)*k,(z-cz)*k),MCQ,new V3(sx*k,sy*k,sz*k));m.premultiply(Fm);B.addM(geo,mk,col,m)}};fn(px);return S};
-try{P(0,135,b=>{lcCore(b,0,135,{scr:0});lcRail(b,0,135,30,26,0,PI*2,null)});P(0,82,b=>lcRail(b,0,0,110,15,-1.08,1.08,null));const col=(x,z,r,h)=>{const f=X.at(x,z,0);X.cy(r,r,h,4,X.TR,0,h/2,0,0,0,0,f,{t:'c',r,hl:h/2}).visible=false};col(0,135,16,180);
-[[-34,116,80,4,{n:6}],[34,114,94,4.5,{n:4,ry:PI/4,vi:1}],[-24,166,70,3.8,{n:8}],[20,166,104,4.2,{n:6,vi:1}],[-88,108,58,3.6,{n:4,ry:.3}],[88,124,72,4,{n:6}],[36,84,50,3.4,{n:6,vi:1,seg:[.55,.45]}]].forEach(([x,z,h,r,o])=>{P(x,z,b=>lcSpire(b,x,z,h,r,o));col(x,z,r,h)});
-P(-34,80,b=>lcBannerT(b,-34,80,1));col(-34,80,6,62)}catch(e){console.warn(e)}LC.orb=0;B.done(det,1)}
+
 
 /*==== 3.32: MONDPFLANZEN – leuchtende Bäume und Pflanzen nach Bild 2/3 (Kuppelgärten, Beete, Leuchthaine in Kratern) ====
    FL  = globaler Zustand. FLS = die 10 Arten (je EIN Modell als Instanzen; Fernstufe = Kreuz-Ebenen aus einem Atlas, Zelle = Index in FLS).
@@ -6148,13 +6213,7 @@ if(o.t=='bus'){const C=CC.car,B=MVF.bs;let best=1e9;if(C&&B)for(let i=0;i<C.n;i+
 sfx('ui');toast('🚏 Haltestelle Kraterpark · Linie 7 Mondstadt-Zentrum · '+(best<1e8?(best<3?'Der Bus ist da!':'nächster Bus in etwa '+Math.max(1,Math.round(best))+' s'):'Kein Bus unterwegs'));G.tt=4.5;return}return mvU0(o)};
 
 /*-- Flug-Modell der Stadt (mcOrbit): Gleiter als ferne Detailstufe, bewegt nur solange das Modell sichtbar ist --*/
-function mvOrbit(s,g,det,site){const S0=site(0,0),fr=new THREE.Matrix4().compose(S0.p,new THREE.Quaternion().setFromUnitVectors(Y3,S0.n),new V3(1,1,1)),q=qlTier(),r=rng(3434),sv=CC.L;CC.L=[];try{ccLanes()}catch(e){console.warn(e)}const L=CC.L;CC.L=sv;
-const N=[40,60,90][q]||60,tot=L.reduce((a,l)=>a+l.len,0),O={L,c:[],F:[],t:0},cnt=[0,0,0,0,0];
-L.forEach((l,li)=>{const n=Math.max(1,Math.round(N*l.len/tot));for(let j=0;j<n;j++){const u=r(),m=l.hi?(u<.55?1:u<.8?2:4):li==1&&j%6==0?3:(u<.3?0:u<.48?1:u<.74?2:4);cnt[m]++;
-O.c.push({li,s:(j+r()*.4)/n*l.len,m,hv:l.hi?0:m==3?4.4:m==1?3.2:m==2?2:1.2,col:m==2?new THREE.Color([0xc8203a,0x2a6ac8,0xe8eaee,0x2a2e36,0x3a8a5a,0x9a5cff,0xd8a040][(r()*7)|0]):m==4?new THREE.Color([0xf2efe8,0x1e2a3c,0x6a1a2a,0xc8b090,0x8a9aa8,0x2a4a3a][(r()*6)|0]):null})}});
-/* Flug-Modell: nur Karosserie, Leuchtpunkte, Triebwerke (lite) */O.F=cnt.map((c,k)=>mvFleet(k,Math.max(1,c),0,det,fr,1));
-g.userData.mv=dt=>{const t=(O.t+=dt),S=MVS0;S.t=t;O.F.forEach(mvBegin);for(const c of O.c){const l=O.L[c.li];c.s=(c.s+l.v*.75*dt)%l.len;const f=c.s/l.ds,j0=Math.floor(f)%l.n,j1=(j0+1)%l.n,u=f-Math.floor(f),x=l.X[j0]+(l.X[j1]-l.X[j0])*u,z=l.Z[j0]+(l.Z[j1]-l.Z[j0])*u;
-mvPut(O.F[c.m],0,x,l.yb+c.hv+(l.hi?Math.sin(c.s*.02)*2:0),z,l.A[j0],0,0,c.col,S)}O.F.forEach(mvEnd)};g.userData.mv(0)}
+
 
 /*==== 3.33: LUNA CITY LEBENDIG – mehr Gebaeude, Fenster- und Strassenlicht, Fussgaenger, Gleiter (fliegende Autos), Taxi, Drohnen, Roboter, Geraeusche, 8 neue begehbare Gebaeude ====
    Zustand CC (CTY bleibt der Stadt-Zustand, LC die Skyline). Aufbau ccBuild (in mcBuild nach lcBuild, vor mcInst), Instanzen ccFinish (nach lcFinish), pro Bild ccStep (aus mcStep).
