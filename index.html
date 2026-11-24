@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>DigoSky Beta 3.35</title>
+<title>DigoSky Beta 3.36</title>
 <style>
 :root{color-scheme:dark;--bg:#02030a;--fg:#e8ecff;--ac:#55ccff;--card:#10142bd9;--gold:#ffcc33;box-sizing:border-box}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;touch-action:none}
@@ -1681,7 +1681,7 @@ const M2=document.createElement('div');M2.id='m2';
 M2.innerHTML='<canvas id="m3"></canvas><div class="mvig"></div><div class="mgr"></div>'
 +'<header class="mt"><div class="lg">'+EMB+'<div class="lgt">'+[...'DIGOSKY'].map((c,i)=>'<span style="--i:'+i+'">'+c+'</span>').join('')+'</div></div><div class="sb">WANDERER VX-9 · EXPEDITION SOL</div></header>'
 +'<div id="mst"></div><nav id="mn"></nav><section id="mp"></section>'
-+'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.35</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
++'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.36</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
 +'<div id="mfade"></div><input type="file" id="mfile" accept=".json,.txt,application/json,text/plain" style="display:none">';
 wrap.appendChild(M2);
 const mp=el('mp'),NAV=[['play','SPIEL STARTEN',0],['new','NEUES SPIEL',0],['load','SPIELSTAND LADEN',0],['mis','MISSIONEN',1],['char','CHARAKTER',1],['ship','RAUMSCHIFF',1],['kod','KODEX',1],['set','EINSTELLUNGEN',2],['prof','SPIELERPROFIL',2]],MNG=['KAMPAGNE','BORDSYSTEME','SYSTEM'];
@@ -3335,10 +3335,11 @@ const tg=el('spt');if(FA.gov){tg.style.display='block';tg.style.left=clamp(Math.
 el('spa').textContent=FA.wc>0?'Warp lädt '+Math.round(FA.wc*100)+' %':FA.gov?(FA.hov&&FA.vt==0?'Schwebeflug · STRG sinken · Leertaste steigen':'Ziel '+Math.round(Math.abs(FA.vt))+' m/s · Limit '+Math.round(cap)+' m/s'):save.fa?'Schub 0 % – antriebslos, W = Gas':'Schub '+Math.round(G.thr*100)+' % · kein Tempolimit';
 el('spb').textContent=G.tgt&&FA.dT<1e11&&v>2?'ETA '+fmtT(Math.max(0,FA.dT)/v):Math.round(v*3.6).toLocaleString('de-CH')+' km/h'}
 /*-- Spielfigur --*/
-/*==== FIGUR 3.12: REALISTISCHER ASTRONAUT UND ASTRONAUTIN ====*/
-/*-- Figurendaten: save.char = {g:'m'|'f', c:Anzugfarbe 0-3, n:Name, v:Sonnenvisier unten} – alte Spielstaende bekommen den bisherigen Standard --*/
-const FGC=[['Weiss',0xe6e8ec],['Orange',0xe2671f],['Blau',0x2f5aa4],['Grau',0x878d95]];
-function chO(){let c=save.char;if(!c||typeof c!='object'){c={g:c=='f'?'f':'m',c:0,n:String(save.name||'Diego').slice(0,14)||'Diego',v:1};save.char=c}if(c.g!='f')c.g='m';c.c=Math.abs(c.c|0)%4;if(typeof c.n!='string'||!c.n.trim())c.n='Diego';c.n=c.n.slice(0,14);if(c.v==null)c.v=1;return c}
+/*==== FIGUR 3.12: REALISTISCHER ASTRONAUT UND ASTRONAUTIN (3.36: neuer Anzug "Field" nach Diegos Bildern) ====*/
+/*-- Figurendaten: save.char = {g:'m'|'f', c:Anzugfarbe 0-3 (Orange, Schwarz, Blau, Weiss), n:Name, v:Sonnenvisier unten, sk:2 = Anzug 3.36} – alte Spielstaende bekommen den bisherigen Standard --*/
+/* 3.36: neuer Anzug nach Diegos Bildern – Farben Orange, Schwarz, Blau (Tuerkis wie auf den Bildern) und Weiss; alte Spielstaende starten einmal mit Blau */
+const FGC=[['Orange',0xd95e16],['Schwarz',0x2c2f34],['Blau',0x2a9aa3],['Weiss',0xe4e7eb]];
+function chO(){let c=save.char;if(!c||typeof c!='object'){c={g:c=='f'?'f':'m',c:2,n:String(save.name||'Diego').slice(0,14)||'Diego',v:1,sk:2};save.char=c}if(c.g!='f')c.g='m';if(c.sk!=2){c.sk=2;c.c=2}c.c=Math.abs(c.c|0)%4;if(typeof c.n!='string'||!c.n.trim())c.n='Diego';c.n=c.n.slice(0,14);if(c.v==null)c.v=1;return c}
 chO();
 const chF=()=>chO().g=='f',chKey=()=>{const c=chO();return c.g+c.c+'|'+c.n+'|'+FGK};
 /*-- Texturen (einmal erzeugt) --*/
@@ -3346,9 +3347,14 @@ const FGT={};
 function fgCv(w,h,fn,rep){const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d',{willReadFrequently:true}),w,h);const t=new THREE.CanvasTexture(c);t.anisotropy=4;if(rep)t.wrapS=t.wrapT=THREE.RepeatWrapping;return t}
 function fgNoise(x,w,h,a,grid){const d=x.getImageData(0,0,w,h),q=d.data;for(let i=0;i<q.length;i+=4){const p=i/4,X=p%w,Y=p/w|0;let v=(Math.random()*2-1)*a;if(grid&&(X%grid<1||Y%grid<1))v-=a*.9;if(X%32<1||Y%32<1)v-=a*.6;q[i]+=v;q[i+1]+=v;q[i+2]+=v}x.putImageData(d,0,0)}
 /* Anzugstoff: Webstruktur, Ripstop-Raster, Doppelnaehte an den Seiten */
-function fgFab(){return FGT.fab||(FGT.fab=fgCv(256,256,(x,w,h)=>{x.fillStyle='#efefef';x.fillRect(0,0,w,h);fgNoise(x,w,h,9,4);x.lineWidth=1.6;x.setLineDash([5,4]);x.strokeStyle='rgba(50,50,60,.45)';
-[0,w/2].forEach(X=>[-4,4].forEach(o=>{x.beginPath();x.moveTo(X+o,0);x.lineTo(X+o,h);x.stroke()}));x.setLineDash([]);x.strokeStyle='rgba(0,0,0,.3)';x.lineWidth=2;[0,w/2].forEach(X=>{x.beginPath();x.moveTo(X,0);x.lineTo(X,h);x.stroke()});
-x.strokeStyle='rgba(40,40,50,.35)';x.setLineDash([4,4]);x.lineWidth=1.4;[8,h-8].forEach(Y=>{x.beginPath();x.moveTo(0,Y);x.lineTo(w,Y);x.stroke()})},1))}
+function fgFab(){return FGT.fab||(FGT.fab=fgCv(256,256,(x,w,h)=>{x.fillStyle='#f2f2f2';x.fillRect(0,0,w,h);fgNoise(x,w,h,5,0);x.lineWidth=1.3;x.setLineDash([4,4]);x.strokeStyle='rgba(30,45,50,.26)';
+[0,w/2].forEach(X=>[-3,3].forEach(o=>{x.beginPath();x.moveTo(X+o,0);x.lineTo(X+o,h);x.stroke()}));x.setLineDash([]);x.strokeStyle='rgba(0,0,0,.2)';x.lineWidth=1.5;[0,w/2].forEach(X=>{x.beginPath();x.moveTo(X,0);x.lineTo(X,h);x.stroke()})},1))}
+/* 3.36: glatte Flaeche (Helm, Flaschen, Taschen) und Gurtband mit Rippen und Steppnaht */
+function fgPlain(){return FGT.pl||(FGT.pl=fgCv(64,64,(x,w,h)=>{x.fillStyle='#f4f4f4';x.fillRect(0,0,w,h);fgNoise(x,w,h,2.5,0)},1))}
+function fgWebT(){return FGT.wb||(FGT.wb=fgCv(64,64,(x,w,h)=>{x.fillStyle='#fff';x.fillRect(0,0,w,h);x.fillStyle='rgba(0,0,0,.12)';for(let X=0;X<w;X+=4)x.fillRect(X,0,1,h);x.fillStyle='rgba(0,0,0,.28)';x.fillRect(0,0,w,3);x.fillRect(0,h-3,w,3);
+x.setLineDash([3,3]);x.strokeStyle='rgba(0,0,0,.38)';x.lineWidth=1.2;[8,h-8].forEach(Y=>{x.beginPath();x.moveTo(0,Y);x.lineTo(w,Y);x.stroke()})},1))}
+/* Aufnaeher am rechten Unterarm (weiss mit gelbem Pfeil) */
+function fgArmT(){return FGT.ar||(FGT.ar=fgCv(64,48,(x,w,h)=>{x.fillStyle='#eef0f0';x.fillRect(0,0,w,h);x.strokeStyle='#9aa0a4';x.lineWidth=3;x.strokeRect(1.5,1.5,w-3,h-3);x.fillStyle='#e2a52a';x.beginPath();x.moveTo(18,12);x.lineTo(32,24);x.lineTo(46,12);x.lineTo(46,22);x.lineTo(32,36);x.lineTo(18,22);x.fill()}))}
 /* harte Schale: feine Paneelfugen und Nieten */
 function fgShell(){return FGT.sh||(FGT.sh=fgCv(256,256,(x,w,h)=>{x.fillStyle='#f4f4f4';x.fillRect(0,0,w,h);fgNoise(x,w,h,4,0);x.strokeStyle='rgba(60,60,70,.4)';x.lineWidth=1.5;
 [[0,90,w,90],[0,200,w,200],[64,0,64,90],[192,0,192,90],[128,90,128,200]].forEach(([a,b,c,d])=>{x.beginPath();x.moveTo(a,b);x.lineTo(c,d);x.stroke()});x.fillStyle='rgba(80,80,90,.5)';for(let i=0;i<w;i+=16){x.beginPath();x.arc(i+8,96,1.6,0,7);x.fill();x.beginPath();x.arc(i+8,194,1.6,0,7);x.fill()}},1))}
@@ -3389,18 +3395,50 @@ s.fragmentShader='uniform float uDirt,uDmg,uBase,uH;uniform vec3 uDC;uniform sam
 +s.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n{float n=fgN(vFW*11.)*.6+fgN(vFW*37.)*.4;float h=clamp((vFW.y-uBase)/uH,0.,1.);float d=uDirt*(1.25-h*1.05)*smoothstep(.3,.75,n+uDirt*.3-.15);diffuseColor.rgb=mix(diffuseColor.rgb,uDC*(.8+.45*n),clamp(d,0.,.8));'
 +(dmg?'vec4 sc=texture2D(uScr,vUv*2.);float s1=step(1.02-uDmg,sc.r)*sc.r;float s2=step(1.6-uDmg,sc.g);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.42,.4,.37),s1*.55)*(1.-s2*.85);':'')+'}');
 s.fragmentShader=s.fragmentShader.replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=min(1.,roughnessFactor+uDirt*.12);')};m.customProgramCacheKey=()=>'fg'+(dmg?1:0);return m}
-function fgMats(c,f){const U={uDirt:{value:0},uDmg:{value:0},uBase:{value:0},uH:{value:1.3},uDC:{value:new THREE.Color(.55,.5,.45)},uScr:{value:fgScr()}},col=new THREE.Color(FGC[c][1]),fab=fgFab(),sh=fgShell(),S=o=>new THREE.MeshStandardMaterial(o),acc=f?0xd8508a:(c==2?0xd8dde6:0x2a6ad0);
-const hut=col.clone().lerp(new THREE.Color(0xf2f3f5),c==0?1:.62);
-return{U,acc,suit:fgSM({color:col,map:fab,roughness:.9,metalness:0,envMapIntensity:.3},U,1),suit2:fgSM({color:col.clone().multiplyScalar(.86),map:fab,roughness:.92,metalness:0,envMapIntensity:.3},U,1),
-shell:fgSM({color:hut,map:sh,roughness:.38,metalness:.06,envMapIntensity:.9,side:THREE.DoubleSide},U,1),pack:fgSM({color:hut.clone().multiplyScalar(.97),map:sh,roughness:.45,metalness:.08,envMapIntensity:.8},U,1),
-glove:fgSM({color:c==3?0xb8bcc2:0xe2e4e8,map:fab,roughness:.82,envMapIntensity:.3},U,0),palm:fgSM({color:0x3c4048,map:fab,roughness:.9},U,0),boot:fgSM({color:c==3?0xa8adb4:0xd9dbe0,map:fab,roughness:.85},U,1),
-rub:S({color:0x1c1e22,roughness:.95,metalness:0}),tip:S({color:0x2a2c31,roughness:.7}),metal:S({color:0xc2c8d0,metalness:1,roughness:.26,envMapIntensity:1.1}),alu:S({color:0x5a6068,metalness:.85,roughness:.38,envMapIntensity:.9}),
-acc:S({color:acc,roughness:.6}),hoseB:S({color:0x3a6ad8,roughness:.55}),hoseG:S({color:0x9aa0a8,roughness:.5,metalness:.3}),
-gold:S({color:0xffc04d,metalness:1,roughness:.07,envMapIntensity:2,emissive:0x3a2606,emissiveIntensity:.5}),glass:S({color:0xffffff,metalness:.9,roughness:.03,transparent:true,opacity:.13,envMapIntensity:1.3,depthWrite:false}),
-fog:new THREE.MeshBasicMaterial({color:0xe8f0ff,transparent:true,opacity:0,depthWrite:false}),
-skin:S({color:f?0xe8b496:0xd9a283,roughness:.62}),lip:S({color:f?0xc0646a:0xa8665e,roughness:.5}),hair:S({color:f?0x4a2a16:0x33241a,roughness:.75}),cap:S({color:0xe8e2d6,roughness:.85}),capB:S({color:0x5e4127,roughness:.8}),
+function fgMats(c,f){const U={uDirt:{value:0},uDmg:{value:0},uBase:{value:0},uH:{value:1.3},uDC:{value:new THREE.Color(.55,.5,.45)},uScr:{value:fgScr()}},W=new THREE.Color(0xffffff),col=new THREE.Color(FGC[c][1]),fab=fgFab(),pl=fgPlain(),wb=fgWebT(),S=o=>new THREE.MeshStandardMaterial(o),blk=c==1;
+/* 3.36: Anzug nach Diegos Bildern – Grundfarbe waehlbar, Gurte und Taschen gelb, Polster und Bänder dunkel */
+const yel=new THREE.Color(0xd99f26),hc=col.clone().lerp(W,blk?.03:.05),tk=col.clone().lerp(W,c==3?.18:blk?.07:.22),gl=col.clone().lerp(W,blk?.06:.1),dk=blk?0x111315:0x202427;
+const glove=fgSM({color:gl,map:fab,roughness:.38,envMapIntensity:.6},U,0);
+return{U,acc:fgSM({color:yel,map:pl,roughness:.5,envMapIntensity:.5},U,0),web:fgSM({color:yel.clone().multiplyScalar(.92),map:wb,roughness:.7,side:THREE.DoubleSide},U,0),
+webD:S({color:dk,map:wb,roughness:.75,side:THREE.DoubleSide}),dk:S({color:dk,roughness:.5,envMapIntensity:.6}),
+suit:fgSM({color:col,map:fab,roughness:blk?.42:.32,metalness:0,envMapIntensity:.8},U,1),suit2:fgSM({color:col.clone().multiplyScalar(.84),map:fab,roughness:.5,metalness:0,envMapIntensity:.5},U,1),
+shell:fgSM({color:hc,map:pl,roughness:.22,metalness:.04,envMapIntensity:1.1},U,1),lin:S({color:0x15191c,roughness:.8,side:THREE.BackSide}),pack:fgSM({color:tk,map:pl,roughness:.2,metalness:.04,envMapIntensity:1.1},U,1),
+glove,palm:fgSM({color:col.clone().multiplyScalar(.7),map:fab,roughness:.6},U,0),boot:fgSM({color:col,map:fab,roughness:.34,envMapIntensity:.8},U,1),tip:glove,
+rub:S({color:0x17191c,roughness:.92,metalness:0}),pad:S({color:blk?0x08090a:0x121518,roughness:.2,metalness:.15,envMapIntensity:1.3}),metal:S({color:0x9aa1a8,metalness:.9,roughness:.3,envMapIntensity:1.1}),alu:S({color:0x40464c,metalness:.6,roughness:.4,envMapIntensity:.9}),
+hose:S({color:blk?0x3a4046:0x2a3034,roughness:.55,envMapIntensity:.6}),mask:S({color:0x1a1d20,roughness:.48,side:THREE.DoubleSide}),mlens:S({color:0x0b1114,metalness:.6,roughness:.06,envMapIntensity:1.6}),
+gold:S({color:0x060a0c,metalness:.75,roughness:.05,transparent:true,opacity:.88,envMapIntensity:2.2,depthWrite:false}),glass:S({color:0xffffff,metalness:.9,roughness:.03,transparent:true,opacity:.13,envMapIntensity:1.3,depthWrite:false}),
+fog:new THREE.MeshBasicMaterial({color:0xe8f0ff,transparent:true,opacity:0,depthWrite:false}),arm:S({map:fgArmT(),roughness:.6}),
+skin:S({color:f?0xe8b496:0xd9a283,roughness:.62}),lip:S({color:f?0xc0646a:0xa8665e,roughness:.5}),hair:S({color:f?0x4a2a16:0x33241a,roughness:.75}),cap:S({color:0x2b3035,roughness:.85}),capB:S({color:0x1c1f23,roughness:.8}),
 eye:S({color:0xf6f6f2,roughness:.15}),iris:S({color:f?0x5a7a3a:0x3a5a86,roughness:.2}),pup:S({color:0x050505,roughness:.1}),
 lens:S({color:0xfff4d0,emissive:0xfff0c0,emissiveIntensity:0,roughness:.1}),dsp:null}}
+/*-- 3.36: Geometrie-Helfer fuer den neuen Anzug --*/
+/* Profil fein unterteilen (damit Verformungen sauber werden) */
+function fgRes(pr,d){const o=[pr[0]];for(let i=1;i<pr.length;i++){const a=pr[i-1],b=pr[i],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/d));for(let k=1;k<=n;k++)o.push([a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n])}return o}
+/* Drehkoerper mit Verformung dr(Richtung x,z normiert, y, r) -> zusaetzlicher Radius */
+function fgLatheD(pr,seg,sx,sz,dr){if(pr[0][1]>pr[pr.length-1][1])pr=pr.slice().reverse();const g=new THREE.LatheGeometry(pr.map(p=>new THREE.Vector2(Math.max(1e-4,p[0]),p[1])),seg,Math.PI/2),P=g.attributes.position,np=pr.length;
+for(let i=0;i<P.count;i++){const x=P.getX(i),y=P.getY(i),z=P.getZ(i),r=Math.hypot(x,z);if(r<1e-3)continue;const d=dr(x/r,y,z/r,r);P.setX(i,x*(1+d/r));P.setZ(i,z*(1+d/r))}
+g.scale(sx||1,1,sz||1);g.computeVertexNormals();const N=g.attributes.normal;for(let j=0;j<np;j++){const a=j,b=seg*np+j;const x=(N.getX(a)+N.getX(b))/2,y=(N.getY(a)+N.getY(b))/2,z=(N.getZ(a)+N.getZ(b))/2,l=Math.hypot(x,y,z)||1;N.setXYZ(a,x/l,y/l,z/l);N.setXYZ(b,x/l,y/l,z/l)}return g}
+/* Punkt auf einem Drehkoerper (Profil pr, Skalierung sx/sz) in Richtung (x,z), Hoehe y, plus Abstand off entlang der Flaechennormale */
+function fgSurf(pr,sx,sz){const P=pr.filter(p=>p[0]>1e-3).sort((a,b)=>a[1]-b[1]),seg=y=>{for(let i=1;i<P.length;i++)if(y<=P[i][1])return[P[i-1],P[i]];return[P[P.length-2],P[P.length-1]]};
+return(x,y,z,off)=>{const[a,b]=seg(y),dy=b[1]-a[1]||1e-6,t=clamp((y-a[1])/dy,0,1),R=a[0]+(b[0]-a[0])*t,dr=(b[0]-a[0])/dy,th=Math.atan2(x/sx,z/sz),s=Math.sin(th),c=Math.cos(th),n=new V3(s/sx,-dr,c/sz).normalize(),p=new V3(sx*R*s,y,sz*R*c).addScaledVector(n,off||0);p.n=n;return p}}
+/* wie fgSurf, aber mit echter x-Lage: bk>0 hinten, sonst vorne */
+function fgSX(pr,sx,sz){const F=fgSurf(pr,sx,sz);return(x,y,bk,off)=>{const R=F(1,y,0,0).x/sx,si=clamp(x/(sx*R),-.999,.999),co=Math.sqrt(1-si*si)*(bk>0?1:-1);return F(si*sx,y,co*sz,off)}}
+/* Gurtband entlang einer Kurve; out(p) = Richtung nach aussen */
+function fgStrap(pts,w,th,out,closed){const cu=new THREE.CatmullRomCurve3(pts,!!closed,'centripetal'),L=cu.getLength(),n=Math.max(6,Math.round(L/.014)),P=[],U=[],I=[],rings=closed?n:n+1,q=new V3(),nn=new V3(),bb=new V3();
+for(let i=0;i<rings;i++){const t=closed?i/n:Math.min(1,i/n),pp=cu.getPointAt(t),tg=cu.getTangentAt(t);nn.copy(out(pp));nn.addScaledVector(tg,-nn.dot(tg)).normalize();bb.crossVectors(tg,nn).normalize();
+[[w/2,th],[-w/2,th],[-w/2,0],[w/2,0]].forEach(([bw,h])=>{q.copy(pp).addScaledVector(bb,bw).addScaledVector(nn,h);P.push(q.x,q.y,q.z);U.push(t*L*7,bw/w+.5)})}
+for(let i=0;i<n;i++){const a=i*4,c=((i+1)%rings)*4;for(let k=0;k<4;k++){const k2=(k+1)%4;I.push(a+k,c+k,c+k2,a+k,c+k2,a+k2)}}
+if(!closed){I.push(0,2,1,0,3,2);const e=n*4;I.push(e,e+1,e+2,e,e+2,e+3)}let g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));g.setIndex(I);g=g.toNonIndexed();g.computeVertexNormals();return g}
+/* Kugel-Ausschnitt als Ellipsoid (keep/disp auf der Einheitskugel), gleiche Punkte an der Naht bekommen die gleiche Normale */
+function fgSph(ws,hs,sc,keep,disp){const g=new THREE.SphereGeometry(1,ws,hs),A=g.attributes.position,k=new Uint8Array(A.count),v=new V3();
+for(let i=0;i<A.count;i++){v.fromBufferAttribute(A,i);k[i]=!keep||keep(v)?1:0;const d=disp?disp(v):0;A.setXYZ(i,v.x*(1+d)*sc[0],v.y*(1+d)*sc[1],v.z*(1+d)*sc[2])}
+if(keep){const X=g.index.array,ni=[];for(let i=0;i<X.length;i+=3)if(k[X[i]]&&k[X[i+1]]&&k[X[i+2]])ni.push(X[i],X[i+1],X[i+2]);g.setIndex(ni)}g.computeVertexNormals();
+const N=g.attributes.normal,m=new Map();for(let i=0;i<A.count;i++){const key=Math.round(A.getX(i)*1e4)+','+Math.round(A.getY(i)*1e4)+','+Math.round(A.getZ(i)*1e4);let a=m.get(key);if(!a)m.set(key,a=[]);a.push(i)}
+for(const a of m.values())if(a.length>1){let x=0,y=0,z=0;for(const i of a){x+=N.getX(i);y+=N.getY(i);z+=N.getZ(i)}const l=Math.hypot(x,y,z)||1;for(const i of a)N.setXYZ(i,x/l,y/l,z/l)}return g}
+/* Ring (offener Kegelstumpf) auf einem Drehkoerper zwischen y0 und y1 */
+function fgBand(pr,y0,y1,off,seg){const R=fgSurf(pr,1,1);return new THREE.CylinderGeometry(R(1,y1,0,0).x+off,R(1,y0,0,0).x+off,y1-y0,seg||24,1,true).translate(0,(y0+y1)/2,0)}
+/* Objekt auf eine Flaeche setzen: Lage p, Normale n (lokal -z zeigt nach aussen) */
+function fgOn(o,p,n,tilt){o.position.copy(p);o.rotation.set(tilt||0,Math.atan2(-n.x,-n.z),0,'YXZ');return o}
 /*-- Arm vom Ellbogen an: Unterarm, Handgelenkring, Handschuh mit einzelnen Fingern und Gummikuppen --*/
 function fgHand(w,s,M,K,hi){const add=K.add,grp=K.grp,h={s,f:[],th:[],gr:0,pt:0};
 add(fgLathe([[0,.014],[.05,.014],[.055,-.012],[.048,-.04],[0,-.046]],16),M.glove,0,0,0,w,0,1);
@@ -3411,48 +3449,62 @@ const t=grp(-s*.012,-.02,-.034,pm);t.rotation.set(.5,0,-s*.3);add(fgCapL(.01,.03
 h.gp=grp(-s*.026,-.095,-.006,pm);return h}
 /* Greifen: g = 0 offen … 1 Faust, p = Zeigefinger gestreckt */
 function fgGrip(h,g,p,k){const s=h.s,L=(o,ax,v)=>{o.rotation[ax]+=(v-o.rotation[ax])*k};h.f.forEach(([a,b],i)=>{const q=i==0&&p?0:g;L(a,'z',-s*q*1.35);L(b,'z',-s*q*1.5)});L(h.th[0],'z',-s*(.3+g*.5));L(h.th[1],'z',-s*g*.9)}
-function fgFore(el,s,M,K,AR,lr){const add=K.add,grp=K.grp;add(new THREE.SphereGeometry(.059*AR,14,10),M.suit,0,0,0,el,0,1);add(fgLathe([[0,.005],[.059,-.005],[.062,-.07],[.056,-.17],[.048,-.236],[0,-.25]].map(p=>[p[0]*AR,p[1]]),18,1,1,[[-.03,.04,.05,140,s]]),M.suit,0,0,0,el,0,1);
-const wr=add(new THREE.TorusGeometry(.049*AR,.011,8,24),M.metal,0,-.248,0,el,1,0);wr.rotation.x=Math.PI/2;add(new THREE.CylinderGeometry(.052*AR,.052*AR,.012,20),M.alu,0,-.24,0,el,1,0);
-if(lr&&s<0){const ck=add(fgRB(.012,.07,.05,.004,2),M.alu,-.055*AR,-.13,-.006,el,2,0);ck.rotation.z=-.08;const pg=add(new THREE.PlaneGeometry(.045,.062),new THREE.MeshStandardMaterial({color:0xf4f0dc,roughness:.8,emissive:0x4a4838}),-.062*AR,-.13,-.006,el,2,0);pg.rotation.y=-Math.PI/2}
-const w=grp(0,-.255,0,el);return{w,h:fgHand(w,s,M,K)}}
+function fgFore(el,s,M,K,AR,lr){const add=K.add,grp=K.grp;add(new THREE.SphereGeometry(.071*AR,16,12),M.suit,0,0,0,el,0,1);
+add(fgLathe([[0,.005],[.071,-.005],[.075,-.06],[.069,-.15],[.06,-.215],[.055,-.235],[0,-.245]].map(p=>[p[0]*AR,p[1]]),20,1,1,[[-.03,.04,.05,140,s],[-.13,.05,.025,110,s]]),M.suit,0,0,0,el,0,1);
+/* 3.36: dunkler Ring und gelbe Handschuh-Stulpe, Aufnaeher am rechten Unterarm */
+const w=grp(0,-.255,0,el);add(fgLathe([[0,.036],[.062*AR,.036],[.066*AR,.026],[.068*AR,.0],[.064*AR,-.012],[0,-.012]],20),M.acc,0,0,0,w,0,1);
+const rg=add(new THREE.TorusGeometry(.063*AR,.0068,6,22),M.webD,0,.037,0,w,1,0);rg.rotation.x=Math.PI/2;
+if(lr&&s>0){const pt=add(fgPatch(.044,.032,.072*AR),M.arm,s*.0728*AR,-.12,0,el,2,0);pt.rotation.y=Math.PI/2}
+const h=fgHand(w,s,M,K);h.pm.scale.setScalar(1.16);return{w,h}}
 function fgLbl(){return FGT.lb||(FGT.lb=fgCv(256,48,(x,w,h)=>{x.clearRect(0,0,w,h);x.fillStyle='rgba(20,30,50,.85)';x.font='bold 26px system-ui';x.textAlign='center';x.textBaseline='middle';x.fillText('DIGOSKY · PLSS-7',w/2,h/2+1)}))}
 /*-- Aufbau der Figur: echte Proportionen (rund 7,5 Kopflaengen), Gelenke als Gruppen (Animation), Detailstufen ueber userData.ld --*/
 function figBuild(o){o=o||{};const C=o.ch||chO(),f=C.g=='f',M=fgMats(C.c,f),PI=Math.PI,g=new THREE.Group(),b=new THREE.Group();g.add(b);b.scale.setScalar(f?.935:1);
 const ldL=[],add=(geo,mat,x,y,z,p,ld,sh)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);p.add(m);if(ld){m.userData.ld=ld;ldL.push(m)}m.castShadow=!!sh;return m},grp=(x,y,z,p)=>{const q=new THREE.Group();q.position.set(x,y,z);p.add(q);return q},K={add,grp};
-const SW=f?.9:1,HW=f?1.07:1,AR=f?.9:1,LR=f?.96:1;
-const u={fem:f,M,b,ldL,lod:-1,t:Math.random()*9,key:C.g+C.c+'|'+C.n,ch:C.g+C.c+'|'+C.n,a:[],e:[],w:[],h:[],l:[],k:[],f:[],L1:.29,L2:.255,tools:{},bt:2+Math.random()*3,bl:0,lk:[0,0],lt2:3,fu:[1,1],ag:0};
+const SW=f?.9:1,HW=f?1.07:1,AR=f?.9:1,LR=f?.96:1,Z=new V3(0,0,1),on=(p,n,par)=>fgOn(grp(0,0,0,par),p,n);
+const u={fem:f,M,b,ldL,lod:-1,t:Math.random()*9,key:C.g+C.c+'|'+C.n,ch:C.g+C.c+'|'+C.n,a:[],e:[],w:[],h:[],l:[],k:[],f:[],L1:.29,L2:.255,tools:{},bt:2+Math.random()*3,bl:0,lk:[0,0],lt2:3,fu:[1,1],ag:0,see:1};
 const hip=grp(0,.955,0,b),tor=grp(0,0,0,hip);u.hip=hip;u.tor=tor;
-/* Becken und Taille (Stoff), Koerperverschlussring, harter Oberkoerper */
-add(fgLathe([[0,.06],[.125,.06],[.15,.04],[.172,-.01],[.183,-.06],[.17,-.11],[.125,-.15],[0,-.165]],28,HW,.76,[[-.1,.05,.025,120,0]]),M.suit,0,0,0,hip,0,1);
-add(fgLathe([[0,.2],[.142,.2],[.14,.15],[.15,.09],[.163,.04],[.176,-.02],[.17,-.04],[0,-.05]],28,f?.9:1,.76,[[.12,.07,.035,95,0]]),M.suit2,0,0,0,tor,0,1);
-const wr=add(new THREE.TorusGeometry(.148,.013,10,40),M.metal,0,.19,0,tor,1,0);wr.rotation.x=PI/2;wr.scale.set(f?.9:1,.74,1);
-add(fgLathe(f?[[0,.565],[.1,.565],[.163,.505],[.175,.42],[.17,.33],[.15,.245],[.142,.18],[0,.18]]:[[0,.565],[.11,.565],[.178,.505],[.19,.42],[.184,.32],[.16,.245],[.15,.18],[0,.18]],32,1.06,.7),M.shell,0,0,0,tor,0,1);
-const nr=add(new THREE.TorusGeometry(.1,.017,10,32),M.metal,0,.56,0,tor,0,0);nr.rotation.x=PI/2;nr.scale.set(1,.9,1);
-/* Brustmodul mit Display, Schaltern und Schlaeuchen */
-const dc=grp(0,.31,-.152,tor);add(fgRB(.2,.09,.065,.014,3),M.alu,0,0,0,dc,0,1);u.dsp=fgDisp();const sc=add(new THREE.PlaneGeometry(.07,.035),new THREE.MeshBasicMaterial({map:u.dsp}),.045,.0462,-.004,dc,2,0);sc.rotation.x=-PI/2+.5;
-[-.07,-.035].forEach(x=>add(new THREE.CylinderGeometry(.011,.011,.014,12),M.rub,x,.014,-.036,dc,2,0).rotation.x=PI/2);add(new THREE.CylinderGeometry(.013,.013,.016,12),new THREE.MeshStandardMaterial({color:0xd03a2a,roughness:.5}),.075,-.018,-.036,dc,2,0).rotation.x=PI/2;
-for(let i=0;i<4;i++)add(new THREE.BoxGeometry(.006,.016,.006),M.metal,-.07+i*.022,-.022,-.038,dc,2,0).rotation.x=-.5;
-[-1,1].forEach(s=>{const cv=new THREE.CatmullRomCurve3([new V3(s*.09,.31,-.168),new V3(s*.165,.29,-.12),new V3(s*.205*SW,.27,-.02),new V3(s*.2*SW,.27,.09),new V3(s*.16*SW,.29,.14)]);add(new THREE.TubeGeometry(cv,16,.012,8),s<0?M.hoseB:M.hoseG,0,0,0,tor,1,0)});
-/* Namensschild und Missionspatch auf der Brust */
-u.tagM=new THREE.MeshStandardMaterial({map:fgTagTex(C.n,'#'+new THREE.Color(M.acc.color).getHexString()),roughness:.6});u.tagN=C.n;const nt=add(fgPatch(.11,.028,.22),u.tagM,-.085,.455,-.123,tor,2,0);nt.rotation.y=PI+.42;
-const mp=add(fgPatch(.056,.056,.22),new THREE.MeshStandardMaterial({map:fgMis(),transparent:true,roughness:.7}),.088,.45,-.121,tor,2,0);mp.rotation.y=PI-.42;
-/* Arme mit Schultergelenkringen, Falten am Ellbogen, Abzeichen am Oberarm */
-[-1,1].forEach(s=>{const sx=s*.218*SW,br=add(new THREE.TorusGeometry(.08*AR,.013,8,28),M.metal,sx-s*.006,.47,0,tor,1,0);br.rotation.y=PI/2;
-const sh=grp(sx,.47,0,tor);u.a.push(sh);add(new THREE.SphereGeometry(.08*AR,16,12),M.suit,s*.006,-.01,0,sh,0,1);
-add(fgLathe([[0,0],[.075,-.02],[.072,-.08],[.068,-.17],[.063,-.24],[.059,-.285],[0,-.295]].map(p=>[p[0]*AR,p[1]]),20,1,1.04,[[-.255,.045,.07,120,s]]),M.suit,0,0,0,sh,0,1);
-add(new THREE.CylinderGeometry(.0695*AR,.0685*AR,.026,20,1,true),M.acc,0,-.125,0,sh,1,0);
-const pt=add(fgPatch(.052,.052,.071*AR),new THREE.MeshStandardMaterial({map:s<0?fgFlag():fgMis(),roughness:.7,transparent:s>0}),s*.0708*AR,-.06,0,sh,2,0);pt.rotation.y=s<0?-PI/2:PI/2;
-const el=grp(0,-.29,0,sh);u.e.push(el);const fr=fgFore(el,s,M,K,AR,1);u.w.push(fr.w);u.h.push(fr.h)});
-/* Beine, Knie, Stiefel mit Profilsohle */
-[-1,1].forEach(s=>{const lg=grp(s*.105*HW,0,0,hip);u.l.push(lg);
-add(fgLathe([[0,.05],[.094,.035],[.1,-.04],[.096,-.16],[.088,-.28],[.078,-.38],[.072,-.43],[0,-.445]].map(p=>[p[0]*LR,p[1]]),22,1,1.06,[[-.4,.05,.06,110,s],[-.02,.04,.03,90,s]]),M.suit,0,0,0,lg,0,1);
-add(new THREE.CylinderGeometry(.0925*LR,.0895*LR,.03,22,1,true),M.acc,0,-.2,0,lg,1,0);
-const kn=grp(0,-.44,0,lg);u.k.push(kn);add(new THREE.SphereGeometry(.073*LR,16,12),M.suit,0,0,0,kn,0,1);add(fgRB(.08,.09,.03,.012,3),M.suit2,0,-.015,-.068*LR,kn,1,0);
-add(fgLathe([[0,0],[.072,-.01],[.076,-.1],[.069,-.2],[.064,-.3],[0,-.31]].map(p=>[p[0]*LR,p[1]]),20,1,1.05),M.suit,0,0,0,kn,0,1);
+/* 3.36: Becken mit Guertel (dunkles Band, gelbes Gurtband, Schnalle, Seitentaschen) */
+const PP=[[0,.06],[.14,.06],[.167,.04],[.19,-.01],[.198,-.06],[.182,-.105],[.135,-.142],[0,-.155]],PS=fgSX(PP,HW,.8);
+add(fgLathe(PP,28,HW,.8,[[-.1,.05,.025,120,0]]),M.suit,0,0,0,hip,0,1);
+add(fgBand(PP,-.016,.04,.006,28).scale(HW,1,.8),M.webD,0,0,0,hip,1,0);add(fgBand(PP,-.006,.03,.012,28).scale(HW,1,.8),M.web,0,0,0,hip,0,1);
+{const q=on(PS(0,.012,-1,.014),new V3(0,0,-1),hip);add(fgRB(.064,.046,.016,.006,2),M.dk,0,0,0,q,0,0);add(fgRB(.034,.022,.008,.003,1),M.metal,0,0,-.009,q,2,0);
+[-1,1].forEach(s=>{const p=PS(s*.075,.012,-1,.012);add(fgRB(.016,.038,.01,.004,1),M.dk,0,0,0,on(p,p.n,hip),2,0);const p2=PS(s*.15*HW,-.01,.1,.026);const q2=on(p2,p2.n,hip);add(fgRB(.078,.086,.044,.012,2),M.dk,0,0,0,q2,1,1);add(fgRB(.082,.026,.048,.008,2),M.dk,0,.034,-.002,q2,1,0)})}
+/* Beine: rechts zwei gelbe Beingurte, links Beintasche; schwarze Knieschoner; Stiefel mit gelber Sohle, Zehenkappe und Ferse */
+[-1,1].forEach(s=>{const lg=grp(s*.114*HW,0,0,hip);u.l.push(lg);const TP=[[0,.05],[.108,.035],[.116,-.04],[.112,-.16],[.103,-.28],[.093,-.38],[.084,-.43],[0,-.445]].map(p=>[p[0]*LR,p[1]]),TS=fgSurf(TP,1,1.06),out=p=>TS(p.x,p.y,p.z,0).n;
+add(fgLathe(TP,22,1,1.06,[[-.4,.05,.06,110,s],[-.02,.04,.03,90,s]]),M.suit,0,0,0,lg,0,1);
+if(s>0){const P=[];for(let i=0;i<24;i++){const a=i/24*PI*2;P.push(TS(Math.sin(a),-.205+.018*Math.sin(a+.4),-Math.cos(a),.004))}add(fgStrap(P,.027,.005,out,true),M.web,0,0,0,lg,0,1);
+const Q=[];for(let i=0;i<=10;i++){const t=i/10,a=-1.45+2.85*t;Q.push(TS(Math.sin(a),-.06-.135*t,-Math.cos(a),.005))}add(fgStrap(Q,.026,.005,out),M.web,0,0,0,lg,0,1);
+[[.55,-.2],[-.75,-.09]].forEach(([a,y])=>{const p=TS(Math.sin(a),y,-Math.cos(a),.011),q=on(p,p.n,lg);add(fgRB(.03,.036,.01,.004,1),M.dk,0,0,0,q,1,0);add(fgRB(.018,.02,.006,.002,1),M.metal,0,0,-.006,q,2,0)})}
+else{const p=TS(-1,-.25,.05,.012),q=on(p,p.n,lg);add(fgRB(.11,.13,.03,.013,3),M.suit2,0,0,0,q,1,1);add(fgRB(.116,.036,.036,.011,2),M.suit2,0,.058,-.002,q,1,0);add(new THREE.BoxGeometry(.024,.012,.008),M.dk,0,.05,-.02,q,2,0)}
+const kn=grp(0,-.44,0,lg);u.k.push(kn);add(new THREE.SphereGeometry(.083*LR,16,12),M.suit,0,0,0,kn,0,1);
+const kp=add(new THREE.SphereGeometry(.1,20,12,0,PI*2,0,.8),M.pad,0,-.016,-.0035,kn,0,1);kp.rotation.x=-PI/2;kp.scale.set(.92,1,1.22);
+add(fgLathe([[0,0],[.082,-.01],[.088,-.1],[.082,-.2],[.076,-.3],[0,-.31]].map(p=>[p[0]*LR,p[1]]),20,1,1.05,[[-.06,.04,.04,120,s]]),M.suit,0,0,0,kn,0,1);
 const fo=grp(0,-.43,0,kn);u.f.push(fo);
-add(fgLathe([[0,.17],[.074,.17],[.078,.09],[.078,0],[.072,-.04],[0,-.05]],20,1,1.08),M.boot,0,0,0,fo,0,1);add(new THREE.CylinderGeometry(.08,.08,.022,20,1,true),M.alu,0,.12,0,fo,1,0);
-add(fgRB(.104,.072,.27,.03,4),M.boot,0,-.045,-.055,fo,0,1);add(fgRB(.108,.044,.075,.02,3),M.rub,0,-.058,-.163,fo,1,0);add(new THREE.BoxGeometry(.108,.012,.035),M.alu,0,-.006,-.09,fo,2,0);
-add(fgRB(.116,.024,.29,.008,2),M.rub,0,-.081,-.055,fo,0,1);for(let z=-.18;z<.09;z+=.038)add(new THREE.BoxGeometry(.108,.009,.018),M.rub,0,-.095,z,fo,2,0)});
+add(fgLathe([[0,.17],[.083,.17],[.089,.09],[.09,0],[.085,-.04],[0,-.05]],20,1,1.08),M.boot,0,0,0,fo,0,1);add(fgRB(.15,.09,.3,.04,4),M.boot,0,-.032,-.06,fo,0,1);
+add(fgRB(.16,.026,.312,.012,3),M.acc,0,-.071,-.06,fo,0,1);add(fgRB(.138,.016,.28,.006,2),M.rub,0,-.089,-.06,fo,0,1);
+add(fgRB(.156,.048,.075,.022,3),M.acc,0,-.048,-.185,fo,0,1);add(fgRB(.152,.044,.05,.018,3),M.acc,0,-.05,.078,fo,1,0);
+for(let z=-.18;z<.06;z+=.036)add(new THREE.BoxGeometry(.124,.006,.014),M.rub,0,-.098,z,fo,2,0)});
+/* Rumpf: Taille und Oberkoerper aus Anzugstoff mit leicht erhabener Brustplatte */
+add(fgLathe([[0,.2],[.152,.2],[.15,.15],[.16,.09],[.172,.04],[.185,-.02],[.18,-.04],[0,-.05]],28,f?.98:1.08,.78,[[.12,.07,.035,95,0]]),M.suit,0,0,0,tor,0,1);
+const UP=fgRes(f?[[0,.565],[.105,.565],[.158,.54],[.185,.49],[.19,.43],[.182,.33],[.16,.25],[.15,.18],[0,.18]]:[[0,.565],[.115,.565],[.17,.54],[.2,.49],[.205,.43],[.198,.33],[.174,.25],[.16,.18],[0,.18]],.012),UX=1.2,UZ=.74,TS=fgSurf(UP,UX,UZ),TX=fgSX(UP,UX,UZ),tout=p=>TS(p.x,p.y,p.z,0).n;
+add(fgLatheD(UP,44,UX,UZ,(dx,y,dz)=>{if(dz>-.2)return 0;const a=Math.atan2(dx,-dz),q=Math.pow(Math.abs(a)/.6,6)+Math.pow(Math.abs(y-.39)/.1,6);return .011*(1-clamp((q-.6)/.4,0,1))}),M.suit,0,0,0,tor,0,1);
+/* Halsring unter dem Helm */
+{const r=add(new THREE.TorusGeometry(.136,.022,10,36),M.shell,0,.553,-.032,tor,0,1);r.rotation.x=PI/2;r.scale.set(1,1.04,1);const r2=add(new THREE.TorusGeometry(.148,.007,6,36),M.dk,0,.537,-.032,tor,1,0);r2.rotation.x=PI/2;r2.scale.set(1,1.05,1)}
+/* Gurtzeug: Schultergurte, Brustgurt mit runder Lampe, zwei gelbe Brusttaschen, Bauchgurt zu den Flaschen */
+[-1,1].forEach(s=>{const P=[TX(s*.12,.2,1,.011),TX(s*.14,.38,1,.012),TX(s*.15,.5,1,.013),TX(s*.152,.552,1,.012),TX(s*.152,.552,-1,.012),TX(s*.158,.49,-1,.014),TX(s*.162,.4,-1,.015),TX(s*.158,.315,-1,.016)];add(fgStrap(P,.036,.006,tout),M.web,0,0,0,tor,0,1)});
+{const P=[];for(let i=0;i<=8;i++)P.push(TX(.165-.24*i/8,.365,-1,.017));add(fgStrap(P,.032,.005,tout),M.web,0,0,0,tor,0,1);
+[[.17,M.dk],[-.075,M.dk],[.04,M.metal]].forEach(([x,m],i)=>{const p=TX(x,.365,-1,.024);add(fgRB(i<2?.022:.03,i<2?.038:.026,.012,.004,1),m,0,0,0,on(p,p.n,tor),i<2?1:2,0)});
+const p=TX(-.122,.392,-1,.008),q=on(p,p.n,tor);add(new THREE.CylinderGeometry(.036,.04,.034,24).rotateX(PI/2),M.dk,0,0,-.012,q,0,1);const t=add(new THREE.TorusGeometry(.034,.006,8,24),M.dk,0,0,-.03,q,1,0);add(new THREE.CylinderGeometry(.026,.026,.006,20).rotateX(PI/2),M.mlens,0,0,-.031,q,2,0)}
+[-1,1].forEach(s=>{const p=TX(s*.142,.252,-1,.004),q=on(p,p.n,tor),w=s>0?.128:.142;add(fgRB(w,.112,.058,.016,3),M.acc,0,0,-.026,q,0,1);add(fgRB(w+.004,.036,.064,.012,2),M.acc,0,.04,-.027,q,1,0);
+add(fgRB(.022,.026,.01,.004,1),M.dk,0,.02,-.059,q,2,0);add(new THREE.BoxGeometry(.003,.068,.004),M.dk,-s*.03,-.014,-.0565,q,2,0);if(s<0){const k=add(new THREE.TorusGeometry(.012,.003,5,12),M.dk,.03,-.07,-.04,q,2,0);k.rotation.y=PI/2}});
+{const P=[];for(let i=0;i<=8;i++)P.push(TX(-.085+.17*i/8,.25,-1,.012));add(fgStrap(P,.03,.005,tout),M.webD,0,0,0,tor,1,0);const p=TX(0,.25,-1,.019);add(fgRB(.05,.028,.01,.004,1),M.acc,0,0,0,on(p,p.n,tor),1,0)}
+{const P=[];for(let i=0;i<28;i++){const a=i/28*PI*2;P.push(TS(Math.sin(a),.205,Math.cos(a),.012))}add(fgStrap(P,.03,.005,tout,true),M.web,0,0,0,tor,0,1);
+[-1,1].forEach(s=>add(fgStrap([TS(s,.205,.35,.012),new V3(s*.2*SW,.205,.13),new V3(s*(.09*SW+.093),.205,.235)],.03,.005,()=>new V3(s,0,0)),M.web,0,0,0,tor,1,0))}
+/* Arme: kraeftige Schultern, Falten am Ellbogen */
+[-1,1].forEach(s=>{const sx=s*.238*SW,sh=grp(sx,.47,0,tor);u.a.push(sh);add(new THREE.SphereGeometry(.088*AR,18,14),M.suit,s*.002,-.014,0,sh,0,1);
+add(fgLathe([[0,0],[.086,-.02],[.084,-.08],[.078,-.17],[.072,-.24],[.067,-.285],[0,-.295]].map(p=>[p[0]*AR,p[1]]),20,1,1.04,[[-.255,.045,.07,120,s],[-.05,.04,.03,90,s]]),M.suit,0,0,0,sh,0,1);
+const el=grp(0,-.29,0,sh);u.e.push(el);const fr=fgFore(el,s,M,K,AR,1);u.w.push(fr.w);u.h.push(fr.h)});
+u.dsp=fgDisp();u.tagM=new THREE.MeshStandardMaterial({map:fgTagTex(C.n,'#'+new THREE.Color(M.acc.color).getHexString()),roughness:.6});u.tagN=C.n;
 /* Kopf mit Gesicht (dreht sich im fest montierten Helm), Haare, Kopfhaube */
 const hd=grp(0,.56,0,tor);u.hd=hd;add(new THREE.CylinderGeometry(.043,.047,.09,14),M.skin,0,.04,.005,hd,0,0);
 const fc=grp(0,.125,-.005,hd);u.face=fc;add(new THREE.SphereGeometry(.1,24,18),M.skin,0,0,0,fc).scale.set(f?.78:.8,.98,.92);add(new THREE.SphereGeometry(.075,18,14),M.skin,0,-.046,-.014,fc).scale.set(f?.74:.82,.78,.86);
@@ -3465,18 +3517,40 @@ u.pony=grp(0,0,0,fc);if(f){add(new THREE.SphereGeometry(.036,12,10),M.hair,0,.0,
 u.cap=grp(0,0,0,fc);const cp=add(new THREE.SphereGeometry(.108,22,14,0,PI*2,0,PI*.58),M.cap,0,.01,.006,u.cap,0,0);cp.scale.set(f?.81:.83,1,.96);cp.rotation.x=.75;
 [-1,1].forEach(s=>add(new THREE.CylinderGeometry(.026,.026,.022,14),M.capB,s*.083,-.004,.008,u.cap,0,0).rotation.z=PI/2);add(new THREE.CylinderGeometry(.003,.003,.075,6),M.rub,-.062,-.05,-.05,u.cap,2,0).rotation.set(PI/2,0,.7);
 u.eye=grp(0,.016,-.08,fc);
-/* Helm: Glaskugel, Schale, goldenes Sonnenvisier (klappbar), Helmlampen, Atemnebel innen */
-const hm=grp(0,.685,-.005,tor);u.helm=hm;const gl=add(new THREE.SphereGeometry(.168,32,24),M.glass,0,0,0,hm,0,0);gl.renderOrder=3;
-add(new THREE.SphereGeometry(.177,32,20,0,PI,0,PI*.74),M.shell,0,0,0,hm,0,1);const rim=add(new THREE.TorusGeometry(.177,.011,8,48,PI*1.44),M.alu,0,0,0,hm,1,0);rim.rotation.z=-PI*.22;
-const vp=grp(0,0,0,hm);u.vp=vp;const vz=add(new THREE.SphereGeometry(.19,36,18,PI,PI,PI*.25,PI*.36),M.gold,0,0,0,vp,0,0);vz.renderOrder=4;add(new THREE.SphereGeometry(.197,32,6,PI*1.08,PI*.84,PI*.13,PI*.08),M.shell,0,0,0,vp,1,0);
-[-1,1].forEach(s=>{add(fgRB(.03,.034,.062,.01,3),M.shell,s*.17,.075,-.022,hm,1,0);add(new THREE.CylinderGeometry(.012,.012,.012,14),M.lens,s*.17,.075,-.055,hm,1,0).rotation.x=PI/2});
-u.fog=add(new THREE.SphereGeometry(.16,20,10,PI*1.2,PI*.6,PI*.5,PI*.24),M.fog,0,0,0,hm,0,0);u.fog.renderOrder=2;
-/* Lebenserhaltungs-Rucksack mit Ventilen, Griffen, Antenne und Warnlichtern */
-const bp=grp(0,.33,.215,tor);u.bp=bp;add(fgRB(.37*SW,.5,.19,.035,5),M.pack,0,0,0,bp,0,1);add(fgRB(.35*SW,.13,.17,.03,4),M.pack,0,.31,-.005,bp,0,1);add(new THREE.BoxGeometry(.33*SW,.03,.006),M.alu,0,.24,.096,bp,1,0);
-[-1,1].forEach(s=>{add(new THREE.TorusGeometry(.035,.007,6,14,PI),M.alu,s*.1,.375,.02,bp,1,0);const vx=s*(.185*SW+.012);add(new THREE.CylinderGeometry(.02,.02,.035,12),M.alu,vx,-.08,0,bp,1,0).rotation.z=PI/2;add(new THREE.CylinderGeometry(.012,.012,.02,10),s<0?M.hoseB:new THREE.MeshStandardMaterial({color:0xd03a2a,roughness:.5}),vx+s*.024,-.08,0,bp,2,0).rotation.z=PI/2});
-add(new THREE.CylinderGeometry(.005,.007,.28,6),M.alu,.13*SW,.5,.03,bp,1,0);add(new THREE.SphereGeometry(.01,8,6),M.rub,.13*SW,.645,.03,bp,1,0);for(let i=0;i<5;i++)add(new THREE.BoxGeometry(.2,.008,.006),M.alu,0,-.05-i*.022,.097,bp,2,0);
-add(fgRB(.2,.05,.012,.004,2),M.rub,0,-.205,.096,bp,1,0);u.leds=[-.065,0,.065].map(x=>add(new THREE.BoxGeometry(.04,.02,.008),new THREE.MeshBasicMaterial({color:0x30ff70}),x,-.205,.103,bp,0,0));
-u.leds2=[-1,1].map(s=>add(new THREE.SphereGeometry(.011,8,6),new THREE.MeshBasicMaterial({color:0x30ff70}),s*.185*SW,.22,.07,bp,0,0));add(new THREE.PlaneGeometry(.2,.0375),new THREE.MeshBasicMaterial({map:fgLbl(),transparent:true}),0,.13,.0962,bp,2,0);
+/* Atemmaske (nur mit Helm): dunkle Vollmaske, runde Augenglaeser, Atemventil mit Filter */
+{const mk=add(new THREE.SphereGeometry(.104,24,14,PI,PI,PI*.26,PI*.62),M.mask,0,-.008,-.004,u.cap,0,0);mk.scale.set(.86,1,.98);
+[-1,1].forEach(s=>{const e=add(new THREE.CylinderGeometry(.021,.021,.012,18).rotateX(PI/2),M.mlens,s*.033,.018,-.097,u.cap,0,0);e.rotation.y=-s*.28;const r=add(new THREE.TorusGeometry(.022,.0048,6,18),M.mask,s*.033,.018,-.1,u.cap,0,0);r.rotation.y=-s*.28});
+const sn=add(fgLathe([[.042,0],[.04,-.028],[.031,-.048],[0,-.05]],16),M.mask,0,-.042,-.082,u.cap,0,0);sn.rotation.x=PI/2-.35;
+const ft=add(new THREE.CylinderGeometry(.027,.027,.02,18),M.dk,0,-.062,-.137,u.cap,0,0);ft.rotation.x=PI/2-.35;const fr=add(new THREE.TorusGeometry(.027,.004,6,18),M.metal,0,-.065,-.146,u.cap,0,0);fr.rotation.x=-.35}
+/* Helm: Schale mit Platte hinten, gewoelbtes dunkles Visier mit Rand, Ohrscheiben (mit Lampe), Atemnebel innen */
+const HX=.18,HY=.188,HZ=.186,AZ=1.22,E0=-.06,EL=.7,HP=2.4,wq=d=>Math.pow(Math.abs(Math.atan2(d.x,-d.z))/AZ,HP)+Math.pow(Math.abs(Math.asin(clamp(d.y,-1,1))-E0)/EL,HP),vb=d=>.09*Math.max(0,1-wq(d));
+const hm=grp(0,.682,-.035,tor);u.helm=hm;
+add(fgSph(28,18,[HX*.975,HY*.975,HZ*.975]),M.lin,0,0,0,hm,1,0);add(fgSph(56,42,[HX,HY,HZ],d=>wq(d)>.99&&d.y>-.84,d=>d.z>0?.07*clamp(1.6-1.6*(Math.pow(Math.abs(d.x)/.38,4)+Math.pow(Math.abs(d.y-.4)/.52,4)),0,1)*clamp(d.z*4,0,1):0),M.shell,0,0,0,hm,0,1);
+const vg=add(fgSph(40,30,[HX+.002,HY+.002,HZ+.002],d=>wq(d)<1.06,vb),M.glass,0,0,0,hm,0,0);vg.renderOrder=3;
+u.dv=grp(0,0,0,hm);const dv=add(fgSph(40,30,[HX+.005,HY+.005,HZ+.005],d=>wq(d)<1.06,vb),M.gold,0,0,0,u.dv,0,0);dv.renderOrder=4;const vp=grp(0,0,0,hm);u.vp=vp;
+{const P=[];for(let i=0;i<96;i++){const t=i/96*PI*2,c=Math.cos(t),s=Math.sin(t),az=AZ*Math.sign(c)*Math.pow(Math.abs(c),2/HP),el=E0+EL*Math.sign(s)*Math.pow(Math.abs(s),2/HP);P.push(new V3(Math.sin(az)*Math.cos(el)*(HX+.006),Math.sin(el)*(HY+.006),-Math.cos(az)*Math.cos(el)*(HZ+.006)))}
+add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(P,true),110,.0135,8,true),M.shell,0,0,0,hm,0,1)}
+[-1,1].forEach(s=>{const az=s*1.5,el=-.04,d=new V3(Math.sin(az)*Math.cos(el),Math.sin(el),-Math.cos(az)*Math.cos(el)),e=grp(d.x*HX,d.y*HY,d.z*HZ,hm);e.quaternion.setFromUnitVectors(Z,new V3(d.x/HX,d.y/HY,d.z/HZ).normalize());
+add(new THREE.CylinderGeometry(.045,.051,.03,26).rotateX(PI/2),M.dk,0,0,.004,e,0,1);add(new THREE.TorusGeometry(.045,.0065,8,26),M.dk,0,0,.019,e,1,0);add(new THREE.CylinderGeometry(.03,.03,.008,22).rotateX(PI/2),M.rub,0,0,.019,e,1,0);
+add(new THREE.CylinderGeometry(.011,.011,.006,14).rotateX(PI/2),M.lens,0,0,.024,e,1,0)});
+u.fog=add(new THREE.SphereGeometry(.15,20,10,PI*1.2,PI*.6,PI*.5,PI*.24),M.fog,0,-.012,0,hm,0,0);u.fog.renderOrder=2;
+/* Atemschlauch vom Helm zur rechten Brust (haengt am Helm, faellt mit ihm weg) */
+{const cv=new THREE.CatmullRomCurve3([new V3(0,-.134,-.145),new V3(.006,-.16,-.175),new V3(.045,-.18,-.17),new V3(.092,-.192,-.145),new V3(.128,-.197,-.115)]);add(new THREE.TubeGeometry(cv,36,.0135,10),M.hose,0,0,0,hm,1,1);
+for(let i=1;i<13;i++){const t=i/13,r=add(new THREE.TorusGeometry(.0142,.0034,5,12),M.hose,0,0,0,hm,2,0);r.position.copy(cv.getPointAt(t));r.quaternion.setFromUnitVectors(Z,cv.getTangentAt(t))}
+[[0,.02,.03],[1,.017,.028]].forEach(([t,r,l])=>{const c=add(new THREE.CylinderGeometry(r,r,l,14).rotateX(PI/2),M.dk,0,0,0,hm,1,0);c.position.copy(cv.getPointAt(t));c.quaternion.setFromUnitVectors(Z,cv.getTangentAt(t))})}
+/* Zwei Atemluft-Flaschen auf dem Ruecken: dunkle Boeden, Ventile oben, Band mit Namensschild, gelbe Schnallen, Tragegriff, Statuslichter */
+const bp=grp(0,.33,.215,tor);u.bp=bp;const TR=.088*(f?.95:1),TO=.09*SW;add(fgRB(.2*SW,.44,.02,.008,2),M.dk,0,0,-.07,bp,1,0);
+[-1,1].forEach(s=>{const x=s*TO;add(fgLathe([[0,-.248],[TR*.8,-.248],[TR*.96,-.24],[TR,-.222],[TR,.27],[TR*.96,.297],[TR*.84,.313],[TR*.5,.323],[0,.325]],28,1,1.05),M.pack,x,0,.02,bp,0,1);
+add(fgLathe([[0,-.256],[TR*.82,-.256],[TR+.003,-.242],[TR+.003,-.204],[0,-.204]],28,1,1.05),M.dk,x,0,.02,bp,0,0);
+add(fgRB(.05,.026,.05,.008,2),M.dk,x,.33,.0,bp,1,0);add(fgLathe([[0,0],[.019,0],[.016,.03],[.019,.042],[.011,.07],[0,.073]],14),M.pack,x,.334,.048,bp,1,0);
+add(fgRB(.016,.046,.036,.004,1),M.acc,s*(TO+TR+.008),.07,.02,bp,1,0);add(fgRB(.014,.04,.032,.004,1),M.acc,s*(TO+TR+.007),-.125,.02,bp,1,0)});
+const band=(y,w,m,ld)=>{const P=[],r=TR+.004,rz=TR*1.05+.004;for(let i=0;i<=12;i++){const a=-PI/2+PI*i/12;P.push(new V3(TO+Math.cos(a)*r,y,.02+Math.sin(a)*rz))}for(let i=1;i<6;i++)P.push(new V3(TO-2*TO*i/6,y,.02+rz));for(let i=0;i<=12;i++){const a=PI/2+PI*i/12;P.push(new V3(-TO+Math.cos(a)*r,y,.02+Math.sin(a)*rz))}for(let i=1;i<6;i++)P.push(new V3(-TO+2*TO*i/6,y,.02-rz));
+return add(fgStrap(P,w,.005,p=>Math.abs(p.x)<TO-.002?new V3(0,0,Math.sign(p.z-.02)):new V3(p.x-Math.sign(p.x)*TO,0,(p.z-.02)/1.05).normalize(),true),m,0,0,0,bp,ld,0)};
+band(.07,.032,M.webD,0);band(-.196,.024,M.webD,1);
+add(new THREE.TorusGeometry(.04,.008,6,14,PI),M.alu,0,.29,-.035,bp,1,0);
+const zB=.02+TR*1.05+.004+.0068;add(new THREE.PlaneGeometry(.1,.024),u.tagM,0,.07,zB,bp,2,0);
+u.leds=[-.026,0,.026].map(x=>add(new THREE.BoxGeometry(.014,.008,.004),new THREE.MeshBasicMaterial({color:0x30ff70}),x,-.196,zB,bp,0,0));
+u.leds2=[-1,1].map(s=>add(new THREE.SphereGeometry(.0065,8,6),new THREE.MeshBasicMaterial({color:0x30ff70}),s*TO,.344,-.012,bp,0,0));
 try{fgGear(u,add,grp,M,SW,o.ws!==undefined?o.ws:(save.suit&&save.suit.ws))}catch(e){console.warn(e)}
 g.traverse(q=>{q.userData.pc=1});u.pc=1;g.userData=u;return g}
 /*-- 3.22: angezogene Teile an der Figur (einfache Modelle, Name 'eq' = wird nicht mit dem Koerper verschmolzen) --*/
@@ -3553,14 +3627,14 @@ S(u.hd,'x',clamp((o.pit||0)*.55,-.55,.6)-lean*.8+u.lk[1]-(cx.zoom?(o.pit||0)*.2:
 /*-- Aussehen: Helm auf/ab, Visier, Blinzeln, Atemnebel, Lampen, Rucksack-Lichter, Staub, Kratzer, Spiegelungen, Detailstufe --*/
 const fgLc=v=>v>50?0x30ff70:v>20?0xffc020:0xff3020;
 function fgLook(m,dt,s){const u=m.userData,M=u.M,k=Math.min(1,dt*5);u.t2=(u.t2||0)+dt;const t=u.t2;
-if(u.helm.visible!=s.helm)u.helm.visible=s.helm;u.cap.visible=s.helm;u.pony.visible=!s.helm;const vt=s.helm&&s.vis?0:.98;u.vp.rotation.x+=(vt-u.vp.rotation.x)*k;u.face.visible=!s.helm||u.vp.rotation.x>.25;
+if(u.helm.visible!=s.helm)u.helm.visible=s.helm;u.cap.visible=s.helm;u.pony.visible=!s.helm;const vt=s.helm&&s.vis?0:.98;u.vp.rotation.x+=(vt-u.vp.rotation.x)*k;u.face.visible=!s.helm||u.vp.rotation.x>.25||!!u.see;if(u.dv){const dt=clamp(u.vp.rotation.x/.98,0,1);M.gold.opacity=.88-.86*dt;u.dv.visible=M.gold.opacity>.04}
 if((u.bt-=dt)<0){u.bl=.15;u.bt=2+Math.random()*4.5}u.bl-=dt;const cl=u.bl>0;u.lid.forEach(l=>{l.scale.y=cl?1:.3;l.position.y=cl?.016:.027});
 M.lens.emissiveIntensity=s.helm?(s.lamp||0)*3:0;
 const ex=Math.max(0,Math.sin(t*1.55-1.3)),fo=s.cold&&s.helm?Math.pow(ex,3)*.42:0;M.fog.opacity+=(fo-M.fog.opacity)*Math.min(1,dt*6);u.fog.visible=M.fog.opacity>.01;u.fogA=M.fog.opacity;
 const o2=s.o2==null?100:s.o2,en=s.en==null?100:s.en,bl=Math.sin(t*9)>0,L=(led,v)=>{led.material.color.setHex(v<=20&&!bl?0x401008:fgLc(v))};L(u.leds[0],o2);L(u.leds[1],Math.min(o2,en,100-(s.dmg||0)*100));L(u.leds[2],en);u.leds2.forEach(q=>L(q,Math.min(o2,en)));
 if((u.dt2=(u.dt2||0)-dt)<=0&&u.lod==0){u.dt2=.5;const x=u.dsp.userData.c;x.fillStyle='#04141c';x.fillRect(0,0,128,64);x.font='bold 15px monospace';x.fillStyle=fgLc(o2)==0x30ff70?'#5fffa0':o2>20?'#ffd040':'#ff5040';x.fillText('O2 '+Math.round(o2)+'%',6,22);x.fillStyle=en>50?'#5fffa0':en>20?'#ffd040':'#ff5040';x.fillText('EN '+Math.round(en)+'%',6,44);x.fillStyle='#2fd0ff';x.fillRect(84,10,36*o2/100,12);x.fillRect(84,32,36*en/100,12);x.fillStyle='#7aa';x.fillText((s.dmg>.4?'!':'OK'),88,60);u.dsp.needsUpdate=true}
 const U=M.U;U.uDirt.value=s.dirt||0;U.uDmg.value=clamp(s.dmg||0,0,1);U.uBase.value=m.position.y;U.uH.value=1.3*m.scale.y*(u.fem?.935:1);if(s.dc!=null)U.uDC.value.setHex(s.dc);
-if(s.env!==undefined&&s.env!==u.env){u.env=s.env;[M.gold,M.glass,M.metal,M.alu,M.shell,M.pack].forEach(q=>{q.envMap=s.env;q.needsUpdate=true})}
+if(s.env!==undefined&&s.env!==u.env){u.env=s.env;[M.gold,M.glass,M.metal,M.alu,M.shell,M.pack,M.pad,M.mlens,M.suit,M.boot,M.glove,M.acc].forEach(q=>{if(q){q.envMap=s.env;q.needsUpdate=true}})}
 fgLod(u,s.menu?0:(save.gfx===0?(s.dist<3?0:s.dist<25?1:2):s.dist<9?0:s.dist<30?1:2))}
 /*-- Werkzeug in der rechten Hand: zielt dorthin, wo du hinschaust --*/
 function fgTK(id){if(!id)return null;if(/^laser/.test(id))return'laser';if(/^scan/.test(id))return'scan';return{fernglas:'bino',multitool:'multi',bohrer:'drill',haken:'hook',bergung:'claw',feldfab:'fab'}[id]||null}
@@ -3630,8 +3704,8 @@ if(R.dl){V.v7.copy(R.dl.position);if(R.dl.target)V.v7.sub(R.dl.target.position);
 function vmRender(){if(!VM.on||!VM.s)return;const c=VM.c;c.position.copy(GC.position);c.quaternion.copy(GC.quaternion);if(c.fov!=GC.fov||c.aspect!=GC.aspect){c.fov=GC.fov;c.aspect=GC.aspect;c.updateProjectionMatrix()}const ac=R3.autoClear;R3.autoClear=false;R3.clearDepth();R3.render(VM.s,c);R3.autoClear=ac}
 /* Laserstrahl beginnt an der Muendung (Ich-Ansicht oder Figur) */
 function fgMuzzle(v){const V=FGV;if(VM.on&&VM.r&&VM.r.tools.laser&&VM.r.tools.laser.visible){const t=VM.r.tools.laser;t.updateMatrixWorld(true);return t.localToWorld(v.copy(t.userData.mz))}const P=GR.pc;if(P&&P.visible&&P.userData.tool&&P.userData.tool.userData.mz){const t=P.userData.tool;t.updateMatrixWorld(true);return t.localToWorld(v.copy(t.userData.mz))}return null}
-/* Helm-Overlay in der Ich-Ansicht: goldene Toenung bei geschlossenem Visier, Atemnebel bei Kaelte */
-const FGO=mkd('position:absolute;inset:0;pointer-events:none;display:none;overflow:hidden');wrap.insertBefore(FGO,c3.nextSibling);FGO.innerHTML='<div style="position:absolute;inset:0;background:radial-gradient(ellipse 75% 70% at 50% 48%,rgba(255,190,90,0) 55%,rgba(60,35,5,.5) 100%),rgba(255,185,70,.07)"></div><div style="position:absolute;inset:0;background:radial-gradient(ellipse 55% 38% at 50% 108%,rgba(235,242,255,.85),rgba(235,242,255,0) 70%);opacity:0"></div>';
+/* Helm-Overlay in der Ich-Ansicht: dunkle Toenung bei geschlossenem Visier (3.36), Atemnebel bei Kaelte */
+const FGO=mkd('position:absolute;inset:0;pointer-events:none;display:none;overflow:hidden');wrap.insertBefore(FGO,c3.nextSibling);FGO.innerHTML='<div style="position:absolute;inset:0;background:radial-gradient(ellipse 75% 70% at 50% 48%,rgba(20,40,46,0) 55%,rgba(3,9,11,.55) 100%),rgba(10,30,36,.15)"></div><div style="position:absolute;inset:0;background:radial-gradient(ellipse 55% 38% at 50% 108%,rgba(235,242,255,.85),rgba(235,242,255,0) 70%);opacity:0"></div>';
 function FGOV(on,P,o,dt){const u=P&&P.userData,show=on&&u&&u.helm&&u.helm.visible;FGO.style.display=show?'block':'none';if(!show)return;const c=FGO.children,vd=chO().v;c[0].style.opacity=vd?1:.25;c[1].style.opacity=(u.fogA||0)*1.6}
 /*-- Cockpit: Pilot sitzt (Haende an Steuerknueppel und Schubhebel, Fuesse am Boden) --*/
 function figCk(on,dt){const P0=CK.fig;if(!on||!CK.built||!CK.seat||(CK.tw&&CK.tw.k=='sit'&&CK.tw.t<CK.tw.d*.8)){if(P0)P0.visible=false;return}let P=P0;if(!P||P.userData.key!=chKey()){if(P0){CK.g.remove(P0);fgDispose(P0)}P=figBuild();P.userData.key=chKey();CK.fig=P;CK.g.add(P);P.userData.helm.visible=false;P.userData.cap.visible=false;P.userData.bp.visible=false;P.userData.hd.visible=false;P.userData.fixed=0}
