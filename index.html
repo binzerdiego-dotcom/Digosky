@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>DigoSky Beta 3.38</title>
+<title>DigoSky Beta 3.39</title>
 <style>
 :root{color-scheme:dark;--bg:#02030a;--fg:#e8ecff;--ac:#55ccff;--card:#10142bd9;--gold:#ffcc33;box-sizing:border-box}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;touch-action:none}
@@ -190,13 +190,15 @@ if(p.atm)p.am=add(new THREE.Mesh(new THREE.SphereGeometry(p.R*(1+p.ak),48,32),ne
 if(p.ring)mkRing(p,add);
 return p}
 function mkPts(pa,ca,sz,op){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pa,3));g.setAttribute('color',new THREE.BufferAttribute(ca,3));const o=new THREE.Points(g,new THREE.PointsMaterial({size:sz,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:op,depthWrite:false}));o.frustumCulled=false;S.add(o)}
+/* 3.39: Galaxie-Daten fuer die Sternenkarte (gleiche Staubpunkte, Galaxiemitte) */
+const GALD={};
 function mkGal(){const r=rng(2026),GR=9e6,NS=500,arm=(pw,fd)=>{const d=fd||Math.pow(r(),pw)*GR,an=Math.floor(r()*4)*1.5708+d/GR*3.5+(r()-.5)*.5;return new V3(Math.cos(an)*d,(r()-.5)*GR*.04*(1-d/GR*.7),Math.sin(an)*d)},
 TC=[[.65,.8,1],[1,.85,.5],[1,.4,.25]],pick=()=>{const q=r();return TC[q<.6?0:q<.9?1:2]},syl=['ka','ro','xe','mi','zu','vol','tar','el','ny','or','sa','dre','ph','ux','an'],
 nm=()=>{let s='';for(let i=0,n=2+Math.floor(r()*2);i<n;i++)s+=syl[Math.floor(r()*15)];return s[0].toUpperCase()+s.slice(1)};
 const sol=arm(1,GR*.5);gal=[{pos:new V3(),col:[1,.8,.45],name:'Sol',sol:1,loaded:1,seed:0}];
 for(let i=1;i<NS;i++)gal.push({pos:(q=>q.length()<3.5e6?q.setLength(3.5e6+r()*1.5e6):q)(arm(1.3).sub(sol)),col:pick(),name:nm()+' '+(10+Math.floor(r()*89)),seed:1000+i,loaded:0});
 const N=14000,dp2=new Float32Array(N*3),dc=new Float32Array(N*3);for(let i=0;i<N;i++){arm(2).sub(sol).toArray(dp2,i*3);const c=pick(),b=.25+r()*.5;dc.set([c[0]*b,c[1]*b,c[2]*b],i*3)}
-const sp2=new Float32Array((NS-1)*3),sc2=new Float32Array((NS-1)*3);gal.slice(1).forEach((s,i)=>{s.pos.toArray(sp2,i*3);sc2.set(s.col,i*3)});mkPts(dp2,dc,1.4,.9);mkPts(sp2,sc2,3,1);
+const sp2=new Float32Array((NS-1)*3),sc2=new Float32Array((NS-1)*3);gal.slice(1).forEach((s,i)=>{s.pos.toArray(sp2,i*3);sc2.set(s.col,i*3)});GALD.dp=dp2;GALD.dc=dc;GALD.c=sol.clone().negate();mkPts(dp2,dc,1.4,.9);mkPts(sp2,sc2,3,1);
 const cs=new THREE.Sprite(new THREE.SpriteMaterial({map:GD,color:0xffd9a0,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,opacity:.6}));cs.position.copy(sol).negate();cs.scale.setScalar(4e6);S.add(cs)}
 function loadSys(s){sysLoad(s);jobFlush('sys'+s.seed)}
 function sysLoad(s){if(s.loaded)return;s.loaded=1;s.ps=[];jobAdd(loadSysJ(s),'sys'+s.seed)}
@@ -1710,7 +1712,7 @@ const M2=document.createElement('div');M2.id='m2';
 M2.innerHTML='<canvas id="m3"></canvas><div class="mvig"></div><div class="mgr"></div>'
 +'<header class="mt"><div class="lg">'+EMB+'<div class="lgt">'+[...'DIGOSKY'].map((c,i)=>'<span style="--i:'+i+'">'+c+'</span>').join('')+'</div></div><div class="sb">WANDERER VX-9 · EXPEDITION SOL</div></header>'
 +'<div id="mst"></div><nav id="mn"></nav><section id="mp"></section>'
-+'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.38</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
++'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.39</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
 +'<div id="mfade"></div><input type="file" id="mfile" accept=".json,.txt,application/json,text/plain" style="display:none">';
 wrap.appendChild(M2);
 const mp=el('mp'),NAV=[['play','SPIEL STARTEN',0],['new','NEUES SPIEL',0],['load','SPIELSTAND LADEN',0],['mis','MISSIONEN',1],['char','CHARAKTER',1],['ship','RAUMSCHIFF',1],['kod','KODEX',1],['set','EINSTELLUNGEN',2],['prof','SPIELERPROFIL',2]],MNG=['KAMPAGNE','BORDSYSTEME','SYSTEM'];
@@ -2554,7 +2556,7 @@ function ckRear(cz){const dc=I.door.t<.02,ro=!(dc&&cz<-12.25);if(ro!==CK.ro){CK.
 function ckHudTxt(){if(I.z>-12.1&&!G.gm)return'';if(G.gm)return'';const v=PH.v.length();return'<br><span style="color:#7fe8ff">Autopilot · '+fV(v)+' · '+ckStage()[0]+'</span><br><small>[E] am Pilotensitz = fliegen</small>'}
 
 /*-- Hauptrender: Weltraum durch die Scheiben, dann Innenraum darüber --*/
-function ckRender(dt){const fly=!G.gi&&!G.gm,ckv=fly&&G.view==1;figCk(ckv,dt);
+function ckRender(dt){if(MP.on&&MP.b){mpRender();return}const fly=!G.gi&&!G.gm,ckv=fly&&G.view==1;figCk(ckv,dt);
 if(!G.gi&&!ckv){R3.autoClear=true;R3.render(G.gm?GS:S,G.gm?GC:C);if(G.gm)vmRender();return}
 if(!I.built)buildInt();if(!CK.built)ckBuild();R3.autoClear=false;R3.clear();
 if(ckv){const cam=ckPose(dt);const vv=vis.visible;vis.visible=false;R3.render(S,C);vis.visible=vv;R3.clearDepth();ckVis(1);ckRear(cam.position.z);ckLights();ckUpd(dt,1);lplUpd(cam,dt);GI.background=null;R3.render(GI,cam)}
@@ -3257,33 +3259,284 @@ o.push({id:s.id+'k'+Math.floor(Date.now()/6e5),ty:'kill',n:2,r:240,t:'Kopfgeld: 
 const lb=G.pl.filter(p=>p.I&&p.I.land&&p.n!='Erde'),b=pk(lb);o.push({id:s.id+'l'+b.n,ty:'land',b:b.n,r:150+Math.round(Math.min(400,b.pos.distanceTo(s.pos)/4000)),t:'Erkundung: '+b.n,d:'Lande auf '+b.n+' und übermittle Messdaten.',f:s.f});return o}
 function jobEvt(ty,a){save.jobs.forEach((j,i)=>{if(j.ty!=ty)return;if(ty=='kill'&&a=='pirat'){j.n--;if(j.n<=0)jobDone(i)}else if(ty=='land'&&j.b==a)jobDone(i);else if(ty=='poi'&&j.p==a)jobDone(i)});save.jobs=save.jobs.filter(j=>!j.done)}
 function jobDone(i){const j=save.jobs[i];if(!j||j.done)return;j.done=1;save.coins+=j.r;save.rep[j.f]=(save.rep[j.f]||0)+5;if(j.bp)setTimeout(()=>bpLearn(j.bp,'Auftrag'),1500);sfx('win');toast('Auftrag erledigt: '+j.t+' · +'+j.r+' ●');save.jobs=save.jobs.filter(q=>!q.done);store()}
-/*==== KARTE ====*/
-const MAPD=mkd('position:absolute;inset:0;z-index:11;display:none;background:#02040cf0;touch-action:none');MAPD.innerHTML='<canvas id="mapc" style="position:absolute;inset:0;width:100%;height:100%"></canvas><div class="umt"><button class="utb on" data-mm="sys"><i>☀</i><span>SONNENSYSTEM</span></button><button class="utb" data-mm="gal"><i>🌌</i><span>GALAXIE</span></button><button class="utb" data-mm="zi" title="Vergrössern"><i>＋</i></button><button class="utb" data-mm="zo" title="Verkleinern"><i>－</i></button><button class="utb" data-mm="me" title="Zu meinem Schiff"><i>◎</i></button></div><button class="ux umx" data-mm="x" title="Schliessen [M]">✕</button><div id="mapi" style="position:absolute;right:12px;top:calc(64px + env(safe-area-inset-top,0px));width:min(340px,88vw);max-height:72%;overflow:auto;padding:14px;display:none"></div>';
-const MV={mode:'sys',z:1/1800,cx:0,cz:0,sel:null,objs:[]};
-function mapTog(v){const on=v==null?MAPD.style.display=='none':v;if(on&&(HY.on||DTH.on))return;MAPD.style.display=on?'block':'none';if(on){if(document.pointerLockElement)document.exitPointerLock();MV.cx=ship.position.x;MV.cz=ship.position.z;MV.sel=null;el('mapi').style.display='none';mapMB();sfx('ui')}}
-function mapMB(){MAPD.querySelectorAll('[data-mm=sys],[data-mm=gal]').forEach(b=>b.classList.toggle('on',b.dataset.mm==MV.mode))}
-function mapDraw(){if(MAPD.style.display=='none')return;const cv=el('mapc'),w=cv.clientWidth,h=cv.clientHeight;if(cv.width!=w||cv.height!=h){cv.width=w;cv.height=h}const x=cv.getContext('2d'),o=[];x.clearRect(0,0,w,h);
-const P=ship.position,sx=X=>(X-MV.cx)*MV.z+w/2,sy=Z=>(Z-MV.cz)*MV.z+h/2;x.font='12px system-ui';x.textAlign='center';
-if(MV.mode=='gal'){gal.forEach(s=>{const X=sx(s.pos.x),Y=sy(s.pos.z);if(X<-5||X>w+5||Y<-5||Y>h+5)return;x.fillStyle='rgb('+s.col.map(c=>c*255|0).join(',')+')';x.fillRect(X-1.5,Y-1.5,s.sol?5:3,s.sol?5:3);o.push({X,Y,sys:s,n:s.name});if(s.sol||MV.z>2e-5){x.fillStyle='#9ab';x.fillText(s.name,X,Y-6)}})}
-else{const sun=G.pl[0];G.pl.forEach(p=>{if(!p.sys||!p.sys.sol)return;if(!p.sun){const c=p.par!=null?G.pl[p.par].pos:sun.pos,r=Math.hypot(p.pos.x-c.x,p.pos.z-c.z)*MV.z;if(r>3){x.strokeStyle=p.par!=null?'#ffffff14':'#55ccff22';x.beginPath();x.arc(sx(c.x),sy(c.z),r,0,6.3);x.stroke()}}
-const X=sx(p.pos.x),Y=sy(p.pos.z),r=Math.max(p.sun?6:p.par!=null?2:3,p.R*MV.z);if(X<-r||X>w+r||Y<-r||Y>h+r)return;const c=p.A||[200,180,140];x.fillStyle=p.sun?'#ffd070':p.n=='Erde'?'#4a90ff':'rgb('+c.join(',')+')';x.beginPath();x.arc(X,Y,r,0,6.3);x.fill();o.push({X,Y,p,n:p.n});if(p.par==null||MV.z>.004){x.fillStyle='#cde';x.fillText(p.n,X,Y-r-4)}});
-const bR=[240000,320000];x.strokeStyle='#8a847822';x.lineWidth=Math.max(1,(bR[1]-bR[0])*MV.z);x.beginPath();x.arc(sx(0),sy(0),(bR[0]+bR[1])/2*MV.z,0,6.3);x.stroke();x.lineWidth=1;
-STN.forEach(s=>{const X=sx(s.pos.x),Y=sy(s.pos.z);x.fillStyle=s.dead?'#777':FAC[s.f].c;x.fillRect(X-4,Y-4,8,8);o.push({X,Y,s,n:s.n});if(MV.z>.0006){x.fillStyle='#fff';x.fillText(s.n,X,Y+15)}});
-POI.forEach(p=>{if(p.id=='stille')return;const kn=save.poi[p.id]||(save.tech&&save.tech.sensor)||p.pos.distanceTo(P)<60000;if(!kn)return;const X=sx(p.pos.x),Y=sy(p.pos.z);x.strokeStyle=save.poi[p.id]>1?'#777':'#9fe8ff';x.beginPath();x.moveTo(X,Y-6);x.lineTo(X+6,Y);x.lineTo(X,Y+6);x.lineTo(X-6,Y);x.closePath();x.stroke();o.push({X,Y,poi:p,n:p.n})});
-NPC.forEach(n=>{if(!n.alive||n.st=='dock'||n.st=='landed')return;const X=sx(n.pos.x),Y=sy(n.pos.z);if(X<0||X>w||Y<0||Y>h)return;x.fillStyle=FAC[n.f].c;x.beginPath();x.arc(X,Y,2.5,0,6.3);x.fill();o.push({X,Y,npc:n,n:n.name})})}
-const X=sx(P.x),Y=sy(P.z),f=PT.set(0,0,-1).applyQuaternion(ship.quaternion),a=Math.atan2(f.z,f.x);x.save();x.translate(X,Y);x.rotate(a);x.fillStyle='#fff';x.beginPath();x.moveTo(9,0);x.lineTo(-6,5);x.lineTo(-3,0);x.lineTo(-6,-5);x.closePath();x.fill();x.restore();
-if(PH.v.length()>1){x.strokeStyle='#9f9';x.beginPath();x.moveTo(X,Y);x.lineTo(X+PH.v.x*MV.z*60,Y+PH.v.z*MV.z*60);x.stroke()}
-const t=G.tgt&&tgtPos(G.tgt);if(t){x.strokeStyle='#f6f';x.setLineDash([4,4]);x.beginPath();x.moveTo(X,Y);x.lineTo(sx(t.x),sy(t.z));x.stroke();x.setLineDash([])}
-{const ht=hyTgt();if(ht){const q=o.find(z=>z.n==ht.n);if(q){x.strokeStyle='#4f9cff';x.lineWidth=2;x.setLineDash([3,3]);x.beginPath();x.arc(q.X,q.Y,16,0,6.3);x.stroke();x.setLineDash([]);x.lineWidth=1;x.fillStyle='#7fb8ff';x.fillText('◆ HYPER',q.X,q.Y+28)}}}
-if(MV.sel){const q=o.find(z=>z.n==MV.sel.n);if(q){x.strokeStyle='#ffcc33';x.beginPath();x.arc(q.X,q.Y,11,0,6.3);x.stroke()}}
-x.textAlign='left';x.fillStyle='#8ab';x.fillText(MV.mode=='gal'?'Galaxie · '+gal.length+' Sterne · Massstab 1 px = '+fmtD(1/MV.z):'Sonnensystem · 1 px = '+fmtD(1/MV.z)+' · Klick = Info / Ziel',12,h-14);MV.objs=o}
-function mapPick(cx,cy){let b=null,bd=16;MV.objs.forEach(q=>{const d=Math.hypot(q.X-cx,q.Y-cy);if(d<bd){bd=d;b=q}});const mi=el('mapi');if(!b){mi.style.display='none';MV.sel=null;return}MV.sel=b;sfx('ui');let h='<div class="utt" style="padding:0 0 6px">'+b.n+'</div>';
-if(b.p)h+=bodyInfo(b.p);else if(b.s)h+='<small style="color:'+FAC[b.s.f].c+'">'+FAC[b.s.f].n+'</small><p>'+b.s.d+'</p>';else if(b.npc)h+='<small style="color:'+FAC[b.npc.f].c+'">'+b.npc.t.n+' · '+FAC[b.npc.f].n+'</small><p>Masse '+b.npc.t.m/1000+' t · Schub '+(b.npc.t.F/1e6).toFixed(1)+' MN · a = '+(b.npc.t.F/b.npc.t.m).toFixed(1)+' m/s²</p>';else if(b.poi)h+='<p>'+(save.poi[b.poi.id]>1?'Bereits untersucht.':'Unerforscht. Langsam nähern (unter 30 m/s), dann [L].')+'</p>';else if(b.sys)h+='<p>'+(b.sys.sol?'Unser Sonnensystem.':'Entfernung: '+fmtD(b.sys.pos.distanceTo(ship.position))+'. Mit Warp [X] erreichbar.')+'</p>';
-if(hySet(b))h+='<p style="color:#7fb8ff"><b>◆ Hyperantrieb-Ziel gewählt.</b><br><small>Im Flug '+(QL.mob?'den Knopf «Hyperantrieb»':'die Taste O')+' lange drücken ('+(save.hd|0)+' Hyperkristall'+((save.hd|0)==1?'':'e')+' eingesetzt)</small></p>';
-h+='<p style="opacity:.7">Entfernung: '+fmtD(((b.p&&b.p.pos)||(b.s&&b.s.pos)||(b.npc&&b.npc.pos)||(b.poi&&b.poi.pos)||b.sys.pos).distanceTo(ship.position))+'</p><button class="t on" data-mm="tg">🎯 Als Ziel setzen</button>';mi.innerHTML=h;mi.style.display='block'}
-MAPD.addEventListener('click',e=>{const b=e.target.closest('button');if(b){const m=b.dataset.mm;if(m=='sys'||m=='gal'){MV.mode=m;MV.z=m=='gal'?1/3e4:1/1800;MV.cx=m=='gal'?0:ship.position.x;MV.cz=m=='gal'?0:ship.position.z;mapMB()}else if(m=='zi')MV.z*=1.6;else if(m=='zo')MV.z/=1.6;else if(m=='me'){MV.cx=ship.position.x;MV.cz=ship.position.z}else if(m=='x')mapTog(0);else if(m=='tg'&&MV.sel){const q=MV.sel;G.tgt={n:q.n,p:q.p,s:q.s,npc:q.npc,poi:q.poi,sys:q.sys};toast('Ziel: '+q.n);sfx('beep')}return}if(e.target.id=='mapc'&&!MV.dg)mapPick(e.offsetX,e.offsetY)});
-{let dn=0,lx=0,ly=0;MAPD.addEventListener('pointerdown',e=>{if(e.target.id!='mapc')return;dn=1;MV.dg=0;lx=e.clientX;ly=e.clientY});addEventListener('pointermove',e=>{if(!dn)return;const dx=e.clientX-lx,dy=e.clientY-ly;if(Math.abs(dx)+Math.abs(dy)>3)MV.dg=1;MV.cx-=dx/MV.z;MV.cz-=dy/MV.z;lx=e.clientX;ly=e.clientY});addEventListener('pointerup',()=>{dn=0;setTimeout(()=>MV.dg=0,10)});
-MAPD.addEventListener('wheel',e=>{e.preventDefault();const k=e.deltaY<0?1.25:.8,cv=el('mapc'),wx=MV.cx+(e.offsetX-cv.clientWidth/2)/MV.z,wz=MV.cz+(e.offsetY-cv.clientHeight/2)/MV.z;MV.z*=k;MV.cx=wx-(e.offsetX-cv.clientWidth/2)/MV.z;MV.cz=wz-(e.offsetY-cv.clientHeight/2)/MV.z},{passive:false})}
+/*==== 3.39: STERNENKARTE – eine Karte fuer alles (Planet -> System -> Nachbarschaft -> Galaxie), logarithmischer Zoom ====*/
+/* WebGL-Szene MP.S mit eigener Kamera MP.C (schwebender Ursprung MP.E), Beschriftungen/Symbole auf der Canvas #mapc. Nur aktiv, solange die Karte offen ist. */
+const MAPD=mkd('position:absolute;inset:0;z-index:11;display:none;touch-action:none;background:radial-gradient(ellipse at 50% 46%,transparent 58%,#00010699 100%)');
+MAPD.innerHTML='<canvas id="mapc"></canvas><div id="mpx"></div>'+
+'<div class="mpt"><div class="mps"><input id="mpq" type="text" placeholder="Suchen: Planet, Mond, Stern, Station …" autocomplete="off" spellcheck="false"><div id="mpr"></div></div>'+
+'<div class="mpf" id="mpf"><button data-mf="pl"><i>◉</i>PLANETEN</button><button data-mf="mo"><i>◦</i>MONDE</button><button data-mf="st"><i>⬡</i>STATIONEN</button><button data-mf="rt"><i>⟿</i>ROUTEN</button><button data-mf="dc"><i>✓</i>NUR ENTDECKT</button></div></div>'+
+'<button class="ux umx" data-mm="x" title="Schliessen [M]">✕</button><div id="mapi"></div>'+
+'<div class="mpb"><div class="mpl" id="mpl"><span data-lv="0">PLANET</span><span data-lv="1">SYSTEM</span><span data-lv="2">NACHBARSCHAFT</span><span data-lv="3">GALAXIE</span></div>'+
+'<div class="mpz"><button data-mm="zo" title="Verkleinern [−]">－</button><div class="mpk" id="mpk"><i style="left:55.8%"></i><i style="left:87%"></i><i style="left:95.2%"></i><div id="mpkt"></div></div><button data-mm="zi" title="Vergrössern [+]">＋</button><button data-mm="me" title="Zum eigenen Schiff [Pos1]">◎</button></div>'+
+'<div class="mpm"><span id="mpsc"></span><i id="mpsb"></i></div></div><div class="mph" id="mph"></div>';
+{const st=document.createElement('style');st.textContent=
+'#mapc{position:absolute;inset:0;width:100%;height:100%;cursor:grab}#mapc.hv{cursor:pointer}#mapc.dg{cursor:grabbing}'+
+'#mpx{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border:1px solid #5fd4ff99;border-radius:50%;display:none;pointer-events:none;box-shadow:0 0 12px #5fd4ff44}#mpx:after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px;background:#9fe8ff;border-radius:50%}body.gpad #mpx{display:block}'+
+'.mpt{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:12px;right:66px;display:flex;gap:10px;align-items:flex-start;z-index:2;pointer-events:none}.mpt>*{pointer-events:auto}'+
+'.mps{position:relative;width:min(380px,36vw);flex:none}.mps:before{content:"⌕";position:absolute;left:12px;top:8px;color:#5fd4ff;font-size:21px;pointer-events:none;z-index:1}'+
+'#mpq{width:100%;box-sizing:border-box;height:44px;padding:0 14px 0 38px;border:1px solid #1d4a66;background:#050f22d8;color:#dff4ff;font:600 16px Rajdhani,system-ui,sans-serif;letter-spacing:.04em;outline:none;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))}#mpq:focus,#mpq.gpf{border-color:#5fd4ff;background:#071a34ee}#mpq::placeholder{color:#5f7f99}'+
+'#mpr{position:absolute;left:0;right:0;top:48px;display:none;background:rgba(4,12,26,.94);border:1px solid #1d4a66;max-height:60vh;overflow:auto}'+
+'#mpr button{display:flex;justify-content:space-between;align-items:baseline;gap:10px;width:100%;padding:8px 12px;margin:0;background:none;border:0;border-bottom:1px solid #ffffff0d;color:#dff4ff;font:600 15px Rajdhani,system-ui,sans-serif;cursor:pointer;text-align:left}#mpr button small{color:#7f9fb8;font-weight:500;white-space:nowrap}#mpr button:hover,#mpr button.gpf{background:#0f2a4a}'+
+'.mpf{display:flex;gap:6px;flex-wrap:wrap}.mpf button{height:44px;padding:0 12px;margin:0;border:1px solid #1d4a66;background:#050f22d0;color:#6f93b0;font:700 11px Orbitron,system-ui,sans-serif;letter-spacing:.1em;cursor:pointer;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))}.mpf button i{font-style:normal;margin-right:7px;color:#3f6f90}.mpf button.on{color:#fff;border-color:#5fd4ff;background:linear-gradient(180deg,#123f62e8,#08243ce8)}.mpf button.on i{color:#5fd4ff}.mpf button:hover{color:#fff}'+
+'#mapi{position:absolute;right:14px;top:calc(66px + env(safe-area-inset-top,0px));width:min(350px,90vw);max-height:calc(100% - 210px);overflow:auto;padding:16px 16px 14px;display:none;background:linear-gradient(165deg,rgba(10,28,54,.82),rgba(3,9,20,.84))!important;border:1px solid #2f7fa8b0!important;border-radius:0!important;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));animation:mpIn .22s ease-out;scrollbar-width:thin}'+
+'@keyframes mpIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}'+
+'.mpn{font:700 18px Orbitron,system-ui,sans-serif;letter-spacing:.07em;color:#fff;text-transform:uppercase;line-height:1.25;padding-right:6px}.mpy{display:inline-block;margin-top:6px;padding:2px 8px;border:1px solid currentColor;font:700 10px Orbitron,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase}'+
+'.mpg{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:12px 0 6px;font-size:14.5px;line-height:1.3}.mpg b{color:#7f9fb8;font-weight:600}.mpg span{color:#dff4ff;text-align:right}.mpg .ja{color:#6fe8b0}.mpg .nein{color:#ffb06a}'+
+'.mpd{margin:6px 0 2px;color:#9fd8ff;font-size:14px}.mpx2{color:#8fb2cc;font-size:13.5px;margin:6px 0}.mph2{font:700 10px Orbitron,system-ui,sans-serif;letter-spacing:.14em;color:#5fd4ff;margin:12px 0 4px}'+
+'.mpls{display:flex;flex-direction:column;gap:3px}.mpls button{display:flex;justify-content:space-between;gap:8px;padding:5px 9px;margin:0;border:1px solid #1d4a6688;background:#06142a99;color:#cfe6ff;font:600 14px Rajdhani,system-ui,sans-serif;text-align:left;cursor:pointer}.mpls button small{color:#7f9fb8;font-weight:500}.mpls button:hover{border-color:#5fd4ff}'+
+'.mpbt{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:14px}.mpbt button{min-height:40px;padding:6px 10px;margin:0;border:1px solid #24587a;background:#0a1a32;color:#cfe6ff;font:700 11px Orbitron,system-ui,sans-serif;letter-spacing:.08em;cursor:pointer;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))}.mpbt button:hover{border-color:#5fd4ff;color:#fff}.mpbt button.pri{grid-column:1/-1;background:linear-gradient(180deg,#2aa0d8,#0c5a8a);border-color:#8fe4ff;color:#fff}'+
+'.mpb{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:stretch;gap:6px;z-index:2;width:min(600px,58vw)}'+
+'.mpl{display:flex;justify-content:space-between;font:700 11px Orbitron,system-ui,sans-serif;letter-spacing:.16em;color:#4f6f88}.mpl span{cursor:pointer;padding:2px 4px;transition:color .25s,text-shadow .25s}.mpl span.on{color:#fff;text-shadow:0 0 10px #5fd4ff}.mpl span:hover{color:#bfe0ff}'+
+'.mpz{display:flex;align-items:center;gap:8px}.mpz button{width:40px;height:34px;flex:none;padding:0;margin:0;border:1px solid #1d4a66;background:#050f22d8;color:#cfe6ff;font:400 18px system-ui;cursor:pointer}.mpz button:hover{border-color:#5fd4ff}'+
+'.mpk{flex:1;height:6px;background:#0b2238;border:1px solid #1d4a66;position:relative;cursor:pointer}.mpk i{position:absolute;top:-4px;width:1px;height:12px;background:#2f7fa8}#mpkt{position:absolute;top:-6px;left:0;width:4px;height:16px;margin-left:-2px;background:#5fd4ff;box-shadow:0 0 10px #5fd4ff}'+
+'.mpm{display:flex;align-items:center;justify-content:center;gap:8px;font:600 13px Rajdhani,system-ui,sans-serif;color:#8fb2cc}#mpsb{display:block;height:5px;border:1px solid #8fb2cc;border-top:0}'+
+'.mph{position:absolute;left:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));font:500 13px/1.4 Rajdhani,system-ui,sans-serif;color:#6f8fa8;z-index:2;width:min(250px,20vw);pointer-events:none}';
+document.head.appendChild(st)}
+const MP={on:0,b:0,F:new V3(),E:new V3(),lz:4.2,lzT:4.2,yaw:.5,yawT:.5,pit:.95,pitT:.95,D:1e4,lv:-1,sel:null,hov:null,objs:[],lab:[],fol:'ship',fly:null,zp:null,k:{},sr:[],ap:null,ft:0,uT:0,w:1,h:1,kk:1,
+f:Object.assign({pl:1,mo:1,st:1,rt:1,dc:0},save.mpf||{}),LZ0:2.3,LZ1:7.45,TH:[1.5e5,6e6,1.6e7],dw:new Map(),tw:new V3(),tv:new V3(),tq:new THREE.Quaternion(),tm:new THREE.Matrix4()};
+const MKV=new V3(),MKW=new V3(),MKQ=[{x:0,y:0,z:0},{x:0,y:0,z:0}];
+const mpLog=d=>Math.log10(Math.max(1,d)),mpRGB=(c,a)=>'rgba('+(c[0]|0)+','+(c[1]|0)+','+(c[2]|0)+','+a+')';
+function mpEsc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function mpVis(i){return!!(save.vsy&&save.vsy.includes(i))}function mpDsc(i){return!!(save.dsy&&save.dsy.includes(i))||mpVis(i)}
+function mpPoiKn(p){return p.id!='stille'&&(save.poi[p.id]||(save.tech&&save.tech.sensor)||p.pos.distanceTo(ship.position)<60000)}
+function mpBodyKn(p){return!!(p.sun||p.vis||(save.scan&&save.scan[p.n])||(p.sys&&p.sys.sol&&p.I&&p.n=='Erde'))}
+function mpPar(p){if(p.sun)return null;if(p.par!=null)return G.pl[p.par];if(p.sys&&p.sys.sol)return G.pl[0];return p.sys&&p.sys.ps&&p.sys.ps[0]&&p.sys.ps[0].sun?p.sys.ps[0]:null}
+function mpKind(p){if(p.I&&p.I.k)return p.I.k;if(p.sun)return'Stern';if(p.par!=null)return'Mond';return p.gas?'Gasplanet':p.t=='e'?'Ozeanplanet':p.cap?'Eisplanet':'Gesteinsplanet'}
+function mpCol(p){if(p.sun){const t=p.tint||[1,.8,.45];return[255*t[0],235*t[1]+20,200*t[2]+30]}if(p.n=='Erde')return[90,150,255];return p.A||[200,180,140]}
+function mpStarK(s){const c=s.col;return s.sol?'Gelber Zwerg (G2V)':c[2]>.9?'Blauweisser Stern (Typ A/F)':c[1]>.6?'Gelber Stern (Typ G/K)':'Roter Zwerg (Typ M)'}
+function mpShip(){if(G.gm){const b=GR.pl||G.pl[3];if(b&&b.pos){MP.sp=MP.sp||new V3();const d=MP.sp.copy(ship.position).sub(b.pos);if(d.lengthSq()<1)d.set(0,1,0);return d.setLength(b.R).add(b.pos)}}return ship.position}
+function mpPos(o){return o.p?o.p.pos:o.s?o.s.pos:o.poi?o.poi.pos:o.npc?o.npc.pos:o.sys?o.sys.pos:o.ship?mpShip():null}
+/* Warp-Reichweite mit dem aktuellen Treibstoff (gleiche Werte wie flyPhys: 9 kg/s, mit Forschung 65 %, Hoechsttempo 140 km/s) */
+function mpWarpR(){const f=Math.max(0,(save.fuel||0)-60);return f/(9*(save.tech&&save.tech.warp?.65:1))*1.4e5*(save.fl&&save.fl.warpB||1)}
+function mpTravel(d){if(d<4e4)return fmtT(d/380+6)+' (Triebwerk)';let h=fmtT(1.3+d/(1.4e5*(save.fl&&save.fl.warpB||1))+8)+' (Warp)';if(save.hd>0&&d>8e5)h+=' · ca. 10 s mit Hyperantrieb';return h}
+/* Aufbau einmal pro Spielstart als Zeitbudget-Aufgabe; Shader werden am Ende mitkompiliert (kein Ruckler beim ersten Oeffnen) */
+const MPBGF='uniform vec2 uO,uR;varying vec2 vU;float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}float fb(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*n(p);p=p*2.03+17.1;a*=.5;}return s;}'+
+'void main(){vec2 p=vU*uR+uO;float a=fb(p*1.2),b=fb(p*2.2+vec2(5.3,1.7)+a*1.4);vec3 c=vec3(.004,.009,.024);c+=vec3(.11,.035,.17)*pow(smoothstep(.42,.95,a),2.)*.9;c+=vec3(.015,.11,.15)*pow(smoothstep(.48,1.,b),2.)*.8;'+
+'vec2 q=vU*uR*85.+uO*24.;float s=h(floor(q));if(s>.982){vec2 f=fract(q)-.5;c+=vec3(.7,.8,1.)*(s-.982)*55.*smoothstep(.14,0.,length(f));}vec2 q2=vU*uR*160.+uO*60.;float s2=h(floor(q2)+7.);if(s2>.992){vec2 f=fract(q2)-.5;c+=vec3(.6,.7,.9)*(s2-.992)*70.*smoothstep(.12,0.,length(f));}'+
+'gl_FragColor=vec4(c*(1.-dot(vU,vU)*.16),1.);}';
+const MPLD='#include <common>\n#include <logdepthbuf_pars_vertex>\n',MPLF='#include <common>\n#include <logdepthbuf_pars_fragment>\n';
+function mpCloud(seed,s){const c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d'),r=rng(seed);for(let i=0;i<26;i++){const px=s/2+(r()-.5)*s*.5,py=s/2+(r()-.5)*s*.5,rr=s*(.12+r()*.3),g=x.createRadialGradient(px,py,0,px,py,rr);g.addColorStop(0,'rgba(255,255,255,'+(.05+r()*.09)+')');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,s,s)}
+const g=x.createRadialGradient(s/2,s/2,s*.2,s/2,s/2,s/2);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,1)');x.globalCompositeOperation='destination-out';x.fillStyle=g;x.fillRect(0,0,s,s);return new THREE.CanvasTexture(c)}
+function* mpBuildJ(){if(MP.S){MP.b=1;return}const MS=new THREE.Scene(),MC=new THREE.PerspectiveCamera(50,1,1,3e8),RT=new THREE.Group();MS.background=new THREE.Color(0x01030a);MS.add(RT);
+const bg=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({uniforms:{uO:{value:new THREE.Vector2()},uR:{value:new THREE.Vector2(1,1)}},vertexShader:'varying vec2 vU;void main(){vU=position.xy;gl_Position=vec4(position.xy,.99999,1.);}',fragmentShader:MPBGF,depthTest:false,depthWrite:false,toneMapped:false}));bg.frustumCulled=false;bg.renderOrder=-10;MS.add(bg);MP.bg=bg;yield;
+/* Galaxie: alle Sternsysteme in EINEM Points-Netz (eigener Shader: Gluehen in Sternfarbe, Ring fuer besucht/entdeckt/Ziel) */
+const N=gal.length,ps=new Float32Array(N*3),cs=new Float32Array(N*3),sz=new Float32Array(N),fl=new Float32Array(N),ld=new Float32Array(N);
+gal.forEach((s,i)=>{s.pos.toArray(ps,i*3);cs.set(s.col,i*3);sz[i]=s.sol?3.2:1.9+((s.seed*7919)%97)/97*1.5});
+const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.BufferAttribute(ps,3));gg.setAttribute('aC',new THREE.BufferAttribute(cs,3));gg.setAttribute('aS',new THREE.BufferAttribute(sz,1));gg.setAttribute('aF',new THREE.BufferAttribute(fl,1));gg.setAttribute('aL',new THREE.BufferAttribute(ld,1));
+const sm2=new THREE.ShaderMaterial({uniforms:{uP:{value:1},uA:{value:1},uN0:{value:4.5e6},uN1:{value:1.1e7}},
+vertexShader:MPLD+'attribute vec3 aC;attribute float aS,aF,aL;uniform float uP,uA,uN0,uN1;varying vec3 vC;varying float vA,vF;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);float d=length(mv.xyz);vF=aF;vC=aC;vA=aF<-.5?0.:uA*mix(1.,smoothstep(uN0,uN1,d),aL);float s=aS*(1.+clamp(aF,0.,2.)*.3)*clamp(7e6/d,1.,3.2);gl_PointSize=aF<-.5?0.:s*uP*3.4;gl_Position=projectionMatrix*mv;\n#include <logdepthbuf_vertex>\n}',
+fragmentShader:MPLF+'varying vec3 vC;varying float vA,vF;void main(){\n#include <logdepthbuf_fragment>\nvec2 q=gl_PointCoord*2.-1.;float r=dot(q,q);if(r>1.||vA<.003)discard;float k=exp(-r*24.)*1.8+exp(-r*5.)*.32;vec3 c=vC*k+vec3(k*k*.22);'+
+'if(vF>.5){float g=smoothstep(.07,0.,abs(sqrt(r)-.74));c+=(vF>2.6?vec3(1.,.8,.25):vF>2.2?vec3(.35,.6,1.):vF>1.6?vec3(1.,.45,.95):vF>1.2?vec3(.25,1.,.8):vec3(.45,.7,.95))*g*(vF>1.2?1.:.5);}gl_FragColor=vec4(c*vA,1.);}',
+transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false});
+const gp=new THREE.Points(gg,sm2);gp.frustumCulled=false;gp.renderOrder=2;RT.add(gp);MP.gp=gp;yield;
+/* Spiralarme: dieselben 14000 Staubpunkte wie im Spiel (mkGal), dazu Nebel und Kern */
+if(GALD.dp){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(GALD.dp,3));g.setAttribute('color',new THREE.BufferAttribute(GALD.dc,3));const d=new THREE.Points(g,new THREE.PointsMaterial({size:1.35,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:.6,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false}));d.frustumCulled=false;d.renderOrder=1;RT.add(d);MP.dust=d}yield;
+const NT=[mpCloud(11,128),mpCloud(23,128),mpCloud(37,128)];if(jbOver())yield;const nr=rng(77),GRr=9e6,NC=[[.85,.25,.9],[.2,.75,.95],[.3,.45,1],[1,.5,.3],[.55,.3,1]],cen=GALD.c||new V3();MP.neb=[];
+for(let i=0;i<40;i++){const d=Math.pow(nr(),.8)*GRr*.95,an=Math.floor(nr()*4)*1.5708+d/GRr*3.5+(nr()-.5)*.35,c=NC[d<GRr*.25?3:Math.floor(nr()*5)];const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:NT[i%3],color:new THREE.Color(c[0],c[1],c[2]),transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false}));
+sp.position.set(cen.x+Math.cos(an)*d,cen.y,cen.z+Math.sin(an)*d);sp.scale.setScalar(6e5+nr()*1.4e6);sp.userData.o=.22+nr()*.22;sp.material.rotation=nr()*6;sp.renderOrder=0;RT.add(sp);MP.neb.push(sp)}
+for(const[k,s,o]of[[0xffd9a0,3e6,.8],[0xff9a70,8e6,.3]]){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:GD,color:k,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false}));sp.position.copy(cen);sp.scale.setScalar(s);sp.userData.o=o;sp.renderOrder=0;RT.add(sp);MP.neb.push(sp)}yield;
+/* Asteroidenguertel (240–320 Mm wie im Spiel) */
+{const n=2600,p=new Float32Array(n*3),r=rng(4242);for(let i=0;i<n;i++){const a=r()*6.2832,d=240000+r()*80000;p.set([Math.cos(a)*d,(r()+r()-1)*7000,Math.sin(a)*d],i*3)}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(p,3));const b=new THREE.Points(g,new THREE.PointsMaterial({size:1.15,sizeAttenuation:false,color:0x9a9282,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false}));b.frustumCulled=false;b.renderOrder=3;RT.add(b);MP.belt=b}
+/* gemeinsame Formen fuer Bahnen, Kugeln, Ringe */
+{const n=160,p=new Float32Array(n*3);for(let i=0;i<n;i++){const a=i/n*6.2832;p.set([Math.cos(a),0,Math.sin(a)],i*3)}MP.cg=new THREE.BufferGeometry();MP.cg.setAttribute('position',new THREE.BufferAttribute(p,3))}
+MP.sg=new THREE.SphereGeometry(1,40,28);MP.rg=new THREE.RingGeometry(1,2,72,1);
+MP.pm=new THREE.ShaderMaterial({uniforms:{map:{value:null},uH:{value:0},uC:{value:new THREE.Color()},uL:{value:new V3()},uAt:{value:new THREE.Color(0,0,0)},uE:{value:0},uA:{value:1}},
+vertexShader:MPLD+'varying vec3 vN,vW;varying vec2 vU;void main(){vU=uv;vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;\n#include <logdepthbuf_vertex>\n}',
+fragmentShader:MPLF+'uniform sampler2D map;uniform float uH,uE,uA;uniform vec3 uC,uL,uAt;varying vec3 vN,vW;varying vec2 vU;void main(){\n#include <logdepthbuf_fragment>\nvec3 N=normalize(vN),V=normalize(cameraPosition-vW),L=normalize(uL-vW);vec3 t=uH>.5?texture2D(map,vU).rgb:uC;'+
+'float df=max(dot(N,L),0.),fr=pow(1.-max(dot(N,V),0.),2.6);vec3 c=uE>.5?t*1.25+vec3(1.,.8,.5)*fr*1.2:t*(.06+df*1.15)+uAt*fr*(.25+df*1.2)+vec3(.25,.55,.8)*fr*.08;gl_FragColor=vec4(c,uA);}',
+transparent:true,toneMapped:false});
+MP.rm=new THREE.MeshBasicMaterial({color:0xd8c8a0,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false,toneMapped:false});
+MP.om=new THREE.LineBasicMaterial({color:0x5fd4ff,transparent:true,opacity:.5,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false});
+/* Routen: animierte Neonlinie (Schiff -> Wegpunkt, Schiff -> Hyperziel), Warp-Reichweite als Kreis */
+const rmk=c=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(6),3));g.setAttribute('aU',new THREE.BufferAttribute(new Float32Array([0,1]),1));const l=new THREE.Line(g,new THREE.ShaderMaterial({uniforms:{uT:{value:0},uN:{value:20},uC:{value:new THREE.Color(c)},uA:{value:1}},
+vertexShader:MPLD+'attribute float aU;varying float vU;void main(){vU=aU;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);\n#include <logdepthbuf_vertex>\n}',fragmentShader:MPLF+'uniform float uT,uN,uA;uniform vec3 uC;varying float vU;void main(){\n#include <logdepthbuf_fragment>\nfloat d=fract(vU*uN-uT);float a=.28+.9*smoothstep(0.,.12,d)*smoothstep(.62,.45,d);gl_FragColor=vec4(uC*a*uA,1.);}',
+transparent:true,depthWrite:false,depthTest:false,blending:THREE.AdditiveBlending,toneMapped:false}));l.frustumCulled=false;l.renderOrder=6;l.visible=false;MP.R.add(l);return l};MP.R=RT;MP.rt1=rmk(0xff5ae0);MP.rt2=rmk(0x4f9cff);
+MP.wr=new THREE.LineLoop(MP.cg,new THREE.LineBasicMaterial({color:0x6fffc8,transparent:true,opacity:.4,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false}));MP.wr.frustumCulled=false;MP.wr.visible=false;MP.wr.renderOrder=5;RT.add(MP.wr);
+MP.S=MS;MP.C=MC;yield;
+/* Shader beim Start kompilieren: Beispiel-Kugel, Ring, Bahn sichtbar schalten, compile, wieder zurueck */
+const tk=new THREE.Mesh(MP.sg,MP.pm.clone()),tr=new THREE.Mesh(MP.rg,MP.rm),to=new THREE.LineLoop(MP.cg,MP.om.clone());[tk,tr,to].forEach(o=>RT.add(o));const vv=[];RT.traverse(o=>{vv.push([o,o.visible]);o.visible=true});MC.position.set(0,1e4,1e4);MC.lookAt(0,0,0);MC.updateMatrixWorld();
+pfCompile(MS,MC);vv.forEach(q=>q[0].visible=q[1]);[tk,tr,to].forEach(o=>RT.remove(o));/* Materialien NICHT freigeben – sonst wird das vorkompilierte Programm wieder geloescht */MP.keep=[tk,tr,to];MP.b=1}
+/* Koerper (Planeten, Monde, Sonnen) bekommen ihre Kugel/Bahn erst, wenn sie zum ersten Mal gross genug sind */
+function mpMesh(p){if(p._mk)return p._mk;const m=new THREE.Mesh(MP.sg,MP.pm.clone());m.userData.bd=1;m.renderOrder=4;const u=m.material.uniforms,c=mpCol(p);u.uC.value.setRGB(c[0]/255,c[1]/255,c[2]/255);u.uE.value=p.sun?1:0;if(p.atm)u.uAt.value.setRGB(p.atm[0],p.atm[1],p.atm[2]);
+m.scale.setScalar(p.R);MP.R.add(m);if(p.ring&&!p.sun){const r=new THREE.Mesh(MP.rg,MP.rm.clone()),ri=p.ring.i||1.3,ro=p.ring.o||2.1;r.scale.set(p.R*ri,p.R*ri,1);r.userData.k=ro/ri;r.rotation.x=-Math.PI/2+(p.ring.tl?p.ring.tl*.35:.3);r.userData.bd=1;r.material.color.setRGB(c[0]/255*1.1,c[1]/255,c[2]/255*.9);r.geometry=new THREE.RingGeometry(1,ro/ri,72,1);m.userData.ring=r;MP.R.add(r)}p._mk=m;return m}
+function mpOrb(p){if(p._mo)return p._mo;const l=new THREE.LineLoop(MP.cg,MP.om.clone());l.userData.bd=1;l.frustumCulled=false;l.renderOrder=3;const c=p.par!=null?[.62,.74,.9]:p.I&&/Zwerg/.test(p.I.k)?[.7,.55,1]:[.37,.83,1];l.material.color.setRGB(c[0],c[1],c[2]);MP.R.add(l);p._mo=l;return l}
+function mpOrbSet(p,pp,l){const r=MKV.copy(p.pos).sub(pp.pos),d=r.length();if(d<1)return 0;const t=MKW.set(0,1,0).cross(r).normalize(),nn=MP.tv.copy(r).cross(t).normalize();if(nn.y<0)nn.negate();l.position.copy(pp.pos);l.quaternion.setFromUnitVectors(MP.tw.set(0,1,0),nn);l.scale.setScalar(d);return d}
+/* Spielstart: Aufbau-Aufgabe anstossen; alte Koerper-Netze eines frueheren Spiels entfernen */
+{const _bd=build;build=function(){_bd();if(MP.R){const rm=[];MP.R.children.forEach(o=>{if(o.userData.bd)rm.push(o)});rm.forEach(o=>{MP.R.remove(o);if(o.material)o.material.dispose();if(o.geometry&&o.geometry!==MP.sg&&o.geometry!==MP.cg&&o.geometry!==MP.rg)o.geometry.dispose()})}MP.sel=null;MP.fly=null;jobAdd(mpBuildJ(),'mapB')}}
+/* besuchte (unter 200 Mm) und entdeckte Systeme (Sensor-Reichweite, System geladen) merken */
+{const _su=sysUpd;sysUpd=function(P){_su(P);if(!save.vsy)save.vsy=[0];if(!save.dsy)save.dsy=[0];let ch=0;gal.forEach((s,i)=>{if(s.loaded&&!save.dsy.includes(i)){save.dsy.push(i);ch=1}});if(G.ns&&G.nsd<2e5){const i=gal.indexOf(G.ns);if(i>0&&!save.vsy.includes(i)){save.vsy.push(i);ch=1}}if(ch)store()}}
+function mapTog(v){const on=v==null?!MP.on:!!v;if(on&&(HY.on||DTH.on))return;if(on&&!MP.b)jobFlush('mapB');if(on&&!MP.b)return;
+MP.on=on?1:0;MAPD.style.display=on?'block':'none';c3.style.zIndex=on?'10':'';tst.style.zIndex=on?'13':'';MP.k={};
+if(on){if(document.pointerLockElement)document.exitPointerLock();if(SU.style.display=='block')stClose();const n=G.gm?(GR.pl||G.pl[3]):G.near,P=ship.position;let D=3.2e6;if(G.gm)D=mpFD({p:n});else if(n&&!n.sun){const d=P.distanceTo(n.pos);D=d<n.R*40?mpFD({p:n}):clamp(d*2.2,2e4,3.2e6)}else if(n&&n.sun&&!n.sys.sol)D=mpFD({p:n});
+MP.F.copy(mpShip());MP.fol='ship';MP.fly=null;MP.zp=null;MP.lz=MP.lzT=clamp(mpLog(D),MP.LZ0,MP.LZ1);MP.yaw=MP.yawT;MP.pit=MP.pitT;MP.sel=null;el('mapi').style.display='none';MP.q.value='';mpSearch();mpFilt();mpFlags(1);MP.lv=-1;MP.uT=0;sfx('ui')}
+else{if(document.activeElement===MP.q)MP.q.blur();if(typeof GP!='undefined'&&GP.foc&&MAPD.contains(GP.foc))gpFocus(null);el('mapc').className=''}}
+/* Fokus-Abstand fuer ein Objekt (Planet mit allen Monden/Stationen, ganzes System, Station mit Planet) */
+function mpFD(o){if(o.ship){const n=G.near;return n&&!n.sun&&ship.position.distanceTo(n.pos)<n.R*40?mpFD({p:n}):9000}
+if(o.p){const p=o.p,i=G.pl.indexOf(p);if(p.sun){let e=0;G.pl.forEach(q=>{if(q.sys===p.sys&&!q.sun&&q.par==null)e=Math.max(e,q.pos.distanceTo(p.pos))});return e?e*1.45:p.R*30}
+let e=p.R*2.2;G.pl.forEach(q=>{if(q.par===i)e=Math.max(e,q.pos.distanceTo(p.pos))});STN.forEach(s=>{if(s.at===i&&s.pos)e=Math.max(e,s.pos.distanceTo(p.pos))});return Math.max(e*2.6,p.R*4.5)}
+if(o.s){const b=G.pl[o.s.at];return o.s.gnd?b.R*1.8:Math.max(o.s.pos.distanceTo(b.pos)*2.4,2500)}
+if(o.poi)return Math.max(o.poi.dist*1.4,4000);if(o.npc)return 6000;if(o.sys){if(o.sys.sol)return 3.4e6;const st=o.sys.ps&&o.sys.ps[0];return st&&st.sun?mpFD({p:st}):2.6e5}return 1e5}
+function mpFocus(o){const P=mpPos(o);if(!P)return;const l1=clamp(mpLog(mpFD(o)),MP.LZ0,MP.LZ1),dist=P.distanceTo(MP.F),b=Math.max(0,mpLog(dist)+.15-Math.max(MP.lz,l1));
+MP.fly={F0:MP.F.clone(),o,l0:MP.lz,l1,b,t:0,d:.9+Math.min(1,Math.abs(l1-MP.lz)*.12+b*.18)};MP.fol=null;MP.zp=null}
+function mpPan(dx,dy){const wp=MP.D/MP.kk,cy=Math.cos(MP.yaw),sy=Math.sin(MP.yaw),k=1/Math.max(Math.sin(MP.pit),.35);MP.F.x-=(cy*dx+sy*dy*k)*wp;MP.F.z-=(-sy*dx+cy*dy*k)*wp;MP.fol=null;MP.fly=null;MP.bp=(MP.bp||0)+1}
+/* Kamera: weiche Fahrt, Zoom zum Zeiger, weit draussen gleitet der Ursprung zur Galaxiemitte */
+function mpCam(dt){const e=1-Math.exp(-dt*9);if(MP.fly){const f=MP.fly;f.t+=dt/f.d;const u=sm(0,1,f.t),P=mpPos(f.o)||f.F0;MP.F.lerpVectors(f.F0,P,u<1?1-Math.pow(1-u,2.2):1);MP.lz=MP.lzT=f.l0+(f.l1-f.l0)*u+f.b*Math.sin(Math.PI*u);if(f.t>=1){MP.fly=null;MP.F.copy(P);MP.fol=f.o.ship?'ship':f.o.npc?f.o:null}}
+else{const l0=MP.lz;MP.lzT=clamp(MP.lzT,MP.LZ0,MP.LZ1);MP.lz+=clamp((MP.lzT-MP.lz)*e,-dt*6,dt*6);if(Math.abs(MP.lzT-MP.lz)<1e-4)MP.lz=MP.lzT;if(MP.zp&&MP.lz!==l0){const k=Math.pow(10,MP.lz-l0);MP.F.sub(MP.zp).multiplyScalar(k).add(MP.zp)}
+if(MP.fol=='ship')MP.F.copy(mpShip());else if(MP.fol&&MP.fol.npc)MP.F.copy(MP.fol.npc.pos)}
+MP.pitT=clamp(MP.pitT,.2,1.52);MP.yaw+=(MP.yawT-MP.yaw)*e;MP.pit+=(MP.pitT-MP.pit)*e;const D=MP.D=Math.pow(10,MP.lz),g=sm(1.1e7,2.6e7,D);MP.E.copy(MP.F);if(g>0&&GALD.c)MP.E.lerp(GALD.c,g);
+const C=MP.C,cv=c3,w=cv.clientWidth||1,h=cv.clientHeight||1;if(C.aspect!==w/h){C.aspect=w/h}C.fov=50;C.near=Math.max(.05,D*2e-4);C.far=D*6+8e7;C.updateProjectionMatrix();
+const cp=Math.cos(MP.pit);C.position.set(cp*Math.sin(MP.yaw)*D,Math.sin(MP.pit)*D,cp*Math.cos(MP.yaw)*D);C.up.set(0,1,0);C.lookAt(0,0,0);C.updateMatrixWorld();MP.R.position.copy(MP.E).negate();MP.R.updateMatrixWorld();MP.kk=(h/2)/Math.tan(25*Math.PI/180);MP.w=w;MP.h=h}
+/* Weltpunkt -> Bildschirm (relativ zum Ursprung gerechnet, damit nichts zittert) */
+function mpPr(a,o){MKV.copy(a).sub(MP.E).applyMatrix4(MP.C.matrixWorldInverse);if(MKV.z>-MP.C.near){o.on=0;return 0}o.z=-MKV.z;MKV.applyMatrix4(MP.C.projectionMatrix);o.x=(MKV.x*.5+.5)*MP.w;o.y=(-MKV.y*.5+.5)*MP.h;o.on=o.x>-300&&o.x<MP.w+300&&o.y>-300&&o.y<MP.h+300;return 1}
+function mpCD(a){return MKW.copy(a).sub(MP.E).sub(MP.C.position).length()}
+function mpRay(cx,cy){/* Zeiger -> Punkt auf der Ebene durch den Fokus */const C=MP.C;MKV.set(cx/MP.w*2-1,-(cy/MP.h)*2+1,.5).unproject(C).sub(C.position).normalize();const py=MP.F.y-MP.E.y;if(Math.abs(MKV.y)<1e-4)return null;const t=(py-C.position.y)/MKV.y;if(t<0)return null;return new V3().copy(C.position).addScaledVector(MKV,Math.min(t,MP.D*30)).add(MP.E)}
+function mpFlags(force){if(!MP.gp)return;const t=performance.now();if(!force&&t-MP.ft<500)return;MP.ft=t;const a=MP.gp.geometry.attributes,F=a.aF.array,L=a.aL.array,ht=hyTgt(),sel=MP.sel&&MP.sel.sys,tg=G.tgt&&G.tgt.sys;
+gal.forEach((s,i)=>{const v=mpVis(i)||s.sol,d=mpDsc(i);F[i]=MP.f.dc&&!d&&!s.sol?-1:s===sel?3:ht&&ht.sys===s?2.5:s===tg?2:v?1.4:d?1:0;L[i]=s.loaded?1:0});a.aF.needsUpdate=a.aL.needsUpdate=true}
+function mpFilt(){MAPD.querySelectorAll('[data-mf]').forEach(b=>b.classList.toggle('on',!!MP.f[b.dataset.mf]))}
+function mpLv(D){return D<MP.TH[0]?0:D<MP.TH[1]?1:D<MP.TH[2]?2:3}
+/* Zeichnen: Kamera, 3D-Teile einstellen, Symbole + Beschriftungen auf der Canvas (nur bei offener Karte) */
+function mapDraw(){const dt=Math.min(.1,G.rdt||.016);if(MP.ap)mpAlign(dt);if(!MP.on)return;mpCam(dt);mpKeys(dt);const cv=el('mapc'),dpr=Math.min(1.5,devicePixelRatio||1),w=MP.w,h=MP.h,W=Math.round(w*dpr),H=Math.round(h*dpr);if(cv.width!=W||cv.height!=H){cv.width=W;cv.height=H}
+const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,w,h);const D=MP.D,T0=performance.now()/1000,O=MP.objs,LB=MP.lab,F=MP.f,kk=MP.kk;O.length=0;LB.length=0;mpFlags();
+const lv=mpLv(D);if(lv!==MP.lv){MP.lv=lv;el('mpl').querySelectorAll('span').forEach(s=>s.classList.toggle('on',+s.dataset.lv===lv))}
+/* 3D-Teile nach Zoom ein- und ausblenden */
+const ga=sm(5e6,2e7,D);if(MP.dust){MP.dust.material.opacity=.62*ga;MP.dust.visible=ga>.01}MP.neb.forEach(s=>{s.material.opacity=s.userData.o*sm(6e6,2e7,D);s.visible=s.material.opacity>.003});
+MP.gp.material.uniforms.uA.value=.5+.5*sm(8e5,5e6,D);MP.gp.material.uniforms.uP.value=Math.min(1.5,R3.getPixelRatio());
+{const br=280000*kk/Math.max(mpCD(G.pl[0].pos),1);MP.belt.material.opacity=F.pl?.42*sm(25,110,br)*sm(2.5e4,1.2e5,D)*(1-sm(2.5e6,1e7,D)):0;MP.belt.visible=MP.belt.material.opacity>.01}
+{const u=MP.bg.material.uniforms;u.uR.value.set(w/h,1);u.uO.value.set(MP.yaw*.32+(MP.bp||0)*.0004,MP.pit*.28+MP.lz*.05)}
+const ht=hyTgt(),tg=G.tgt,SEL=MP.sel,P=mpShip(),Q=MKQ[0],Q2=MKQ[1];
+const lab=(t,X,Y,pr,c,f,a,dy)=>{if(a>.05)LB.push({t,X,Y:Y+(dy||0),pr,c,f,a})},SF=new Map(),sf=sy=>{if(!sy)return 1;let v=SF.get(sy);if(v==null){v=1-sm(4.5e6,1.1e7,mpCD(sy.pos));SF.set(sy,v)}return v},sfS=sf(gal[0]);
+/* Planeten, Monde, Sonnen */
+for(let i=0;i<G.pl.length;i++){const p=G.pl[i],pp=mpPar(p),moon=p.par!=null,dw=p.I&&/Zwerg/.test(p.I.k),kn=mpBodyKn(p);let hide=(!p.sun&&!moon&&!F.pl)||(moon&&!F.mo)||(F.dc&&!kn&&!p.sun);
+const vis=mpPr(p.pos,Q)&&Q.on;let a=0,orpx=0,rp=0;if(vis&&!hide){rp=p.R*kk/Q.z;if(p.sun)a=sf(p.sys);else{orpx=pp?p.pos.distanceTo(pp.pos)*kk/Q.z:99;a=sm(2.5,10,orpx)*sf(p.sys)}if(SEL&&SEL.p===p)a=Math.max(a,.9)}
+const m=p._mk||(a>.01&&rp>1.6?mpMesh(p):null);if(m){const on=a>.01&&rp>1.6;m.visible=on;if(m.userData.ring)m.userData.ring.visible=on&&rp>3;if(on){m.position.copy(p.pos);const u=m.material.uniforms,mt=p.mat||(p.o&&p.o[0]&&p.o[0].material),tx=mt&&mt.map;u.map.value=tx||null;u.uH.value=tx?1:0;u.uA.value=Math.min(1,a*1.2);
+const sn=p.sys&&p.sys.ps&&p.sys.ps[0]&&p.sys.ps[0].sun?p.sys.ps[0].pos:G.pl[0].pos;u.uL.value.copy(sn).sub(MP.E);if(m.userData.ring){const r=m.userData.ring;r.position.copy(p.pos);r.material.opacity=.38*a}}}
+/* Bahn */
+if(!p.sun&&pp&&(p._mo||(!hide&&a>.01))){const l=mpOrb(p);let oa=0;if(!hide){const d=mpOrbSet(p,pp,l),px=d*kk/Math.max(mpCD(pp.pos),MP.C.near);oa=sm(4,22,px)*(moon?.32:dw?.42:.55)*(moon?1-sm(1.5e6,6e6,D):1)*sf(p.sys)}l.material.opacity=oa*(SEL&&SEL.p===p?1.6:1);l.visible=oa>.005}
+if(!vis||a<.02)continue;const X=Q.x,Y=Q.y,c=mpCol(p);
+if(p.sun){const r=Math.max(4,rp),g=x.createRadialGradient(X,Y,0,X,Y,r*3.2+10);g.addColorStop(0,mpRGB([255,250,235],a));g.addColorStop(.18,mpRGB(c,.85*a));g.addColorStop(1,mpRGB(c,0));x.fillStyle=g;x.beginPath();x.arc(X,Y,r*3.2+10,0,6.3);x.fill()}
+else if(rp<5){const r=Math.max(moon?1.8:2.6,rp);x.fillStyle=mpRGB(c,a*.25);x.beginPath();x.arc(X,Y,r+3,0,6.3);x.fill();x.fillStyle=mpRGB(c,a);x.beginPath();x.arc(X,Y,r,0,6.3);x.fill();if(!kn&&!p.sun){x.strokeStyle='rgba(255,176,106,'+a*.7+')';x.lineWidth=1;x.beginPath();x.arc(X,Y,r+4.5,0,6.3);x.stroke()}}
+const o={n:p.n,p};O.push({X,Y,r:Math.max(rp,6),o,pr:p.sun?80:moon?40:dw?50:60,a});
+const showL=p.sun||(!moon&&orpx>8)||(moon&&orpx>24)||(SEL&&SEL.p===p);if(showL)lab(p.sun?p.n:p.n.toUpperCase(),X,Y,(p.sun?82:moon?42:dw?52:62)+Math.min(8,p.R/2000),p.sun?'#ffe2a8':moon?'#b8cce0':dw?'#cdb8ff':'#e8f6ff',moon?0:1,a*(p.sun?1:sm(8,20,moon?orpx/3:orpx)),-Math.max(rp,4)-9);
+/* Planet-Stufe: Landeorte und Basen als Hinweis am Planeten */
+if(!p.sun&&rp>14&&lv==0){const ns=SITES.filter(s=>s.p==p.n&&(!s.req||s.req())).length,nb=((save.bases&&save.bases[p.n])||[]).length;if(ns||nb)lab((nb?'⌂ '+nb+' Basis'+(nb>1?'en':'')+'  ':'')+(ns?'◇ '+ns+' Landeort'+(ns>1?'e':''):''),X,Y,30,'#9fe8c8',0,a*sm(14,30,rp),rp+16)}}
+/* Stationen, Staedte, Bodenhaefen */
+if(F.st)STN.forEach(s=>{const b=G.pl[s.at];if(!s.pos||!b||!mpPr(s.pos,Q)||!Q.on)return;const dd=s.gnd?b.R:s.pos.distanceTo(b.pos),px=dd*kk/Q.z;let a=Math.max(sm(5,16,px)*sfS,SEL&&SEL.s===s?1:0);if(s.gnd&&MKW.copy(s.pos).sub(b.pos).dot(MKV.copy(MP.C.position).add(MP.E).sub(s.pos))<0)a*=.3;if(a<.02)return;const X=Q.x,Y=Q.y,c=s.dead?'#8a8a8a':FAC[s.f].c;
+x.globalAlpha=a;x.strokeStyle=c;x.fillStyle='#04101ecc';x.lineWidth=1.6;x.beginPath();if(s.gnd){x.moveTo(X,Y-6);x.lineTo(X+5,Y+4);x.lineTo(X-5,Y+4);x.closePath()}else for(let k=0;k<6;k++){const an=k/6*6.2832+.5236;x.lineTo(X+Math.cos(an)*5.5,Y+Math.sin(an)*5.5)}x.closePath();x.fill();x.stroke();x.fillStyle=c;x.fillRect(X-1.5,Y-1.5,3,3);x.globalAlpha=1;
+O.push({X,Y,r:8,o:{n:s.n,s},pr:55,a});if(px>26||(SEL&&SEL.s===s))lab(s.n,X,Y,56,s.dead?'#9a9a9a':'#d8ecff',0,a*sm(26,50,px),15)});
+/* bekannte Orte (Wracks, Sonden) */
+if(F.st)POI.forEach(p=>{if(!mpPoiKn(p)||!mpPr(p.pos,Q)||!Q.on)return;const b=G.pl[p.at],px=(b?p.pos.distanceTo(b.pos):5e4)*kk/Q.z,a=sm(6,18,px)*sfS;if(a<.02)return;const X=Q.x,Y=Q.y;x.globalAlpha=a;x.strokeStyle=save.poi[p.id]>1?'#7a8a90':'#9fe8ff';x.lineWidth=1.4;x.beginPath();x.moveTo(X,Y-6);x.lineTo(X+6,Y);x.lineTo(X,Y+6);x.lineTo(X-6,Y);x.closePath();x.stroke();x.globalAlpha=1;
+O.push({X,Y,r:8,o:{n:p.n,poi:p},pr:35,a});if(px>40)lab(p.n,X,Y,36,'#9fd8e8',0,a*sm(40,70,px),15)});
+/* andere Schiffe nur nah */
+if(F.st&&D<4e5)NPC.forEach(n=>{if(!n.alive||n.st=='dock'||n.st=='landed'||!mpPr(n.pos,Q)||Q.x<0||Q.x>w||Q.y<0||Q.y>h)return;const a=1-sm(1.5e5,4e5,D);x.fillStyle=FAC[n.f].c;x.globalAlpha=a;x.beginPath();x.arc(Q.x,Q.y,2.2,0,6.3);x.fill();x.globalAlpha=1;O.push({X:Q.x,Y:Q.y,r:5,o:{n:n.name,npc:n},pr:20,a})});
+/* Sternsysteme: Klickziele + Namen (Nachbarschaft: die nahen; Galaxie: besuchte/entdeckte) */
+{const NB=[];gal.forEach((s,i)=>{const d=mpDsc(i)||s.sol;if(F.dc&&!d)return;if(!mpPr(s.pos,Q)||Q.x<-20||Q.x>w+20||Q.y<-20||Q.y>h+20)return;if(s.loaded&&mpCD(s.pos)<6e6)return;
+const v=mpVis(i)||s.sol,ia=s===(ht&&ht.sys)||s===(tg&&tg.sys)||(SEL&&SEL.sys===s);O.push({X:Q.x,Y:Q.y,r:7,o:{n:s.name,sys:s},pr:ia?70:v?30:d?25:10,a:1});NB.push({s,X:Q.x,Y:Q.y,fd:s.pos.distanceTo(MP.F),v,d,ia})});
+NB.sort((a,b)=>a.fd-b.fd);const near=lv>=2?14:lv==1&&D>1e6?6:0;NB.forEach((q,j)=>{const s=q.s,c=s.col;let a=0,pr=10;if(q.ia){a=1;pr=88}else if(j<near&&lv<3){a=lv==1?sm(1e6,3e6,D):1;pr=40-j}else if(lv>=2&&(q.v||s.sol)){a=1;pr=34}else if(lv>=2&&q.d){a=.8;pr=26}
+if(a>.05)lab(s.sol&&lv>=2?'SOL · DEIN SYSTEM':s.name,q.X,q.Y,pr,mpRGB([150+c[0]*105,150+c[1]*105,150+c[2]*105],1),1,a,-11)})}
+/* Routen: Schiff -> Wegpunkt (magenta), Schiff -> Hyperziel (blau), Warp-Reichweite */
+const rt=(l,t,on)=>{if(!on||!t){l.visible=false;return}const A=l.geometry.attributes.position.array;MKV.copy(P).sub(MP.E);MKW.copy(t).sub(MP.E);A[0]=MKV.x;A[1]=MKV.y;A[2]=MKV.z;A[3]=MKW.x;A[4]=MKW.y;A[5]=MKW.z;l.geometry.attributes.position.needsUpdate=true;l.visible=true;l.position.copy(MP.E);
+let L=60;if(mpPr(P,Q)&&mpPr(t,Q2))L=Math.hypot(Q.x-Q2.x,Q.y-Q2.y);const u=l.material.uniforms;u.uN.value=Math.max(2,L/22);u.uT.value=T0*1.6};
+const tp=tg&&tgtPos(tg),hp=ht&&(ht.p?ht.p.pos:ht.s?ht.s.pos:ht.sys?ht.sys.pos:ht.poi?ht.poi.pos:null);rt(MP.rt1,tp,F.rt&&tp&&tp.distanceTo(P)>1);rt(MP.rt2,hp,F.rt&&hp&&hp!==tp&&hp.distanceTo(P)>1);
+{const wr=mpWarpR(),ok=F.rt&&wr>1e4&&mpPr(P,Q);let a=0;if(ok){const px=wr*kk/Q.z;a=sm(14,60,px)*(1-sm(Math.max(w,h)*1.2,Math.max(w,h)*3,px));if(a>.01&&mpPr(MKW.set(P.x+wr,P.y,P.z),Q2))lab('WARP-REICHWEITE '+fmtD(wr),Q2.x,Q2.y,24,'#6fffc8',0,a*.9,-8)}
+if(F.rt&&lv>=1&&a<.5&&Q.on!==undefined&&mpPr(P,Q)){lab('WARP-REICHWEITE '+(wr>2e7?'> GANZE GALAXIE':wr<1e4?'– TANK FAST LEER':fmtD(wr)),Q.x,Q.y,57,'#6fffc8',0,.85,40);if(lv>=2)lab(save.hd>0?'◆ HYPERANTRIEB: '+save.hd+(save.hd==1?' SPRUNG':' SPRÜNGE')+' · JEDE ENTFERNUNG':'◇ KEIN HYPERKRISTALL EINGESETZT',Q.x,Q.y,56,'#7fb8ff',0,.8,56)}
+MP.wr.visible=a>.01;if(MP.wr.visible){MP.wr.position.copy(P);MP.wr.scale.setScalar(wr);MP.wr.material.opacity=.42*a}}
+/* Wegpunkt-/Hyperziel-Markierungen */
+const mk=(pos,c,t,r0)=>{if(!pos||!mpPr(pos,Q)||!Q.on)return;const X=Q.x,Y=Q.y,r=r0+Math.sin(T0*3)*1.5;x.strokeStyle=c;x.lineWidth=1.6;x.setLineDash([5,4]);x.lineDashOffset=-T0*14;x.beginPath();x.arc(X,Y,r,0,6.3);x.stroke();x.setLineDash([]);lab(t,X,Y,90,c,1,1,r+13)};
+mk(tp,'#ff6ae6','◎ WEGPUNKT',15);if(hp&&hp!==tp)mk(hp,'#6fb0ff','◆ HYPERZIEL',19);
+/* eigenes Schiff */
+if(mpPr(P,Q)){const X=Q.x,Y=Q.y,fw=MP.tv.set(0,0,-1).applyQuaternion(ship.quaternion);let an=0;if(mpPr(MKW.copy(P).addScaledVector(fw,D*.05),Q2))an=Math.atan2(Q2.y-Y,Q2.x-X);x.save();x.translate(X,Y);x.rotate(an);x.fillStyle='#ffffff';x.strokeStyle='#5fd4ff';x.lineWidth=1.2;x.shadowColor='#5fd4ff';x.shadowBlur=8;x.beginPath();x.moveTo(10,0);x.lineTo(-7,6);x.lineTo(-3.5,0);x.lineTo(-7,-6);x.closePath();x.fill();x.restore();
+const pl=1+Math.sin(T0*2.4)*.5;x.strokeStyle='rgba(95,212,255,'+(.25+.2*pl)+')';x.lineWidth=1;x.beginPath();x.arc(X,Y,14+pl*3,0,6.3);x.stroke();lab('DU',X,Y,95,'#ffffff',1,1,-20);
+if(G.gm&&lv<=1&&typeof cybTarget=='function'){const ct=cybTarget();if(ct&&ct.x!=null)lab('◈ SCANNER: CYBERKRISTALL '+fmtD(Math.hypot(ct.x-GR.x,ct.z-GR.z)),X,Y,94,'#7fe8ff',0,1,30)}}
+/* Auswahl: animierter Ring */
+if(SEL){const sp=mpPos(SEL);if(sp&&mpPr(sp,Q)){const q=O.find(z=>z.o.n==SEL.n),r=Math.max(12,(q?q.r:6)+7),X=Q.x,Y=Q.y,a0=T0*1.4;x.strokeStyle='#ffcc33';x.lineWidth=2;for(let k=0;k<4;k++){x.beginPath();x.arc(X,Y,r,a0+k*1.5708,a0+k*1.5708+.9);x.stroke()}x.strokeStyle='rgba(255,204,51,'+(.5-((T0*1.2)%1)*.5)+')';x.lineWidth=1;x.beginPath();x.arc(X,Y,r+((T0*1.2)%1)*12,0,6.3);x.stroke()}}
+/* Zeiger: naechstes Objekt hervorheben */
+{const hv=MP.dn?null:mpHit(MP.mx,MP.my,O);MP.hov=hv;if(hv&&(!SEL||hv.o.n!==SEL.n)){x.strokeStyle='rgba(159,232,255,.8)';x.lineWidth=1.2;x.beginPath();x.arc(hv.X,hv.Y,Math.max(10,hv.r+4),0,6.3);x.stroke();lab(hv.o.n,hv.X,hv.Y,99,'#ffffff',0,1,Math.max(10,hv.r+4)+14)}const cc=el('mapc');cc.className=MP.dn&&MP.dg?'dg':hv?'hv':''}
+mpLabels(x);mpBar();MP.uT+=dt;if(MP.uT>.25){MP.uT=0;mpPanelLive()}}
+/* Beschriftungen ohne Ueberlappung: wichtige zuerst, der Rest blendet aus */
+function mpLabels(x){const L=MP.lab.sort((a,b)=>b.pr-a.pr),R=[];x.textAlign='center';x.textBaseline='middle';x.lineJoin='round';for(const l of L){const fn=l.f?'700 11px Orbitron,system-ui,sans-serif':'600 13px Rajdhani,system-ui,sans-serif',k=fn+l.t;let tw=MP.dw.get(k);if(tw==null){x.font=fn;tw=x.measureText(l.t).width+(l.f?l.t.length*.8:0);if(MP.dw.size>3000)MP.dw.clear();MP.dw.set(k,tw)}
+const r={x0:l.X-tw/2-3,x1:l.X+tw/2+3,y0:l.Y-8,y1:l.Y+8};let hit=0;for(const q of R)if(r.x0<q.x1&&r.x1>q.x0&&r.y0<q.y1&&r.y1>q.y0){hit=1;break}if(hit)continue;R.push(r);if(R.length>90)break;x.font=fn;x.globalAlpha=l.a;x.strokeStyle='rgba(0,4,12,.85)';x.lineWidth=3.2;x.strokeText(l.t,l.X,l.Y);x.fillStyle=l.c;x.fillText(l.t,l.X,l.Y)}x.globalAlpha=1}
+/* Zoom-Leiste und Massstab (DOM, hoechstens 10 Mal pro Sekunde) */
+function mpBar(){const t=performance.now();if(t-(MP.bt||0)<100)return;MP.bt=t;el('mpkt').style.left=((MP.lz-MP.LZ0)/(MP.LZ1-MP.LZ0)*100).toFixed(2)+'%';const wp=MP.D/MP.kk,tgt=wp*110,e=Math.pow(10,Math.floor(Math.log10(tgt))),v=[1,2,5,10].map(q=>q*e).filter(q=>q<=tgt).pop()||e,s=el('mpsc');
+const tx=fmtD(v);if(s.__t!==tx){s.__t=tx;s.textContent=tx}el('mpsb').style.width=Math.round(v/wp)+'px';const hn=GP.act?'Linker Stick verschieben · Rechter Stick drehen · Trigger zoomen · '+gpLbl(0)+' wählen · '+gpLbl(3)+' Wegpunkt · '+gpLbl(2)+' Fokus · '+gpLbl(1)+' zurück':'Rad: Zoom zum Zeiger · Ziehen: verschieben · Rechte Maustaste: drehen · Klick: wählen · Doppelklick / F: Fokus · Pos1: eigenes Schiff';const hm=el('mph');if(hm.__t!==hn){hm.__t=hn;hm.textContent=hn}}
+function mpHit(cx,cy,O){if(cx==null)return null;let b=null,bs=1e9;for(const q of O){if(q.a<.15)continue;const d=Math.hypot(q.X-cx,q.Y-cy),lim=Math.max(14,Math.min(q.r,60)+5);if(d>lim)continue;const s=d-q.pr*.12;if(s<bs){bs=s;b=q}}return b}
+function mpPick(cx,cy,big){const O=MP.objs;let b=mpHit(cx,cy,O);if(!b&&big){let bd=46;for(const q of O){const d=Math.hypot(q.X-cx,q.Y-cy);if(d<bd&&q.a>.15){bd=d;b=q}}}if(!b){MP.sel=null;el('mapi').style.display='none';mpFlags(1);return null}mpSel(b.o);return b.o}
+function mpSel(o){MP.sel=o;sfx('ui');mpPanel();mpFlags(1)}
+/* Info-Panel */
+function mpPanel(){const o=MP.sel,mi=el('mapi');if(!o){mi.style.display='none';return}let h='<div class="mpn">'+mpEsc(o.n)+'</div>',ty='',tc='#9fe8ff',g=[];const row=(a,b,c)=>g.push('<b>'+a+'</b><span'+(c?' class="'+c+'"':'')+'>'+b+'</span>');
+const jn=v=>v?'ja':'nein';
+if(o.p){const p=o.p,I=p.I,i=G.pl.indexOf(p),kn=mpBodyKn(p);ty=mpKind(p);tc=p.sun?'#ffd27a':p.par!=null?'#b8cce0':'#7fe8ff';row('Grösse','Radius '+fmtD(p.R));
+if(I){row('Schwerkraft',I.g+' m/s² ('+(I.g/9.81).toFixed(2)+' g)');row('Atmosphäre',p.sun?mpEsc(I.co):I.p?(I.p>=.01?I.p+' bar':'Spuren'):'Vakuum');row('Temperatur',I.T[0]==I.T[1]?I.T[0]+' °C':I.T[0]+' bis '+I.T[1]+' °C')}else{row('Schwerkraft','unbekannt');row('Atmosphäre',p.atm?'vorhanden':p.sun?'Plasma':'keine erkennbar');row('Temperatur','unbekannt')}
+const mo=G.pl.filter(q=>q.par===i);if(!p.sun)row('Monde',mo.length?String(mo.length):'keine');row('Entdeckt',jn(kn),kn?'ja':'nein');
+h+='<div class="mpy" style="color:'+tc+'">'+mpEsc(ty)+'</div><div class="mpg">'+g.join('')+'</div>';g=[];
+if(o.site)h+='<div class="mpx2">◇ Landeort: <b>'+mpEsc(o.site.n)+'</b> – liegt in der Nähe der Landestelle auf '+mpEsc(p.n)+'.</div>';
+if(I&&I.res)h+='<div class="mpx2"><b>Rohstoffe:</b> '+mpEsc(I.res.join(', ')||'–')+'<br><b>Landung:</b> '+(I.land?'möglich':'unmöglich')+'</div>';
+if(p.sun&&p.sys){const pl=G.pl.filter(q=>q.sys===p.sys&&!q.sun&&q.par==null);if(pl.length){h+='<div class="mph2">PLANETEN ('+pl.length+')</div><div class="mpls">'+pl.slice(0,16).map(q=>'<button data-ps="'+G.pl.indexOf(q)+'">'+mpEsc(q.n)+'<small>'+mpEsc(mpKind(q))+'</small></button>').join('')+'</div>'}}
+if(mo.length)h+='<div class="mph2">MONDE</div><div class="mpls">'+mo.map(q=>'<button data-ps="'+G.pl.indexOf(q)+'">'+mpEsc(q.n)+'<small>'+fmtD(q.R)+'</small></button>').join('')+'</div>';
+const ss=STN.filter(s=>s.at===i);if(ss.length)h+='<div class="mph2">STATIONEN & STÄDTE</div><div class="mpls">'+ss.map(s=>'<button data-ss="'+s.id+'">'+mpEsc(s.n)+'<small>'+(s.dead?'verlassen':'Handel · Cyberkristalle '+CYK.price+' ●')+'</small></button>').join('')+'</div>';
+const si=SITES.filter(s=>s.p==p.n&&(!s.req||s.req())),nb=((save.bases&&save.bases[p.n])||[]).length;if(si.length||nb)h+='<div class="mph2">LANDEORTE & BASEN</div><div class="mpx2">'+si.map(s=>'◇ '+mpEsc(s.n)).join('<br>')+(nb?(si.length?'<br>':'')+'⌂ '+nb+' eigene Bauteil'+(nb>1?'e':'')+' (Basis)':'')+'</div>'}
+else if(o.s){const s=o.s,b=G.pl[s.at];ty=s.city?'Stadt':s.gnd?'Bodenhafen':s.dead?'Verlassene Station':'Raumstation';tc=s.dead?'#9a9a9a':FAC[s.f].c;row('Fraktion','<span style="color:'+FAC[s.f].c+'">'+mpEsc(FAC[s.f].n)+'</span>');row('Ort',(s.gnd?'auf ':'im Orbit von ')+mpEsc(b.n));
+const SV={werft:'Werft',rep:'Reparatur',fuel:'Treibstoff',mods:'Module'};if(s.svc&&s.svc.length)row('Dienste',s.svc.map(k=>SV[k]||k).join(', '));h+='<div class="mpy" style="color:'+tc+'">'+ty+'</div><div class="mpg">'+g.join('')+'</div>';g=[];
+if(!s.dead)h+='<div class="mph2">HANDEL</div><div class="mpx2"><b style="color:#7fe8ff">Cyberkristalle kaufbar · '+CYK.price+' ● pro Stück</b><br><b>Verkauft:</b> '+mpEsc(s.prod.join(', '))+'<br><b>Sucht:</b> '+mpEsc(s.need.join(', '))+'</div>';h+='<div class="mpx2">'+mpEsc(s.d)+'</div>'}
+else if(o.sys){const s=o.sys,i=gal.indexOf(s),v=mpVis(i)||s.sol,d=mpDsc(i)||s.sol;ty='Sternsystem';tc=mpRGB([150+s.col[0]*105,150+s.col[1]*105,150+s.col[2]*105],1);row('Stern',mpStarK(s));row('Besucht',jn(v),v?'ja':'nein');row('Entdeckt',jn(d),d?'ja':'nein');if(s.loaded&&s.ps)row('Planeten',String(s.ps.filter(q=>!q.sun).length));
+h+='<div class="mpy" style="color:'+tc+'">'+ty+'</div><div class="mpg">'+g.join('')+'</div>';g=[];h+='<div class="mpx2">'+(s.sol?'Unser Sonnensystem.':'Mit dem Hyperantrieb erreichbar'+(save.hd>0?'':' (Hyperkristall nötig)')+'. Planeten werden beim Anflug sichtbar.')+'</div>'}
+else if(o.poi){const p=o.poi;h+='<div class="mpy" style="color:#9fe8ff">Ort</div><div class="mpx2">'+(save.poi[p.id]>1?'Bereits untersucht.':'Unerforscht. Langsam nähern (unter 30 m/s), dann [L].')+'</div>'}
+else if(o.npc){const n=o.npc;h+='<div class="mpy" style="color:'+FAC[n.f].c+'">'+mpEsc(n.t.n)+'</div><div class="mpx2">'+mpEsc(FAC[n.f].n)+' · Masse '+n.t.m/1000+' t · Schub '+(n.t.F/1e6).toFixed(1)+' MN</div>'}
+const ht=hyTgt(),isT=G.tgt&&G.tgt.n===o.n,isH=ht&&ht.n===o.n;if(isT||isH)h+='<div class="mpx2" style="color:#ff9af0">'+(isT?'◎ Aktueller Wegpunkt':'')+(isT&&isH?' · ':'')+(isH?'<span style="color:#7fb8ff">◆ Hyperziel</span>':'')+'</div>';
+h+='<div class="mpd" id="mpdl"></div><div class="mpbt"><button class="pri" data-mm="go">➤ HIERHIN FLIEGEN</button><button data-mm="wp">◎ WEGPUNKT SETZEN</button><button data-mm="fo">⌖ FOKUS</button></div>';
+mi.innerHTML=h;mi.style.display='block';mpPanelLive()}
+function mpPanelLive(){const o=MP.sel,dl=el('mpdl');if(!o||!dl)return;const p=mpPos(o);if(!p)return;let d=p.distanceTo(mpShip());if(o.p)d=Math.max(0,d-o.p.R);const t='Entfernung: <b>'+fmtD(d)+'</b><br>Reisezeit: '+mpTravel(d);if(dl.__t!==t){dl.__t=t;dl.innerHTML=t}}
+/* Aktionen: Wegpunkt, Hierhin fliegen, Fokus */
+function mpAct(m){const o=MP.sel;if(!o)return;if(m=='fo'){mpFocus(o);sfx('ui');return}
+if(m=='wp'||m=='go'){G.tgt={n:o.n,p:o.p,s:o.s,npc:o.npc,poi:o.poi,sys:o.sys};if(o.p||o.s||o.sys||o.poi)hySet(o);sfx('beep');mpFlags(1);
+if(m=='wp'){toast('Wegpunkt: '+o.n);mpPanel();return}const st=G.st;mapTog(0);
+if(G.gm)toast('Wegpunkt '+o.n+' gesetzt – erst ins Schiff und abheben');else if(st=='docked'||st=='dock')toast('Wegpunkt '+o.n+' gesetzt – zum Losfliegen abdocken');else if(st=='landed')toast('Wegpunkt '+o.n+' gesetzt – zum Losfliegen abheben');
+else if(st=='fly'&&!G.gi){MP.ap={t:0};const d=mpPos(o).distanceTo(ship.position);toast('Kurs auf '+o.n+(d>6e5&&save.hd>0?' – Warp [X] oder Hyperantrieb [O] halten':' – Warp [X] halten'))}else toast('Wegpunkt '+o.n+' gesetzt – zurück an den Pilotensitz')}}
+/* "Hierhin fliegen": Fadenkreuz (FA.q) dreht das Schiff in Ruhe zum Ziel, jede eigene Lenkung bricht ab */
+function mpAlign(dt){const a=MP.ap,tp=G.tgt&&tgtPos(G.tgt);if(G.paused)return;dt=Math.min(1/30,dt);a.t+=dt;if(!tp||G.st!='fly'||G.gm||G.gi||HY.on||a.t>8||keys.ArrowLeft||keys.ArrowRight||keys.ArrowUp||keys.ArrowDown||Math.abs(G.sx||0)+Math.abs(G.sy||0)>.15){MP.ap=null;return}if(!FA.ok)return;
+const up=MP.tv.set(0,1,0).applyQuaternion(ship.quaternion);MP.tm.lookAt(ship.position,tp,up);MP.tq.setFromRotationMatrix(MP.tm);FA.q.slerp(MP.tq,Math.min(1,dt*3));const fw=MKW.set(0,0,-1).applyQuaternion(ship.quaternion),dv=MKV.copy(tp).sub(ship.position).normalize();if(fw.dot(dv)>.9995&&a.t>.5)MP.ap=null}
+/* gehaltene Tasten: Pfeile/WASD verschieben, Q/E drehen */
+function mpKeys(dt){const k=MP.k,s=Math.min(MP.w,MP.h)*.9*dt;let dx=(k.ArrowLeft||k.KeyA?1:0)-(k.ArrowRight||k.KeyD?1:0),dy=(k.ArrowUp||k.KeyW?1:0)-(k.ArrowDown||k.KeyS?1:0);if(dx||dy)mpPan(dx*s,dy*s);if(k.KeyQ)MP.yawT+=dt*1.4;if(k.KeyE)MP.yawT-=dt*1.4}
+function mpKey(e,dn){const c=e.code,inp=document.activeElement===MP.q;if(!dn){delete MP.k[c];return 0}
+if(c=='F3'||c=='F5'||c=='F11'||c=='F12')return 0;
+if(c=='Escape'){if(inp&&MP.q.value){MP.q.value='';mpSearch()}else if(inp)MP.q.blur();else mapTog(0);return 1}
+if(inp){if(c=='Enter'){const b=el('mpr').querySelector('button');if(b)b.click()}else if(c=='ArrowDown'){const b=el('mpr').querySelector('button');if(b){MP.q.blur();if(typeof GP!='undefined'&&GP.act)gpFocus(b);else b.focus()}e.preventDefault()}return 1}
+if(c=='KeyM'){mapTog(0);return 1}if(c=='Home'){mpFocus({n:'Schiff',ship:1});sfx('ui');return 1}if(c=='KeyF'){if(MP.sel)mpFocus(MP.sel);return 1}
+if(c=='Equal'||c=='NumpadAdd'||c=='BracketRight'){MP.lzT-=.3;MP.zp=null;MP.fly=null;return 1}if(c=='Minus'||c=='NumpadSubtract'){MP.lzT+=.3;MP.zp=null;MP.fly=null;return 1}
+if(c=='Enter'&&e.target&&e.target.tagName=='BUTTON')return 0;if(c=='Enter'&&MP.sel){mpFocus(MP.sel);return 1}
+if(c=='Slash'||c=='NumpadDivide'){MP.q.focus();e.preventDefault();return 1}
+if(c=='Tab')return 0;MP.k[c]=1;return 1}
+/* Gamepad: Sticks verschieben/drehen, Trigger zoomen, A waehlen, B zurueck, Y Wegpunkt, X Fokus; Steuerkreuz = gpNav im Panel/Suche */
+function mpGp(B,ax,dn,p){const t=performance.now(),dt=Math.min(.05,(t-(MP.gt||t))/1000);MP.gt=t;const inUI=GP.foc&&GP.foc.isConnected&&MAPD.contains(GP.foc);
+let d=B[12]?'u':B[13]?'d':B[14]?'l':B[15]?'r':'';if(d){if(d!=GP.nav.d||t>GP.nav.t){gpNav(d);GP.nav.t=t+(d!=GP.nav.d?380:130)}GP.nav.d=d}else GP.nav.d='';
+const s=Math.min(MP.w,MP.h)*1.1*dt;if(Math.abs(ax[0])+Math.abs(ax[1])>.02)mpPan(-ax[0]*Math.abs(ax[0])*s*1.6,-ax[1]*Math.abs(ax[1])*s*1.6);
+if(Math.abs(ax[2])+Math.abs(ax[3])>.02){MP.yawT-=ax[2]*dt*1.8;MP.pitT+=ax[3]*dt*1.1*(save.invY?-1:1)}
+const lt=p.buttons[6]?p.buttons[6].value:0,rt=p.buttons[7]?p.buttons[7].value:0;if(lt>.04||rt>.04){MP.lzT+=(lt-rt)*dt*1.8;MP.zp=null;MP.fly=null}
+if(dn(0)){if(inUI)GP.foc.click();else{mpPick(MP.w/2,MP.h/2,1)}}
+if(dn(1)){if(inUI)gpFocus(null);else mapTog(0)}if(dn(3))mpAct('wp');if(dn(2)){if(MP.sel)mpFocus(MP.sel)}if(dn(9)){mapTog(0)}if(dn(8)||dn(10)||dn(11))mpFocus({n:'Schiff',ship:1});return true}
+/* Suche */
+MP.q=el('mpq');
+function mpSearch(){const q=MP.q.value.trim().toLowerCase(),R=el('mpr');if(!q){R.innerHTML='';R.style.display='none';MP.sr=[];return}const L=[],add=(n,k,o,pr)=>{const i=n.toLowerCase().indexOf(q);if(i<0)return;L.push({n,k,o,s:(i==0?0:1)+pr})};
+G.pl.forEach(p=>add(p.n,mpKind(p),{n:p.n,p},p.sys&&p.sys.sol?0:.5));STN.forEach(s=>add(s.n,s.city?'Stadt':s.gnd?'Bodenhafen':'Station',{n:s.n,s},0));POI.forEach(p=>{if(mpPoiKn(p))add(p.n,'Ort',{n:p.n,poi:p},.3)});
+SITES.forEach(s=>{if(s.req&&!s.req())return;const p=G.pl.find(q=>q.n==s.p);if(p)add(s.n,'Landeort · '+p.n,{n:p.n,p,site:s},.4)});gal.forEach((s,i)=>{if(!s.sol&&!(MP.f.dc&&!mpDsc(i)))add(s.name,'Sternsystem',{n:s.name,sys:s},.6)});
+L.sort((a,b)=>a.s-b.s||a.n.localeCompare(b.n));MP.sr=L.slice(0,8);R.innerHTML=MP.sr.length?MP.sr.map((r,i)=>'<button data-sr="'+i+'">'+mpEsc(r.n)+'<small>'+mpEsc(r.k)+'</small></button>').join(''):'<div style="padding:9px 12px;color:#7f9fb8">Nichts gefunden</div>';R.style.display='block'}
+MP.q.addEventListener('input',mpSearch);
+MAPD.addEventListener('click',e=>{const b=e.target.closest('button,[data-lv]');if(!b)return;const d=b.dataset;
+if(d.sr!=null){const r=MP.sr[+d.sr];if(r){MP.q.value='';mpSearch();MP.q.blur();mpSel(r.o);mpFocus(r.o)}return}
+if(d.mf){MP.f[d.mf]=MP.f[d.mf]?0:1;save.mpf=MP.f;store();mpFilt();mpFlags(1);sfx('ui');return}
+if(d.lv!=null){const L=[3.9,6.5,6.95,7.42][+d.lv];MP.lzT=L;MP.zp=null;MP.fly=null;sfx('ui');return}
+if(d.ps!=null){const p=G.pl[+d.ps];if(p){const o={n:p.n,p};mpSel(o);mpFocus(o)}return}if(d.ss){const s=STN.find(q=>q.id==d.ss);if(s){const o={n:s.n,s};mpSel(o);mpFocus(o)}return}
+const m=d.mm;if(m=='x')mapTog(0);else if(m=='zi'){MP.lzT-=.35;MP.zp=null;MP.fly=null}else if(m=='zo'){MP.lzT+=.35;MP.zp=null;MP.fly=null}else if(m=='me'){mpFocus({n:'Schiff',ship:1});sfx('ui')}else if(m)mpAct(m)});
+el('mpk').addEventListener('pointerdown',e=>{const r=e.currentTarget.getBoundingClientRect();MP.lzT=MP.LZ0+clamp((e.clientX-r.left)/r.width,0,1)*(MP.LZ1-MP.LZ0);MP.zp=null;MP.fly=null;e.stopPropagation()});
+/* Maus: Rad = Zoom zum Zeiger, links ziehen = verschieben, rechts ziehen = drehen/neigen, Klick = waehlen, Doppelklick = Fokus */
+{const cv=el('mapc');let lx=0,ly=0,bt=0,sx=0,sy=0;cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('pointerdown',e=>{MP.dn=1;MP.dg=0;bt=e.button;lx=sx=e.clientX;ly=sy=e.clientY;try{cv.setPointerCapture(e.pointerId)}catch(_){}if(document.activeElement===MP.q)MP.q.blur()});
+cv.addEventListener('pointermove',e=>{MP.mx=e.offsetX;MP.my=e.offsetY;if(!MP.dn)return;const dx=e.clientX-lx,dy=e.clientY-ly;lx=e.clientX;ly=e.clientY;if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>4)MP.dg=1;if(!MP.dg)return;if(bt==2){MP.yawT-=dx*.006;MP.pitT+=dy*.004}else mpPan(dx,dy)});
+cv.addEventListener('pointerup',e=>{const was=MP.dn&&!MP.dg&&bt==0;MP.dn=0;if(was)mpPick(e.offsetX,e.offsetY);setTimeout(()=>MP.dg=0,10)});cv.addEventListener('pointerleave',()=>{if(!MP.dn){MP.mx=MP.my=null}});
+cv.addEventListener('dblclick',e=>{const o=mpPick(e.offsetX,e.offsetY);if(o)mpFocus(o);else{const p=mpRay(e.offsetX,e.offsetY);if(p){MP.fly={F0:MP.F.clone(),o:{p:{pos:p}},l0:MP.lz,l1:Math.max(MP.LZ0,MP.lz-.4),b:0,t:0,d:.7};MP.fol=null}}});
+MAPD.addEventListener('wheel',e=>{if(e.target.closest&&e.target.closest('#mapi,#mpr'))return;e.preventDefault();const st=clamp(e.deltaY*(e.deltaMode==1?.05:.0016),-.4,.4);MP.lzT=clamp(MP.lzT+st,MP.LZ0,MP.LZ1);MP.fly=null;
+const cx=e.target.id=='mapc'?e.offsetX:MP.w/2,cy=e.target.id=='mapc'?e.offsetY:MP.h/2;if(Math.hypot(cx-MP.w/2,cy-MP.h/2)<24&&MP.fol){MP.zp=null;return}const p=mpRay(cx,cy);MP.zp=p;if(p)MP.fol=null},{passive:false})}
+/* Rendern statt der Spielszene (ckRender ruft das auf, solange die Karte offen ist) */
+function mpRender(){R3.autoClear=true;R3.render(MP.S,MP.C)}
 function bodyInfo(p){const I=p.I;if(!I)return'<p>Unerforschter Himmelskörper in einem fremden System. Radius '+fmtD(p.R)+'.</p>';const T=I.T[0]==I.T[1]?I.T[0]+' °C':I.T[0]+' bis '+I.T[1]+' °C',rq=p.sun||!I.land?[]:envReq(p);
 return'<small style="color:#9fe">'+I.k+'</small><table style="width:100%;margin-top:6px"><tr><td>Schwerkraft</td><td>'+I.g+' m/s² ('+(I.g/9.81).toFixed(2)+' g)</td></tr><tr><td>Temperatur</td><td>'+T+'</td></tr><tr><td>Atmosphäre</td><td>'+(p.sun?I.co:I.p?(I.p>=.01?I.p+' bar':'Spuren')+'<br><small>'+I.co+'</small>':'Vakuum <small>('+I.co+')</small>')+'</td></tr><tr><td>Tageslänge</td><td>'+(I.day>48?Math.round(I.day/24*10)/10+' Erdtage':I.day+' h')+'</td></tr></table><p><small>'+I.geo+'</small></p><p><b>Rohstoffe:</b> '+(I.res.join(', ')||'–')+'<br><b>Gefahren:</b> '+I.haz.join(', ')+'<br><b>Landung:</b> '+(I.land?'möglich':'unmöglich')+(rq.length?'<br><b>Anzug:</b> '+rq.map(k=>MODS[k].n).join(', '):'')+'</p>'}
 /*==== FORSCHUNG ====*/
@@ -3347,10 +3600,11 @@ save.mi++;save.mp=0;while(MIS[save.mi]&&MIS[save.mi].skip&&MIS[save.mi].skip())s
 function mhud(fl){const m=MIS[save.mi];mbox.innerHTML=m?'<b style="color:#ffcc33;letter-spacing:.08em">'+(m.ch?m.ch.toUpperCase():'MISSION')+'</b><br><b>'+m.t+'</b> <span style="opacity:.6">('+(save.mi+1)+'/'+MIS.length+')</span><br>'+m.d+(m.n>1?' <b style="color:#7fe8ff">'+Math.floor(save.mp)+'/'+m.n+'</b>':''):'<b style="color:#7fe8ff">ALLE MISSIONEN ERLEDIGT</b><br>Die Galaxie gehört dir.';if(fl){mbox.style.animation='none';void mbox.offsetWidth;mbox.style.animation='mfl 1.2s 2'}}
 function scanB(){if(G.gi||G.gm||!G.near)return;const n=G.near;if(G.alt>n.R*5)return toast('Zu weit entfernt zum Scannen (unter '+fmtD(n.R*5)+' Höhe)');if(save.scan[n.n])return toast(n.n+' ist bereits gescannt – Daten in der Karte [M]');save.scan[n.n]=1;save.fp=(save.fp||0)+4;save.coins+=15;sfx('dia');store();
 const I=n.I;dlg([['kai','Scan von '+n.n+' abgeschlossen. '+(I?I.k+', Schwerkraft '+I.g+' m/s², '+(I.p?I.p+' bar ':'Vakuum, ')+(I.T[0]==I.T[1]?I.T[0]:I.T[0]+' bis '+I.T[1])+' °C. '+I.geo:'Unbekannter Körper, Radius '+fmtD(n.R)+'.')+' (+4 Forschungspunkte, +15 ●)']])}
-addEventListener('keydown',e=>{if(!G.on)return;if(e.code=='Escape'&&MAPD.style.display!='none'){mapTog(0);e.stopImmediatePropagation();return}if(e.code=='Escape'&&SU.style.display!='none'){stClose();e.stopImmediatePropagation();return}},true);
+addEventListener('keydown',e=>{if(!G.on)return;if(MP.on){if(mpKey(e,1))e.stopImmediatePropagation();return}if(e.code=='Escape'&&SU.style.display!='none'){stClose();e.stopImmediatePropagation();return}},true);
 addEventListener('keydown',e=>{if(!G.on||G.paused)return;if(e.code=='KeyM')mapTog();if(e.code=='KeyV'&&!G.gm&&!G.gi){save.fa=save.fa?0:1;toast(save.fa?'Flugassistent AN – Schubhebel = Wunschtempo, das Schiff fliegt, wohin die Nase zeigt':'NEWTON-MODUS – Schub wirkt direkt, das Schiff driftet frei');store()}if(e.code=='KeyC')scanB();if(e.code=='KeyT'&&G.st=='docked'&&G.cur&&!G.gi)stOpen(G.cur);if(e.code=='Space'&&G.st=='fly'&&!G.gi&&!G.gm)e.preventDefault()});
 mk('Feuer','fi',()=>G.fire=1,()=>G.fire=0);mk('Bremsen [B]','br',()=>G.brk=1,()=>G.brk=0);mk('Assist [V]','fa',()=>{save.fa=save.fa?0:1;toast(save.fa?'Flugassistent AN':'NEWTON-MODUS')});mk('Karte [M]','mp',()=>mapTog());mk('Station [T]','so',()=>{if(G.cur)stOpen(G.cur)});
 ui.insertAdjacentHTML('beforeend','<div id="vs2" style="position:absolute;left:50%;transform:translateX(-50%);bottom:calc(160px + env(safe-area-inset-bottom,0px));font:600 13px system-ui;text-shadow:0 0 4px #000;white-space:nowrap"></div>');
+addEventListener('keyup',e=>{if(MP.on)mpKey(e,0)},true);
 ACT.push(['Bremsen (Flip & Burn)','KeyB'],['Stabilisierung','KeyV'],['Karte','KeyM'],['Scannen','KeyC'],['Stationsmenü','KeyT']);
 function kodHtml(){let h='<h2>KODEX</h2><p>Wissen über das Sonnensystem, die Fraktionen und deine Geschichte.</p><h3>HIMMELSKÖRPER</h3>';G.pl.length;SP.forEach(s=>{h+='<details style="margin:3px 0"><summary style="cursor:pointer">'+s.n+' <small style="opacity:.6">'+s.I.k+(save.scan[s.n]?' · gescannt':'')+'</small></summary>'+bodyInfo(s)+'</details>'});
 h+='<small>Grössen und Abstände sind verkleinert, damit Reisen spielbar bleiben. Schwerkraft, Temperaturen, Atmosphären und Tageslängen entsprechen den echten Werten. Die Helligkeit im äusseren System ist für die Spielbarkeit angehoben.</small><h3>FRAKTIONEN</h3>';
@@ -7173,6 +7427,7 @@ function gpPoll(){GP.run=0;const ps=navigator.getGamepads?navigator.getGamepads(
 GP.ps=gpIsPS(p.id);const B=p.buttons.map(b=>b&&(b.pressed||b.value>.45)?1:0),ax=[0,1,2,3].map(i=>{const v=p.axes[i]||0;return Math.abs(v)<.16?0:Math.sign(v)*(Math.abs(v)-.16)/.84}),pr=GP.pb,dn=i=>B[i]&&!pr[i];GP.pb=B;
 if(B.some(v=>v)||ax.some(v=>Math.abs(v)>.3))gpDev(1);if(!GP.act)return;
 const menu=gpMenu(),mode=menu?'m':(G.gi||G.gm)?'f':'y';if(mode!=GP.mode){gpRelease();GP.mode=mode;if(mode!='m')gpFocus(null)}
+if(menu&&MP.on&&mpGp(B,ax,dn,p))return;
 if(menu){/* Menue: Fokus bewegen (mit Wiederholung), A waehlt, B zurueck, Start = Pause/Weiter */
 let d=B[12]||ax[1]<-.55?'u':B[13]||ax[1]>.55?'d':B[14]||ax[0]<-.55?'l':B[15]||ax[0]>.55?'r':'';const now=performance.now(),f=GP.foc;
 if(d){if(d!=GP.nav.d||now>GP.nav.t){if(f&&f.type=='range'&&(d=='l'||d=='r')){const st=+f.step||.05;f.value=clamp(+f.value+(d=='r'?st:-st),+f.min,+f.max);f.dispatchEvent(new Event('input',{bubbles:true}));f.dispatchEvent(new Event('change',{bubbles:true}))}else gpNav(d);GP.nav.t=now+(d!=GP.nav.d?380:130)}GP.nav.d=d}else GP.nav.d='';
