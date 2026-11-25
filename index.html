@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>DigoSky Beta 3.37</title>
+<title>DigoSky Beta 3.38</title>
 <style>
 :root{color-scheme:dark;--bg:#02030a;--fg:#e8ecff;--ac:#55ccff;--card:#10142bd9;--gold:#ffcc33;box-sizing:border-box}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;touch-action:none}
@@ -1710,7 +1710,7 @@ const M2=document.createElement('div');M2.id='m2';
 M2.innerHTML='<canvas id="m3"></canvas><div class="mvig"></div><div class="mgr"></div>'
 +'<header class="mt"><div class="lg">'+EMB+'<div class="lgt">'+[...'DIGOSKY'].map((c,i)=>'<span style="--i:'+i+'">'+c+'</span>').join('')+'</div></div><div class="sb">WANDERER VX-9 · EXPEDITION SOL</div></header>'
 +'<div id="mst"></div><nav id="mn"></nav><section id="mp"></section>'
-+'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.37</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
++'<footer class="mf"><span>DIGOSTUDIOS · BETA 3.38</span><span id="mtip"></span><span class="mkh"><kbd>↑↓</kbd>AUSWAHL<kbd>ENTER</kbd>OK<kbd>ESC</kbd>ZURÜCK</span></footer>'
 +'<div id="mfade"></div><input type="file" id="mfile" accept=".json,.txt,application/json,text/plain" style="display:none">';
 wrap.appendChild(M2);
 const mp=el('mp'),NAV=[['play','SPIEL STARTEN',0],['new','NEUES SPIEL',0],['load','SPIELSTAND LADEN',0],['mis','MISSIONEN',1],['char','CHARAKTER',1],['ship','RAUMSCHIFF',1],['kod','KODEX',1],['set','EINSTELLUNGEN',2],['prof','SPIELERPROFIL',2]],MNG=['KAMPAGNE','BORDSYSTEME','SYSTEM'];
@@ -2637,7 +2637,7 @@ const c=new THREE.Mesh(cybPrismGeo(r*.42,L*.88,tip*.6),M.core);c.position.y=L*.0
 const s=new THREE.Mesh(cybPrismGeo(r,L,tip),M.shell);s.renderOrder=7;g.add(s);
 const sx=.85+rr()*.3;g.scale.set(sx,1,2-sx);g.rotation.y=rr()*6.28;g.userData.L=L+tip;g.userData.r=r;return g}
 function cybOrient(o,dx,dz,tilt){const ax=new V3(dz,0,-dx).normalize();o.quaternion.setFromAxisAngle(ax,tilt)}
-function cybCluster(seed){const M=cybMats(),r=rng(seed),g=new THREE.Group();
+function cybCluster(seed,raw){const M=cybMats(),r=rng(seed),g=new THREE.Group();
 /* dunkler Fels mit Splittern */
 const rg=(rad)=>{const q=new THREE.IcosahedronGeometry(rad,1),p=q.attributes.position;for(let i=0;i<p.count;i++){const k=.72+r()*.5;p.setXYZ(i,p.getX(i)*k,p.getY(i)*k,p.getZ(i)*k)}q.computeVertexNormals();return q};
 for(let i=0;i<9;i++){const o=new THREE.Mesh(rg(.28+r()*.42),i%3?M.rock:M.rock2),a=r()*6.28,d=.2+r()*1.2;o.position.set(Math.cos(a)*d,-.05+r()*.12,Math.sin(a)*d);o.scale.set(1+r()*.4,.4+r()*.3,1+r()*.4);o.rotation.set(r()*.6,r()*3,r()*.6);o.castShadow=o.receiveShadow=true;g.add(o)}
@@ -2646,22 +2646,62 @@ for(let i=0;i<16;i++){const o=new THREE.Mesh(new THREE.OctahedronGeometry(.05+r(
 const a0=r()*6.28,main=cybCrystal(.34,2.4,seed*3+1);main.position.set(0,.15,0);cybOrient(main,Math.cos(a0),Math.sin(a0),.42+r()*.15);g.add(main);
 const sub=[];for(let i=0;i<7;i++){const a=a0+1+i*.82+r()*.4,rad=.08+r()*.17,L=.45+r()*1.4,c=cybCrystal(rad,L,seed*7+i);const d=.25+r()*.55;c.position.set(Math.cos(a)*d,.1,Math.sin(a)*d);cybOrient(c,Math.cos(a),Math.sin(a),.35+r()*.6);g.add(c);sub.push(c)}
 const h=new THREE.Sprite(new THREE.SpriteMaterial({map:GD,color:0x5fd8ff,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,opacity:.4,fog:false}));h.position.set(0,1.3,0);h.scale.setScalar(6);g.add(h);
-mrgStatic(g,[main,sub,h]);return{g,main,sub,halo:h}}
+if(!raw)mrgStatic(g,[main,sub,h]);return{g,main,sub,halo:h}}
 /* Platzierung: je höher und steiler, desto wahrscheinlicher; einer sicher auf einer Kuppe in erreichbarer Nähe */
 function gCyber(){const R=GR;CYB.cl=[];CYB.loose=null;CYB.rocks=[];if(!R.nodes)R.nodes=[];const rr=rng((R.sd*977|0)+5),h0=gY(0,0),C=[];
 const near=(x,z,d)=>{const cg=R.cg||{};for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){const L=cg[(Math.floor(x/10)+i)+','+(Math.floor(z/10)+j)];if(L&&L.some(q=>Math.hypot(q[0]-x,q[1]-z)<q[2]+d))return 1}return 0};
-for(let i=0;i<1400;i++){const a=rr()*6.283,d=50+Math.pow(rr(),.85)*340,x=Math.cos(a)*d,z=Math.sin(a)*d,h=gY(x,z);if(h<2.5)continue;let av=0;for(let k=0;k<8;k++){const b=k*.785;av+=gY(x+Math.cos(b)*24,z+Math.sin(b)*24)}av/=8;
+for(let i=0,nS=Math.round(1400*Math.max(1,CYK.rate));i<nS;i++){const a=rr()*6.283,d=50+Math.pow(rr(),.85)*340,x=Math.cos(a)*d,z=Math.sin(a)*d,h=gY(x,z);if(h<2.5)continue;let av=0;for(let k=0;k<8;k++){const b=k*.785;av+=gY(x+Math.cos(b)*24,z+Math.sin(b)*24)}av/=8;
 let a2=0;for(let k=0;k<8;k++){const b=k*.785+.39;a2+=gY(x+Math.cos(b)*65,z+Math.sin(b)*65)}a2/=8;const pr=h-av,pr2=h-a2,sl=Math.hypot(gY(x+3,z)-gY(x-3,z),gY(x,z+3)-gY(x,z-3))/6,rel=h-h0,w=clamp(pr2/12,0,1.2)*.8+clamp(pr/5,0,1.2)*.8+clamp((sl-.35)/.5,0,1)*.6+clamp(rel/30,0,1)*.3;if(w<.3||pr2<0)continue;C.push({x,z,h,d,w,pr,pr2,sl,rel})}
-const pick=[];const ok=c=>!pick.some(p=>Math.hypot(p.x-c.x,p.z-c.z)<48)&&!near(c.x,c.z,2.2);
+const pick=[];const ok=c=>!pick.some(p=>Math.hypot(p.x-c.x,p.z-c.z)<CYK.sp)&&!near(c.x,c.z,2.2);
 /* sicherer Kristall: beste Kuppe in 60–170 m */
 const sc=c=>c.pr2*1.2+c.pr+clamp(c.rel,-10,40)*.5-Math.max(0,c.d-130)*.08;let s0=null;if(R.hc)for(let i=0;i<60&&!s0;i++){const a=rr()*6.28,q=i<1?0:rr()*9,x=R.hc.x+Math.cos(a)*q,z=R.hc.z+Math.sin(a)*q,c={x,z,h:gY(x,z),d:Math.hypot(x,z),w:2};if(ok(c))s0=c}if(!s0)s0=C.filter(c=>c.d>60&&c.d<180&&c.sl<.9&&(c.pr>1.2||c.pr2>5)).sort((a,b)=>sc(b)-sc(a)).find(ok);if(!s0)s0=C.filter(c=>c.d>50&&c.d<240&&c.sl<1).sort((a,b)=>sc(b)-sc(a)).find(ok);
 if(!s0){for(let i=0;i<200&&!s0;i++){const a=rr()*6.28,d=80+rr()*70,x=Math.cos(a)*d,z=Math.sin(a)*d,h=gY(x,z);if(h>2.5&&!near(x,z,2.2))s0={x,z,h,d,w:1}}}
 if(s0)pick.push(s0);
-C.sort((a,b)=>b.w-a.w);for(const c of C){if(pick.length>=8)break;if(rr()<c.w*.45&&ok(c))pick.push(c)}
-pick.forEach((c,i)=>{const k=cybCluster(((R.sd*131)|0)+i*17+3),y=gY(c.x,c.z)-.15;k.g.position.set(c.x,y,c.z);R.g.add(k.g);{const pg=new THREE.PlaneGeometry(6.5,6.5,12,12);pg.rotateX(-Math.PI/2);const pp=pg.attributes.position;for(let j=0;j<pp.count;j++)pp.setY(j,gY(c.x+pp.getX(j),c.z+pp.getZ(j))-y+.06);const pm=new THREE.Mesh(pg,cybMats().patch);pm.renderOrder=1;k.g.add(pm)}colAdd(c.x,c.z,1.15);
-const nd={x:c.x,z:c.z,g:'cyberkristall',n:1,cy:1,yo:1.1,rr:1.4,sc:1,m:k.g,p:0,k,safe:i==0,y};R.nodes.push(nd);CYB.cl.push(nd)});
+C.sort((a,b)=>b.w-a.w);const cM=cykMax(),cP=Math.min(.95,.45*CYK.rate);for(const c of C){if(pick.length>=cM)break;if(rr()<Math.min(.95,c.w*cP)&&ok(c))pick.push(c)}
+const cyC=new Map();pick.forEach((c,i)=>{const k=cybCluster(((R.sd*131)|0)+i*17+3,1),y=gY(c.x,c.z)-.15;k.g.position.set(c.x,y,c.z);R.g.add(k.g);{const pg=new THREE.PlaneGeometry(6.5,6.5,12,12);pg.rotateX(-Math.PI/2);const pp=pg.attributes.position;for(let j=0;j<pp.count;j++)pp.setY(j,gY(c.x+pp.getX(j),c.z+pp.getZ(j))-y+.06);const pm=new THREE.Mesh(pg,cybMats().patch);pm.renderOrder=1;k.g.add(pm)}colAdd(c.x,c.z,1.15);
+const nd={x:c.x,z:c.z,g:'cyberkristall',n:1,cy:1,yo:1.1,rr:1.4,sc:1,m:k.g,p:0,k,safe:i==0,y};R.nodes.push(nd);CYB.cl.push(nd);cykCollect(cyC,nd)});cykCells(cyC);
 const L=new THREE.PointLight(0x55d8ff,0,16,2);GS.add(L);CYB.lt=L;const L2=new THREE.PointLight(0xbff4ff,0,9,2);GS.add(L2);CYB.ck=L2;
 CYB.fn=GS.fog.near;CYB.ff=GS.fog.far;CYB.storm=0;CYB.sT=0;CYB.ns=150+rr()*110;CYB.rk=40;CYB.o2=CYB.o2==null?100:CYB.o2;CYB.dust=null;CYB.shk=0;CYB.ph='';CYB.pulse=[];CYB.burn=0;CYB.g=R.ship&&R.ship.children[0];CYB.nst=0}
+/*==== 3.38: CYBERKRISTALLE – Menge (CYK), Zellen mit Instanzen, Kauf auf Stationen ====*/
+/* CYK.rate: Faktor auf Anzahl und Erscheinungs-Chance (1 = wie bis 3.37: höchstens 8 pro Absturzstelle). CYK.base = Höchstzahl bei rate 1, CYK.sp = Mindestabstand in m, CYK.cell = Zellgrösse in m, CYK.price = Münzen pro Kristall auf Stationen. */
+const CYK={rate:2.5,base:8,sp:48,cell:160,price:100,cells:[]};
+function cykMax(){return Math.max(1,Math.round(CYK.base*CYK.rate))}
+const CYKM=new THREE.Matrix4(),CYKZ=new THREE.Matrix4().makeScale(0,0,0);
+/* gleiche Form wie cybCrystal(.34,2.4): Hülle/Rückseite und Kern (Kern um L*.04 angehoben) */
+function cykGeo(){if(CYK.G)return CYK.G;const r=.34,L=2.4,t=r*2.4;CYK.G={b:cybPrismGeo(r,L,t),c:cybPrismGeo(r*.42,L*.88,t*.6).translate(0,L*.04,0),h:new THREE.PlaneGeometry(1,1)};return CYK.G}
+/* Leuchthof als Instanz-Billboard (wie das frühere Sprite: GD, additiv, ohne Nebel). Instanz-Matrix: Spalte 0 = Grösse, Spalte 1 = Deckkraft, Spalte 3 = Ort */
+function cykHaloMat(){if(CYK.HM)return CYK.HM;CYK.HM=new THREE.ShaderMaterial({uniforms:{map:{value:GD},col:{value:new THREE.Color(0x5fd8ff)}},
+vertexShader:'#include <common>\n#include <logdepthbuf_pars_vertex>\nvarying float vA;varying vec2 vU;void main(){vU=uv;vA=length(instanceMatrix[1].xyz);vec4 c=modelViewMatrix*instanceMatrix*vec4(0.,0.,0.,1.);c.xy+=position.xy*length(instanceMatrix[0].xyz);gl_Position=projectionMatrix*c;\n#include <logdepthbuf_vertex>\n}',
+fragmentShader:'#include <common>\n#include <logdepthbuf_pars_fragment>\nuniform sampler2D map;uniform vec3 col;varying float vA;varying vec2 vU;void main(){\n#include <logdepthbuf_fragment>\nvec4 t=texture2D(map,vU);gl_FragColor=vec4(col*t.rgb,t.a*vA);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}',
+transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,fog:false});return CYK.HM}
+/* Geometrie-Hülle: teilt die Attribute, eigene Hüllkugel pro Zelle */
+function cykShell(src,c,r){const g=new THREE.BufferGeometry();for(const a in src.attributes)g.setAttribute(a,src.attributes[a]);if(src.index)g.setIndex(src.index);g.boundingSphere=new THREE.Sphere(c.clone(),r);g.boundingBox=null;return g}
+/* Teile eines Kristallfelds (ohne Hauptkristall) in Weltlage (GR.g) nach Material in die Zelle legen */
+function cykCollect(cells,nd){const k=nd.k,M=cybMats(),cs=CYK.cell,key=Math.floor(nd.x/cs)+','+Math.floor(nd.z/cs);let C=cells.get(key);if(!C)cells.set(key,C={n:[],p:{rk:[],sd:[],bk:[],co:[],sl:[],pa:[]}});C.n.push(nd);
+const par=k.g.parent;if(par)par.remove(k.g);k.g.updateMatrixWorld(true);const rk2=new THREE.Color(),inM=o=>{for(let p=o;p;p=p.parent)if(p===k.main)return 1;return 0};
+k.g.traverse(o=>{if(!o.isMesh||inM(o))return;const t=o.material,q=t===M.rock||t===M.rock2?'rk':t===M.shard?'sd':t===M.back?'bk':t===M.core?'co':t===M.shell?'sl':t===M.patch?'pa':null;if(!q)return;
+let g=o.geometry.index?o.geometry.toNonIndexed():o.geometry.clone();g.applyMatrix4(o.matrixWorld);if(q=='rk'){rk2.copy(t.color);const n=g.attributes.position.count,a=new Float32Array(n*3);for(let i=0;i<n;i++){a[i*3]=rk2.r;a[i*3+1]=rk2.g;a[i*3+2]=rk2.b}g.setAttribute('color',new THREE.BufferAttribute(a,3))}C.p[q].push(g)});
+[...k.g.children].forEach(o=>{if(o===k.main)return;k.g.remove(o);o.traverse(q=>{if(q.geometry)q.geometry.dispose()})});k.main.visible=false;k.halo=null;if(par)par.add(k.g)}
+function cykMerge(L){let n=0;L.forEach(g=>n+=g.attributes.position.count);const out=new THREE.BufferGeometry(),ks=Object.keys(L[0].attributes).filter(a=>L.every(g=>g.attributes[a]));
+ks.forEach(a=>{const sz=L[0].attributes[a].itemSize,A=new Float32Array(n*sz);let o=0;L.forEach(g=>{A.set(g.attributes[a].array,o);o+=g.attributes[a].array.length});out.setAttribute(a,new THREE.BufferAttribute(A,sz))});L.forEach(g=>g.dispose());out.computeBoundingSphere();return out}
+/* pro Zelle: Fels (Schatten), Splitter, Nebenkristalle (3 Schichten), Bodenfleck zusammengelegt; Hauptkristalle und Leuchthöfe als InstancedMesh */
+function cykCells(cells){const R=GR,M=cybMats(),G0=cykGeo();CYK.cells.forEach(C=>C.ms.forEach(m=>{if(m.parent)m.parent.remove(m)}));CYK.cells=[];
+if(!M.rockV)M.rockV=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.93,metalness:.09,flatShading:true});
+cells.forEach(C=>{C.ms=[];const c=new V3();C.n.forEach(nd=>c.add(CYW.set(nd.x,nd.y+1.2,nd.z)));c.multiplyScalar(1/C.n.length);let r=0;C.n.forEach(nd=>r=Math.max(r,Math.hypot(nd.x-c.x,nd.y+1.2-c.y,nd.z-c.z)));
+const add=(m,ro,cs,rs)=>{m.renderOrder=ro;m.castShadow=!!cs;m.receiveShadow=!!rs;m.frustumCulled=true;m.matrixAutoUpdate=false;m.updateMatrix();R.g.add(m);C.ms.push(m);return m};
+[['rk',M.rockV,0,1,1],['sd',M.shard,0,0,0],['bk',M.back,5,0,0],['co',M.core,6,0,0],['sl',M.shell,7,0,0],['pa',M.patch,1,0,0]].forEach(([q,mt,ro,cs,rs])=>{if(C.p[q].length)add(new THREE.Mesh(cykMerge(C.p[q]),mt),ro,cs,rs)});C.p=null;
+const n=C.n.length,rr=r+4.6;C.im=[[G0.b,M.back,5],[G0.c,M.core,6],[G0.b,M.shell,7]].map(([g,mt,ro])=>add(new THREE.InstancedMesh(cykShell(g,c,rr),mt,n),ro,0,0));
+const hg=cykShell(G0.h,c,r+14);C.hm=add(new THREE.InstancedMesh(hg,cykHaloMat(),n),0,0,0);C.hm.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+C.n.forEach((nd,j)=>{nd.ci=C;nd.ii=j;cykSet(nd);cykHalo(nd,.3,5)});C.hd=1;CYK.cells.push(C)});cykHaloF()}
+/* Hauptkristall einer Instanz setzen (abgebaut = ausgeblendet) */
+function cykSet(nd){const C=nd.ci,k=nd.k;if(!C||!C.im)return;const on=k.main.parent===k.g;if(on){k.g.updateMatrix();k.main.updateMatrix();CYKM.multiplyMatrices(k.g.matrix,k.main.matrix)}C.im.forEach(m=>{m.setMatrixAt(nd.ii,on?CYKM:CYKZ);m.instanceMatrix.needsUpdate=true})}
+function cykHalo(nd,a,sc){const C=nd.ci;if(!C||!C.hm)return;CYKM.makeScale(sc,Math.max(0,a),sc);CYKM.setPosition(nd.x,nd.y+1.3,nd.z);C.hm.setMatrixAt(nd.ii,CYKM);C.hd=1}
+function cykHaloF(){CYK.cells.forEach(C=>{if(!C.hd)return;C.hd=0;C.hm.instanceMatrix.needsUpdate=true})}
+/* Kauf auf Raumstationen (Stationsmenü, Handel → Waren; auch Luna City) */
+function cykRow(R,ic){const p=CYK.price,c=save.coins,b=n=>{const f=p*n-c;return '<button class="t buy cyk" title="'+n+' Cyberkristall'+(n>1?'e':'')+' für '+p*n+' ● kaufen" data-cyk="'+n+'" '+(f>0?'disabled':'')+'>💎 '+n+' kaufen'+(f>0?'<br><small>es fehlen '+f+' ●</small>':'<br><small>'+p*n+' ●</small>')+'</button>'};
+const m1=p-c,m5=p*5-c;return '<h3>CYBERKRISTALLE</h3>'+R(ic('cyberkristall')+'<div><b>Cyberkristall</b><br><small>Energiekristall · an Bord '+have('cyberkristall')+'</small></div>','<b>'+p+' ●</b><br><small>pro Stück</small>',b(1)+b(5))+(m5>0?'<div class="unote" style="color:#ffcc66;margin:2px 0 6px">'+(m1>0?'Für 1 Cyberkristall fehlen dir '+m1+' Münzen.':'Für 5 Cyberkristalle fehlen dir '+m5+' Münzen.')+'</div>':'')}
+function cykBuy(n){const p=CYK.price;if(save.coins<p*n){toast('Zu wenig Münzen – es fehlen '+(p*n-save.coins)+' ●');G.tt=3;return 0}let got=0;for(let i=0;i<n;i++){if(addTo(['bp','hb','sh','cg'],'cyberkristall',1))break;got++}
+if(!got){toast('Kein Platz mehr für Cyberkristalle');G.tt=3;return 0}save.coins-=p*got;hbDirty=1;IVD=1;sfx('coin');store();toast('+'+got+' Cyberkristall'+(got>1?'e':'')+(got<n?' (mehr passt nicht)':''));G.tt=3;return got}
 /* Ziel für Scanner und Wegpunkt */
 function cybTarget(){const R=GR;if(!cybOn())return null;if(save.sk)return null;if(cybHave())return{k:'ship'};if(CYB.loose&&!CYB.loose.got)return{k:'loose',x:CYB.loose.x,z:CYB.loose.z};let b=null,bd=1e9;CYB.cl.forEach(n=>{if(n.n<=0)return;const d=Math.hypot(n.x-R.x,n.z-R.z);if(d<bd){bd=d;b=n}});return b?{k:'cl',x:b.x,z:b.z,n:b}:null}
 const CYW=new V3();
@@ -2673,15 +2713,15 @@ function cybUse(t){if(t.k=='pick')return cybPick();if(t.k=='ins')return cybInser
 /* Abbau mit dem Laser */
 function cybMine(h,dt,tier){const nd=h.node,R=GR;LZ.acc=0;nd.p=Math.min(1,nd.p+dt/(7.5/(1+(tier-1)*.5)));CYB.bar=.35;
 sparkAt(h.p,0x7fe8ff,4,4.2);if(Math.random()<.5)sparkAt(h.p,0xffffff,2,6.5);if(Math.random()<.25)sparkAt(h.p,0xffd890,2,3);
-const m=nd.k.main;m.position.x=(Math.random()-.5)*.05*nd.p;m.position.z=(Math.random()-.5)*.05*nd.p;cybMats().shell.emissiveIntensity=.55+Math.random()*.6*nd.p;
+const m=nd.k.main;m.position.x=(Math.random()-.5)*.05*nd.p;m.position.z=(Math.random()-.5)*.05*nd.p;cykSet(nd);cybMats().shell.emissiveIntensity=.55+Math.random()*.6*nd.p;
 if(AC&&AC.state=='running'&&!save.mute&&(CYB.ms=(CYB.ms||0)-dt)<=0){CYB.ms=.08;const t=AC.currentTime;tone(380+nd.p*1700,t,.1,'triangle',.035,SG);if(Math.random()<.4)tone(2400+Math.random()*1600,t,.05,'sine',.02,SG)}
 if(Math.random()<dt*3)cybSplinter(h.p);
 if(nd.p>=1)cybBreak(nd)}
 function cybSplinter(p){const M=cybMats(),o=new THREE.Mesh(new THREE.OctahedronGeometry(.05+Math.random()*.05,0),M.shard);o.position.copy(p);o.scale.y=2;GS.add(o);(CYB.spl=CYB.spl||[]).push({o,v:new V3((Math.random()-.5)*4,2+Math.random()*3,(Math.random()-.5)*4),t:1.6})}
-function cybBreak(nd){const R=GR,k=nd.k,m=k.main;nd.n=0;m.updateMatrixWorld(true);const wp=new V3(),wq=new THREE.Quaternion(),ws=new V3();m.matrixWorld.decompose(wp,wq,ws);k.g.remove(m);m.position.copy(wp);m.quaternion.copy(wq);m.scale.copy(ws);GS.add(m);
+function cybBreak(nd){const R=GR,k=nd.k,m=k.main;nd.n=0;m.updateMatrixWorld(true);const wp=new V3(),wq=new THREE.Quaternion(),ws=new V3();m.matrixWorld.decompose(wp,wq,ws);k.g.remove(m);m.position.copy(wp);m.quaternion.copy(wq);m.scale.copy(ws);m.visible=true;GS.add(m);cykSet(nd);
 const dx=R.x-nd.x,dz=R.z-nd.z,dl=Math.hypot(dx,dz)||1,tx=nd.x+dx/dl*1.6,tz=nd.z+dz/dl*1.6;
 CYB.loose={o:m,x:tx,z:tz,y:wp.y,vy:2.2,t:0,q0:wq.clone(),q1:new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI/2,Math.random()*6.28,.2)),p0:wp.clone(),got:0};
-for(let i=0;i<5;i++)sparkAt(wp,i%2?0xffffff:0x7fe8ff,18,7);for(let i=0;i<8;i++)cybSplinter(wp);k.halo.material.opacity=.15;sfx('hit');setTimeout(()=>sfx('dia'),150);CYB.shk=.5;
+for(let i=0;i<5;i++)sparkAt(wp,i%2?0xffffff:0x7fe8ff,18,7);for(let i=0;i<8;i++)cybSplinter(wp);sfx('hit');setTimeout(()=>sfx('dia'),150);CYB.shk=.5;
 toast('Der Cyberkristall ist herausgebrochen! Heb ihn auf [E]');G.tt=4}
 function cybPick(){const L=CYB.loose;if(!L||L.got)return;L.got=1;GS.remove(L.o);give('cyberkristall',1,['bp','hb']);sfx('dia');stinger();mhud(1);cybCard();
 toast('Cyberkristall erhalten! Bring ihn zurück zum Schiff');G.tt=4;CYB.bm=beam(0x55e8ff,.35);const w=cybChamber();CYB.bm.position.set(w?w.x:0,GR.h0+40,w?w.z:0);GR.g.add(CYB.bm);store()}
@@ -2754,7 +2794,7 @@ for(let i=0;i<6;i++){const s=.25+Math.random()*.5,o=new THREE.Mesh(new THREE.Dod
 /* nach dayStep: Nebel, Staub, Kamera, Kristalle */
 function cybPost(dt){const R=GR;if(!CYB.cl||!G.gm||R.free)return;const dl=R.daylt==null?1:R.daylt,M=CYB.M,pu=.8+.2*Math.sin(T*2.6);
 if(M){M.core.opacity=.55+.3*pu;if(!(CYB.bar>0))M.shell.emissiveIntensity=.6+.3*pu+(1-dl)*.4}
-let ln=null,ld=1e9;CYB.cl.forEach(n=>{const d=Math.hypot(n.x-GC.position.x,n.z-GC.position.z);n.k.halo.material.opacity=(n.n>0?(.22+.55*(1-dl)):.08)*pu*(d>260?.6:1);n.k.halo.scale.setScalar(5+(1-dl)*3+(d>120?d/60:0));if(n.n>0&&d<ld){ld=d;ln=n}});
+let ln=null,ld=1e9;CYB.cl.forEach(n=>{const d=Math.hypot(n.x-GC.position.x,n.z-GC.position.z);cykHalo(n,(n.n>0?(.22+.55*(1-dl)):.08)*pu*(d>260?.6:1),5+(1-dl)*3+(d>120?d/60:0));if(n.n>0&&d<ld){ld=d;ln=n}});cykHaloF();
 if(CYB.lt){const L=CYB.loose&&!CYB.loose.got?CYB.loose.o.position:ln?CYW.set(ln.x,ln.y+1.4,ln.z):null;if(L&&ld<70){CYB.lt.position.copy(L);CYB.lt.intensity=(1.3+1.6*(1-dl))*pu}else CYB.lt.intensity=0}
 if(CYB.ck&&R.ph!='cyb')CYB.ck.intensity=save.sk?1.6:0;
 /* herausgebrochener Kristall fällt und liegt */
@@ -5966,7 +6006,7 @@ h+='<div class="utabs">'+[['dienst','⛽','TANKEN'],['handel','🛒','HANDEL'],[
 h+='<div class="unote" style="margin:8px 0 4px">🚚 Frachtraum '+fmtKg(cgMass())+' / '+sp.hold+' t · ⛽ Tank '+Math.round(save.fuel/sp.cap*100)+' %</div>';
 const m=MIS[save.mi];if(m&&m.ev=='deliver'&&m.at==s.id){const n=have(m.g);h+='<div class="urow umis"><div class="un"><div><b>⭐ MISSION: '+m.t+'</b><br><small>'+m.n+'× '+(ITM[m.g]?ITM[m.g].n:m.g)+' · an Bord: '+n+'</small></div></div><div class="ua"><button class="t on" data-a="liefer" '+(n>=m.n?'':'disabled')+'>Liefern</button></div></div>'}
 if(grp=='handel')h+='<div class="ush">'+[['markt','Waren'],['ausr','Ausrüstung'],['bp','Baupläne']].map(([k,n])=>'<button class="t'+(STAB==k?' on':'')+'" data-tab="'+k+'">'+n+'</button>').join('')+'</div>';
-if(STAB=='markt'){const own=[...new Set(['cg','sh','bp','hb'].flatMap(k=>ivA(k).filter(q=>q&&['roh','mat','han'].includes(ITM[q.id].c)).map(q=>q.id)))],list=TRADE.concat(own.filter(g=>!TRADE.includes(g)));
+if(STAB=='markt'){h+=cykRow(R,ic)+'<h3>WAREN</h3>';const own=[...new Set(['cg','sh','bp','hb'].flatMap(k=>ivA(k).filter(q=>q&&['roh','mat','han'].includes(ITM[q.id].c)).map(q=>q.id)))],list=TRADE.concat(own.filter(g=>!TRADE.includes(g)));
 list.forEach(g=>{const st=save.eco[s.id][g],tr=TRADE.includes(g),bp=tr?price(s,g):0,spp=tr?price(s,g,1):Math.max(1,Math.round((ITM[g]?ITM[g].v:20)*.6*(1+clamp(rep,-60,80)/500))),n=have(g),tag=s.prod.includes(g)?' <small style="color:#7f7">günstig</small>':s.need.includes(g)?' <small style="color:#fc6">gefragt</small>':'';
 h+=R((ITM[g]?ic(g):'')+'<div><b>'+(ITM[g]?ITM[g].n:g)+'</b>'+tag+'<br><small>Lager '+(st==null?'–':Math.floor(st))+' · an Bord '+n+'</small></div>','<small>Kauf</small> <b>'+(tr?bp+' ●':'–')+'</b><br><small>Verkauf</small> <b>'+spp+' ●</b>',
 (tr?'<button class="t buy" title="1 kaufen" data-b="'+g+'|1" '+(save.coins<bp||st<1||cgFull(g,1)?'disabled':'')+'>🛒 1</button><button class="t buy" title="10 kaufen" data-b="'+g+'|10" '+(save.coins<bp*10||st<10||cgFull(g,10)?'disabled':'')+'>🛒 10</button>':'')+'<button class="t sell" title="1 verkaufen" data-s="'+g+'|1" '+(n<1?'disabled':'')+'>💰 1</button><button class="t sell" title="alle verkaufen" data-s="'+g+'|'+n+'" '+(n<1?'disabled':'')+'>💰 Alle</button>')});
@@ -5985,7 +6025,7 @@ h+='</div><div class="uft"><button class="t" data-a="inv">🚚 Frachtraum</butto
 SU.onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const d=b.dataset,s=G.cur,sp=SPEC(),rep=save.rep[s.f]||0;sfx('ui');
 if(d.tab)STAB=d.tab;else if(d.b){const[g,n]=d.b.split('|');for(let i=0;i<+n;i++){const p=price(s,g);if(save.coins<p||save.eco[s.id][g]<1||cgFull(g,1))break;save.coins-=p;save.eco[s.id][g]--;addTo(['cg'],g,1)}IVD=1;sfx('coin')}
 else if(d.s){const[g,n]=d.s.split('|'),tr=TRADE.includes(g);for(let i=0;i<+n;i++){if(!takeFrom(['cg','sh','bp','hb'],g,1))break;save.coins+=tr?price(s,g,1):Math.max(1,Math.round((ITM[g]?ITM[g].v:20)*.6*(1+clamp(rep,-60,80)/500)));if(save.eco[s.id][g]!=null)save.eco[s.id][g]++}hbDirty=1;sfx('coin')}
-else if(d.ai){const[id,n]=d.ai.split('|'),p=Math.max(1,Math.round(ITM[id].v*1.25*(1-clamp(rep,-60,80)/500)));for(let i=0;i<+n;i++){if(save.coins<p)break;if(addTo(['bp','hb','sh','cg'],id,1)){toast('Kein Platz mehr');break}save.coins-=p}hbDirty=1;sfx('coin')}
+else if(d.cyk){cykBuy(+d.cyk);if(typeof GP!='undefined'&&GP.foc===b)setTimeout(()=>{const q=SU.querySelector('[data-cyk="'+d.cyk+'"]:not([disabled])')||SU.querySelector('[data-cyk]:not([disabled])');if(q)gpFocus(q)},0)}else if(d.ai){const[id,n]=d.ai.split('|'),p=Math.max(1,Math.round(ITM[id].v*1.25*(1-clamp(rep,-60,80)/500)));for(let i=0;i<+n;i++){if(save.coins<p)break;if(addTo(['bp','hb','sh','cg'],id,1)){toast('Kein Platz mehr');break}save.coins-=p}hbDirty=1;sfx('coin')}
 else if(d.bp){const[k,p]=d.bp.split('|');if(save.coins>=+p&&!bpKnown(k)){save.coins-=+p;bpLearn(k,'gekauft')}}
 else if(d.u)doUp(d.u);else if(d.m){const o=MODS[d.m];if(save.coins>=o.p){save.coins-=o.p;give(MODI[d.m],1,['bp','hb','sh','cg']);toast(o.n+' gekauft – am Anzugsspind im Schiff anziehen');sfx('lvl')}}
 else if(d.j!=null){const j=jobsFor(s)[+d.j];save.jobs.push(j)}else if(d.jx!=null)save.jobs.splice(+d.jx,1);else if(d.jd!=null){const j=save.jobs[+d.jd];spend(j.g,j.n);jobDone(+d.jd)}
